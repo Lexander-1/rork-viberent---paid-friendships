@@ -29,6 +29,7 @@ struct ProfileView: View {
                         interestsSection
                     }
 
+                    ghostModeSection
                     menuSection
                     myPostsSection
                     logoutButton
@@ -247,6 +248,38 @@ struct ProfileView: View {
                 }
             }
         }
+    }
+
+    private var ghostModeSection: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "eye.slash.fill")
+                .font(.body)
+                .foregroundStyle(Theme.secondaryText)
+                .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Ghost Mode")
+                    .font(.subheadline)
+                    .foregroundStyle(.white)
+                Text("Hide your location from the map")
+                    .font(.caption)
+                    .foregroundStyle(Theme.secondaryText)
+            }
+
+            Spacer()
+
+            Toggle("", isOn: $user.isGhostMode)
+                .labelsHidden()
+                .tint(Theme.accent)
+        }
+        .padding(16)
+        .background(Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
+        .padding(.horizontal, 16)
     }
 
     private var logoutButton: some View {

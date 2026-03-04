@@ -84,9 +84,13 @@ struct FeedPostCard: View {
     var feedViewModel: FeedViewModel?
     @State private var showComments: Bool = false
     @State private var showReport: Bool = false
+    @State private var showShareSheet: Bool = false
 
     private var author: User? { users.first(where: { $0.id == post.authorId }) }
-    private var taggedUser: User? { users.first(where: { $0.id == post.taggedUserId }) }
+    private var taggedUser: User? {
+        guard let taggedId = post.taggedUserId else { return nil }
+        return users.first(where: { $0.id == taggedId })
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -135,7 +139,6 @@ struct FeedPostCard: View {
 
                 Menu {
                     Button("Report Post", systemImage: "flag") { showReport = true }
-                    Button("Share", systemImage: "square.and.arrow.up") { }
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.body)
@@ -209,7 +212,9 @@ struct FeedPostCard: View {
                     .padding(.vertical, 10)
                 }
 
-                Button { } label: {
+                Button {
+                    showShareSheet = true
+                } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "square.and.arrow.up")
                         Text("Share")
@@ -232,6 +237,9 @@ struct FeedPostCard: View {
         .sheet(isPresented: $showComments) {
             CommentsSheet(post: post, feedViewModel: feedViewModel)
         }
+        .sheet(isPresented: $showShareSheet) {
+            SharePostSheet(post: post)
+        }
         .alert("Report Post", isPresented: $showReport) {
             Button("Report", role: .destructive) { }
             Button("Cancel", role: .cancel) { }
@@ -241,5 +249,101 @@ struct FeedPostCard: View {
         .navigationDestination(for: User.self) { user in
             HostProfileView(host: user)
         }
+    }
+}
+
+struct SharePostSheet: View {
+    let post: FeedPost
+    @Environment(\.dismiss) private var dismiss
+    @State private var linkCopied: Bool = false
+
+    private var shareLink: String {
+        "https://viberent.app/post/\(post.id)"
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                VStack(spacing: 8) {
+                    Text(post.caption)
+                        .font(.subheadline)
+                        .foregroundStyle(.white)
+                        .lineLimit(3)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Text("by \(post.authorName)")
+                        .font(.caption)
+                        .foregroundStyle(Theme.secondaryText)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(16)
+                .background(Theme.cardBackground)
+                .clipShape(.rect(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Theme.border, lineWidth: 1)
+                )
+
+                Button {
+                    UIPasteboard.general.string = shareLink
+                    linkCopied = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        linkCopied = false
+                    }
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: linkCopied ? "checkmark.circle.fill" : "link")
+                            .font(.body)
+                        Text(linkCopied ? "Link Copied!" : "Copy Link")
+                            .font(.subheadline.bold())
+                    }
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(linkCopied ? Color.green : Theme.accent)
+                    .clipShape(.rect(cornerRadius: 12))
+                }
+
+                Button {
+                    let items: [Any] = [shareLink]
+                    let activityVC = UIActivityViewController(activityItems: items, applicationActivities: nil)
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let rootVC = windowScene.windows.first?.rootViewController {
+                        rootVC.present(activityVC, animated: true)
+                    }
+                    dismiss()
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.body)
+                        Text("Share via...")
+                            .font(.subheadline.bold())
+                    }
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(Theme.cardBackground)
+                    .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
+                }
+
+                Spacer()
+            }
+            .padding(16)
+            .background(Theme.background)
+            .navigationTitle("Share Post")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium])
+        .presentationDragIndicator(.visible)
+        .preferredColorScheme(.dark)
     }
 }

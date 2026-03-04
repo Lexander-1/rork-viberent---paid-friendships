@@ -45,11 +45,15 @@ struct ContentView: View {
                 DiscoverView(viewModel: discoverViewModel)
             }
 
-            Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill", value: 2) {
+            Tab("Map", systemImage: "map.fill", value: 2) {
+                MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity)
+            }
+
+            Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill", value: 3) {
                 ChatListView(viewModel: chatViewModel)
             }
 
-            Tab("Profile", systemImage: "person.fill", value: 3) {
+            Tab("Profile", systemImage: "person.fill", value: 4) {
                 ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel, feedViewModel: feedViewModel)
             }
         }
@@ -66,15 +70,19 @@ struct ContentView: View {
                 MyCalendarView(user: $appViewModel.currentUser)
             }
 
-            Tab("Earnings", systemImage: "dollarsign.circle.fill", value: 2) {
+            Tab("Map", systemImage: "map.fill", value: 2) {
+                MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity)
+            }
+
+            Tab("Earnings", systemImage: "dollarsign.circle.fill", value: 3) {
                 EarningsView()
             }
 
-            Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill", value: 3) {
+            Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill", value: 4) {
                 ChatListView(viewModel: chatViewModel)
             }
 
-            Tab("Profile", systemImage: "person.fill", value: 4) {
+            Tab("Profile", systemImage: "person.fill", value: 5) {
                 ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel, feedViewModel: feedViewModel)
             }
         }

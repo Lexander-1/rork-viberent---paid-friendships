@@ -4,23 +4,14 @@ struct CreatePostView: View {
     @Environment(\.dismiss) private var dismiss
     var feedViewModel: FeedViewModel?
     @State private var caption: String = ""
-    @State private var selectedCompanion: String = ""
-    @State private var selectedCompanionId: String = ""
     @State private var selectedCity: String = "New York City"
     @State private var isPosting: Bool = false
-
-    private let pastCompanions: [(name: String, id: String)] = [
-        ("Sarah Chen", "1"),
-        ("Emma Wilson", "5"),
-        ("Marcus Johnson", "2")
-    ]
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     captionSection
-                    companionSection
                     locationSection
                     photosSection
                 }
@@ -56,45 +47,6 @@ struct CreatePostView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(Theme.border, lineWidth: 1)
                 )
-        }
-    }
-
-    private var companionSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Tag your companion")
-                .font(.subheadline.bold())
-                .foregroundStyle(Theme.secondaryText)
-
-            ForEach(pastCompanions, id: \.id) { companion in
-                companionRow(companion)
-            }
-        }
-    }
-
-    private func companionRow(_ companion: (name: String, id: String)) -> some View {
-        let isSelected = selectedCompanion == companion.name
-        return Button {
-            selectedCompanion = companion.name
-            selectedCompanionId = companion.id
-        } label: {
-            HStack(spacing: 12) {
-                AvatarView(name: companion.name, size: 36, userId: companion.id)
-                Text(companion.name)
-                    .font(.subheadline)
-                    .foregroundStyle(.white)
-                Spacer()
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Theme.accent)
-                }
-            }
-            .padding(12)
-            .background(isSelected ? Theme.accent.opacity(0.1) : Theme.cardBackground)
-            .clipShape(.rect(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Theme.accent : Theme.border, lineWidth: 1)
-            )
         }
     }
 
@@ -163,7 +115,7 @@ struct CreatePostView: View {
                     .foregroundStyle(Theme.accent)
             }
         }
-        .disabled(caption.isEmpty || selectedCompanion.isEmpty || isPosting)
+        .disabled(caption.isEmpty || isPosting)
     }
 
     private func createPost() {
@@ -174,8 +126,8 @@ struct CreatePostView: View {
             authorName: "Alex Morgan",
             authorPhotoURL: nil,
             authorIsVerified: true,
-            taggedUserId: selectedCompanionId,
-            taggedUserName: selectedCompanion,
+            taggedUserId: nil,
+            taggedUserName: nil,
             caption: caption,
             photoURLs: [],
             city: selectedCity,

@@ -201,25 +201,7 @@ struct BookingFlowView: View {
                         .foregroundStyle(Theme.accent)
                 }
 
-                HStack {
-                    Text("Host receives")
-                        .font(.subheadline)
-                        .foregroundStyle(Theme.secondaryText)
-                    Spacer()
-                    Text("$\(Int(pricing.hostEarnings))")
-                        .font(.headline.bold())
-                        .foregroundStyle(.green)
-                }
 
-                HStack {
-                    Text("Platform fee (25%)")
-                        .font(.caption)
-                        .foregroundStyle(Theme.secondaryText.opacity(0.7))
-                    Spacer()
-                    Text("$\(Int(pricing.platformFee))")
-                        .font(.caption.bold())
-                        .foregroundStyle(Theme.secondaryText.opacity(0.7))
-                }
             }
             .padding(16)
             .background(Theme.cardBackground)

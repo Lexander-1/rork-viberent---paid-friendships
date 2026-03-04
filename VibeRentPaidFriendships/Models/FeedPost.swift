@@ -6,8 +6,8 @@ nonisolated struct FeedPost: Identifiable, Hashable, Codable, Sendable {
     let authorName: String
     let authorPhotoURL: String?
     let authorIsVerified: Bool
-    let taggedUserId: String
-    let taggedUserName: String
+    let taggedUserId: String?
+    let taggedUserName: String?
     var caption: String
     var photoURLs: [String]
     var city: String

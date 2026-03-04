@@ -177,14 +177,9 @@ struct HostProfileView: View {
                 .font(.subheadline)
                 .foregroundStyle(.white)
             Spacer()
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("$\(Int(total))")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(Theme.accent)
-                Text("Host gets $\(Int(hostEarnings))")
-                    .font(.caption2)
-                    .foregroundStyle(Theme.secondaryText)
-            }
+            Text("$\(Int(total))")
+                .font(.subheadline.bold())
+                .foregroundStyle(Theme.accent)
         }
         .padding(12)
         .background(Theme.cardBackground)
