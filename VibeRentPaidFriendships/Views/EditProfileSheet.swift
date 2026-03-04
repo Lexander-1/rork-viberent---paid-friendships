@@ -1,45 +1,28 @@
 import SwiftUI
+import PhotosUI
 
 struct EditProfileSheet: View {
     @Bindable var viewModel: ProfileViewModel
     @Binding var user: User
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var profileImage: Image?
+    @State private var isSaving: Bool = false
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Personal") {
-                    TextField("Name", text: $viewModel.editName)
-                    TextField("Bio", text: $viewModel.editBio, axis: .vertical)
-                        .lineLimit(3...6)
-                    Picker("City", selection: $viewModel.editCity) {
-                        ForEach(City.allCities, id: \.name) { city in
-                            Text(city.name).tag(city.name)
-                        }
-                    }
+            ScrollView {
+                VStack(spacing: 24) {
+                    profilePhotoSection
+                    personalInfoSection
+                    interestsSection
+                    hostModeSection
                 }
-
-                Section("Interests (comma-separated)") {
-                    TextField("Coffee, Hiking, Art...", text: $viewModel.editInterests)
-                }
-
-                Section("Host Mode") {
-                    Toggle("Enable Host Mode", isOn: $viewModel.isHostMode)
-                        .tint(Theme.gradientStart)
-
-                    if viewModel.isHostMode {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Hourly Rate: $\(Int(viewModel.editHourlyRate))")
-                                .font(.subheadline.bold())
-                            Slider(value: $viewModel.editHourlyRate, in: 30...200, step: 5)
-                                .tint(Theme.gradientStart)
-                            Text("Minimum $30/hr")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 40)
             }
+            .background(Color.black)
             .navigationTitle("Edit Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -47,15 +30,181 @@ struct EditProfileSheet: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button {
+                        isSaving = true
                         viewModel.saveChanges(to: &user)
-                        dismiss()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            isSaving = false
+                            dismiss()
+                        }
+                    } label: {
+                        if isSaving {
+                            ProgressView()
+                                .tint(Theme.gradientStart)
+                        } else {
+                            Text("Save")
+                                .fontWeight(.bold)
+                                .foregroundStyle(Theme.gradientStart)
+                        }
                     }
-                    .fontWeight(.bold)
-                    .foregroundStyle(Theme.gradientStart)
+                    .disabled(isSaving)
+                }
+            }
+            .onChange(of: selectedPhoto) { _, newValue in
+                Task {
+                    if let data = try? await newValue?.loadTransferable(type: Data.self),
+                       let uiImage = UIImage(data: data) {
+                        profileImage = Image(uiImage: uiImage)
+                    }
                 }
             }
         }
+        .presentationDragIndicator(.visible)
         .preferredColorScheme(.dark)
+    }
+
+    private var profilePhotoSection: some View {
+        VStack(spacing: 12) {
+            PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                ZStack {
+                    if let profileImage {
+                        profileImage
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                    } else {
+                        AvatarView(
+                            name: user.name,
+                            size: 100,
+                            userId: user.id,
+                            isVerified: user.isVerified
+                        )
+                    }
+
+                    Circle()
+                        .fill(.black.opacity(0.4))
+                        .frame(width: 100, height: 100)
+
+                    Image(systemName: "camera.fill")
+                        .font(.title3)
+                        .foregroundStyle(.white)
+                }
+            }
+
+            Text("Tap to change photo")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+    }
+
+    private var personalInfoSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Personal Info")
+                .font(.headline)
+                .foregroundStyle(.white)
+
+            VStack(spacing: 12) {
+                editField("Name", text: $viewModel.editName, icon: "person.fill")
+                editField("Bio", text: $viewModel.editBio, icon: "text.quote", isMultiline: true)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("City", systemImage: "location.fill")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.secondary)
+
+                    Picker("City", selection: $viewModel.editCity) {
+                        ForEach(City.allCities, id: \.name) { city in
+                            Text(city.name).tag(city.name)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(.white)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(14)
+                    .background(Theme.cardBackground)
+                    .clipShape(.rect(cornerRadius: 12))
+                }
+            }
+        }
+    }
+
+    private var interestsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Interests")
+                .font(.headline)
+                .foregroundStyle(.white)
+
+            editField("Coffee, Hiking, Art...", text: $viewModel.editInterests, icon: "heart.fill")
+        }
+    }
+
+    private var hostModeSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Host Settings")
+                .font(.headline)
+                .foregroundStyle(.white)
+
+            HStack {
+                Label("Enable Host Mode", systemImage: "clock.badge.checkmark")
+                    .font(.subheadline)
+                    .foregroundStyle(.white)
+                Spacer()
+                Toggle("", isOn: $viewModel.isHostMode)
+                    .tint(Theme.gradientStart)
+                    .labelsHidden()
+            }
+            .padding(14)
+            .background(Theme.cardBackground)
+            .clipShape(.rect(cornerRadius: 12))
+
+            if viewModel.isHostMode {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Hourly Rate")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text("$\(Int(viewModel.editHourlyRate))/hr")
+                            .font(.headline.bold())
+                            .foregroundStyle(Theme.gradientStart)
+                    }
+
+                    Slider(value: $viewModel.editHourlyRate, in: 30...200, step: 5)
+                        .tint(Theme.gradientStart)
+
+                    Text("Minimum $30/hr")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(14)
+                .background(Theme.cardBackground)
+                .clipShape(.rect(cornerRadius: 12))
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+    }
+
+    private func editField(_ placeholder: String, text: Binding<String>, icon: String, isMultiline: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(placeholder, systemImage: icon)
+                .font(.subheadline.bold())
+                .foregroundStyle(.secondary)
+
+            if isMultiline {
+                TextField(placeholder, text: text, axis: .vertical)
+                    .lineLimit(3...6)
+                    .padding(14)
+                    .background(Theme.cardBackground)
+                    .clipShape(.rect(cornerRadius: 12))
+            } else {
+                TextField(placeholder, text: text)
+                    .padding(14)
+                    .background(Theme.cardBackground)
+                    .clipShape(.rect(cornerRadius: 12))
+            }
+        }
     }
 }

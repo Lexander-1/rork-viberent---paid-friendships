@@ -94,10 +94,22 @@ struct FeedPostCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
-                AvatarView(name: post.authorName, size: 44, userId: post.authorId, isVerified: post.authorIsVerified)
+                if let author {
+                    NavigationLink(value: author) {
+                        AvatarView(name: post.authorName, size: 44, userId: post.authorId, isVerified: post.authorIsVerified)
+                    }
+                } else {
+                    AvatarView(name: post.authorName, size: 44, userId: post.authorId, isVerified: post.authorIsVerified)
+                }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 4) {
+                    if let author {
+                        NavigationLink(value: author) {
+                            Text(post.authorName)
+                                .font(.subheadline.bold())
+                                .foregroundStyle(.white)
+                        }
+                    } else {
                         Text(post.authorName)
                             .font(.subheadline.bold())
                             .foregroundStyle(.white)

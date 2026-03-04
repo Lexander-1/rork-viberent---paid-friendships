@@ -20,6 +20,10 @@ struct ContentView: View {
                 SignUpView {
                     withAnimation(.snappy) { appViewModel.login() }
                 }
+            } else if !appViewModel.hasSelectedRole {
+                RoleSelectionView { role in
+                    withAnimation(.snappy) { appViewModel.selectRole(role) }
+                }
             } else {
                 mainTabView
             }
@@ -34,7 +38,7 @@ struct ContentView: View {
             }
 
             Tab("Discover", systemImage: "sparkle.magnifyingglass", value: .discover) {
-                DiscoverView(viewModel: discoverViewModel)
+                DiscoverView(viewModel: discoverViewModel, currentUserRole: appViewModel.currentUser.role)
             }
 
             Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill", value: .chat) {
@@ -42,7 +46,7 @@ struct ContentView: View {
             }
 
             Tab("Profile", systemImage: "person.fill", value: .profile) {
-                ProfileView(user: $appViewModel.currentUser)
+                ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel)
             }
         }
         .tint(Theme.gradientStart)

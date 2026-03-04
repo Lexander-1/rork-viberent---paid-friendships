@@ -2,66 +2,32 @@ import SwiftUI
 
 struct DiscoverView: View {
     @Bindable var viewModel: DiscoverViewModel
+    let currentUserRole: UserRole
+    @State private var selectedSegment: DiscoverSegment = .hosts
 
-    private let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
-    ]
+    private enum DiscoverSegment: String, CaseIterable {
+        case hosts = "Find Hosts"
+        case seekers = "Find Seekers"
+    }
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            FilterChip(
-                                title: viewModel.selectedCity == "All Cities" ? "City" : viewModel.selectedCity,
-                                icon: "mappin",
-                                isActive: viewModel.selectedCity != "All Cities"
-                            ) {
-                                viewModel.showFilters = true
-                            }
+            VStack(spacing: 0) {
+                segmentPicker
 
-                            ForEach(DiscoverViewModel.SortOption.allCases, id: \.self) { option in
-                                FilterChip(
-                                    title: option.rawValue,
-                                    icon: nil,
-                                    isActive: viewModel.sortOption == option
-                                ) {
-                                    viewModel.sortOption = option
-                                }
-                            }
+                ScrollView {
+                    VStack(spacing: 16) {
+                        filterBar
 
-                            FilterChip(
-                                title: "Verified",
-                                icon: "checkmark.seal.fill",
-                                isActive: viewModel.verifiedOnly
-                            ) {
-                                viewModel.verifiedOnly.toggle()
-                            }
-                        }
-                        .contentMargins(.horizontal, 16)
-                    }
-
-                    LazyVGrid(columns: columns, spacing: 12) {
-                        ForEach(viewModel.filteredHosts, id: \.id) { host in
-                            NavigationLink(value: host) {
-                                HostCard(host: host)
-                            }
+                        if viewModel.filteredHosts.isEmpty {
+                            emptyState
+                        } else {
+                            hostList
                         }
                     }
-                    .padding(.horizontal, 16)
-
-                    if viewModel.filteredHosts.isEmpty {
-                        ContentUnavailableView(
-                            "No Hosts Found",
-                            systemImage: "person.slash",
-                            description: Text("Try adjusting your filters")
-                        )
-                        .padding(.top, 40)
-                    }
+                    .padding(.top, 12)
+                    .padding(.bottom, 24)
                 }
-                .padding(.top, 8)
             }
             .background(Color.black)
             .navigationTitle("Discover")
@@ -71,6 +37,229 @@ struct DiscoverView: View {
             }
             .sheet(isPresented: $viewModel.showFilters) {
                 FilterSheet(viewModel: viewModel)
+            }
+            .onAppear {
+                selectedSegment = currentUserRole == .host ? .seekers : .hosts
+            }
+        }
+    }
+
+    private var segmentPicker: some View {
+        HStack(spacing: 0) {
+            ForEach(DiscoverSegment.allCases, id: \.self) { segment in
+                Button {
+                    withAnimation(.snappy(duration: 0.25)) {
+                        selectedSegment = segment
+                    }
+                } label: {
+                    Text(segment.rawValue)
+                        .font(.subheadline.bold())
+                        .foregroundStyle(selectedSegment == segment ? .white : .secondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(
+                            selectedSegment == segment
+                            ? Theme.gradientStart.opacity(0.2)
+                            : Color.clear
+                        )
+                        .overlay(alignment: .bottom) {
+                            if selectedSegment == segment {
+                                Rectangle()
+                                    .fill(Theme.gradientStart)
+                                    .frame(height: 2)
+                            }
+                        }
+                }
+            }
+        }
+        .background(Theme.surfaceBackground)
+    }
+
+    private var filterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                FilterChip(
+                    title: viewModel.selectedCity == "All Cities" ? "City" : viewModel.selectedCity,
+                    icon: "mappin",
+                    isActive: viewModel.selectedCity != "All Cities"
+                ) {
+                    viewModel.showFilters = true
+                }
+
+                ForEach(DiscoverViewModel.SortOption.allCases, id: \.self) { option in
+                    FilterChip(
+                        title: option.rawValue,
+                        icon: nil,
+                        isActive: viewModel.sortOption == option
+                    ) {
+                        viewModel.sortOption = option
+                    }
+                }
+
+                FilterChip(
+                    title: "Verified",
+                    icon: "checkmark.seal.fill",
+                    isActive: viewModel.verifiedOnly
+                ) {
+                    viewModel.verifiedOnly.toggle()
+                }
+            }
+            .contentMargins(.horizontal, 16)
+        }
+    }
+
+    private var hostList: some View {
+        LazyVStack(spacing: 12) {
+            ForEach(viewModel.filteredHosts, id: \.id) { host in
+                NavigationLink(value: host) {
+                    HostListCard(host: host)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "person.2.slash")
+                .font(.system(size: 48))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [Theme.gradientStart.opacity(0.6), Theme.gradientEnd.opacity(0.6)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            VStack(spacing: 6) {
+                Text("No hosts nearby yet")
+                    .font(.title3.bold())
+                    .foregroundStyle(.white)
+
+                Text("Try another city or adjust your filters")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Button {
+                viewModel.showFilters = true
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "mappin.circle.fill")
+                    Text("Change City")
+                }
+                .font(.subheadline.bold())
+                .foregroundStyle(.white)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(Theme.accent)
+                .clipShape(.capsule)
+            }
+        }
+        .padding(.top, 60)
+        .padding(.horizontal, 32)
+    }
+}
+
+struct HostListCard: View {
+    let host: User
+
+    var body: some View {
+        HStack(spacing: 14) {
+            AvatarView(
+                name: host.name,
+                size: 64,
+                userId: host.id,
+                isVerified: host.isVerified,
+                isFeatured: host.isFeatured
+            )
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 6) {
+                    Text(host.name)
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+
+                    if host.isVerified {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.caption)
+                            .foregroundStyle(Theme.verifiedBlue)
+                    }
+                }
+
+                Text(host.bio)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+
+                HStack(spacing: 12) {
+                    HStack(spacing: 3) {
+                        Image(systemName: "star.fill")
+                            .font(.caption2)
+                            .foregroundStyle(.yellow)
+                        Text(String(format: "%.1f", host.rating))
+                            .font(.caption.bold())
+                            .foregroundStyle(.white)
+                        Text("(\(host.reviewCount))")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    HStack(spacing: 3) {
+                        Image(systemName: "mappin")
+                            .font(.caption2)
+                        Text(host.city)
+                            .font(.caption)
+                    }
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+
+                    if host.hasBackgroundCheck {
+                        HStack(spacing: 2) {
+                            Image(systemName: "shield.checkmark.fill")
+                                .font(.caption2)
+                            Text("BG")
+                                .font(.caption2.bold())
+                        }
+                        .foregroundStyle(.green)
+                    }
+                }
+            }
+
+            Spacer(minLength: 0)
+
+            VStack(spacing: 8) {
+                Text("$\(Int(host.hourlyRate))")
+                    .font(.title3.bold())
+                    .foregroundStyle(.white)
+                Text("/hr")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+
+                Text("Book")
+                    .font(.caption.bold())
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                    .background(Theme.accent)
+                    .clipShape(.capsule)
+            }
+        }
+        .padding(16)
+        .background(Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 16))
+        .overlay {
+            if host.isFeatured {
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [Theme.goldBorder, Theme.goldBorder.opacity(0.3), Theme.goldBorder],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1.5
+                    )
             }
         }
     }
@@ -101,81 +290,6 @@ struct FilterChip: View {
                 if isActive {
                     Capsule().strokeBorder(Theme.gradientStart.opacity(0.5), lineWidth: 1)
                 }
-            }
-        }
-    }
-}
-
-struct HostCard: View {
-    let host: User
-
-    var body: some View {
-        VStack(spacing: 12) {
-            AvatarView(
-                name: host.name,
-                size: 72,
-                userId: host.id,
-                isVerified: host.isVerified,
-                isFeatured: host.isFeatured
-            )
-
-            VStack(spacing: 4) {
-                Text(host.name)
-                    .font(.subheadline.bold())
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-
-                HStack(spacing: 4) {
-                    Image(systemName: "star.fill")
-                        .font(.caption2)
-                        .foregroundStyle(.yellow)
-                    Text(String(format: "%.1f", host.rating))
-                        .font(.caption.bold())
-                        .foregroundStyle(.white)
-                    Text("(\(host.reviewCount))")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-            }
-
-            HStack(spacing: 4) {
-                Image(systemName: "mappin")
-                    .font(.caption2)
-                Text(host.city)
-                    .font(.caption2)
-                    .lineLimit(1)
-            }
-            .foregroundStyle(.secondary)
-
-            Text("$\(Int(host.hourlyRate))/hr")
-                .font(.headline.bold())
-                .foregroundStyle(Theme.gradientStart)
-
-            if host.hasBackgroundCheck {
-                HStack(spacing: 4) {
-                    Image(systemName: "shield.checkmark.fill")
-                        .font(.caption2)
-                    Text("BG Check")
-                        .font(.caption2.bold())
-                }
-                .foregroundStyle(.green)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(16)
-        .background(Theme.cardBackground)
-        .clipShape(.rect(cornerRadius: 16))
-        .overlay {
-            if host.isFeatured {
-                RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [Theme.goldBorder, Theme.goldBorder.opacity(0.3), Theme.goldBorder],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1.5
-                    )
             }
         }
     }

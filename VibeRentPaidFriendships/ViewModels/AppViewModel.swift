@@ -7,6 +7,7 @@ class AppViewModel {
     var isOnboarded: Bool = false
     var hasAgreedToPlatonic: Bool = false
     var isLoggedIn: Bool = false
+    var hasSelectedRole: Bool = false
     var selectedTab: AppTab = .feed
 
     enum AppTab: Int, CaseIterable {
@@ -28,9 +29,29 @@ class AppViewModel {
         isLoggedIn = true
     }
 
+    func selectRole(_ role: UserRole) {
+        currentUser.role = role
+        if role == .host {
+            currentUser.isHost = true
+            if currentUser.hourlyRate < 30 {
+                currentUser.hourlyRate = 30
+            }
+        }
+        hasSelectedRole = true
+    }
+
+    func switchRole(to role: UserRole) {
+        currentUser.role = role
+        currentUser.isHost = role == .host
+        if role == .host && currentUser.hourlyRate < 30 {
+            currentUser.hourlyRate = 30
+        }
+    }
+
     func logout() {
         isLoggedIn = false
         isOnboarded = false
         hasAgreedToPlatonic = false
+        hasSelectedRole = false
     }
 }

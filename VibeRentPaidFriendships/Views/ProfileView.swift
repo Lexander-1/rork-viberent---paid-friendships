@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @Binding var user: User
+    let appViewModel: AppViewModel
     @State private var viewModel = ProfileViewModel()
     @State private var showSubscriptions: Bool = false
     @State private var showReferral: Bool = false
@@ -35,14 +36,14 @@ struct ProfileView: View {
                             .foregroundStyle(.secondary)
                         }
 
-                        if user.isVerified || user.hasBackgroundCheck {
-                            HStack(spacing: 8) {
-                                if user.isVerified {
-                                    BadgePill(icon: "checkmark.seal.fill", text: "Verified", color: Theme.verifiedBlue)
-                                }
-                                if user.hasBackgroundCheck {
-                                    BadgePill(icon: "shield.checkmark.fill", text: "BG Check", color: .green)
-                                }
+                        HStack(spacing: 8) {
+                            rolePill
+
+                            if user.isVerified {
+                                BadgePill(icon: "checkmark.seal.fill", text: "Verified", color: Theme.verifiedBlue)
+                            }
+                            if user.hasBackgroundCheck {
+                                BadgePill(icon: "shield.checkmark.fill", text: "BG Check", color: .green)
                             }
                         }
 
@@ -80,6 +81,11 @@ struct ProfileView: View {
                     VStack(spacing: 2) {
                         profileMenuItem(icon: "pencil.circle.fill", title: "Edit Profile", color: Theme.gradientStart) {
                             viewModel.startEditing(user: user)
+                        }
+
+                        profileMenuItem(icon: "arrow.left.arrow.right.circle.fill", title: "Switch to \(user.role == .host ? "Seeker" : "Host")", color: Theme.gradientEnd) {
+                            let newRole: UserRole = user.role == .host ? .seeker : .host
+                            appViewModel.switchRole(to: newRole)
                         }
 
                         if !user.isVerified {
@@ -131,6 +137,20 @@ struct ProfileView: View {
                 AdminDashboardView()
             }
         }
+    }
+
+    private var rolePill: some View {
+        HStack(spacing: 4) {
+            Image(systemName: user.role.icon)
+                .font(.caption2)
+            Text(user.role.title)
+                .font(.caption2.bold())
+        }
+        .foregroundStyle(user.role == .host ? Theme.gradientEnd : Theme.gradientStart)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background((user.role == .host ? Theme.gradientEnd : Theme.gradientStart).opacity(0.15))
+        .clipShape(.capsule)
     }
 
     private func statItem(value: String, label: String) -> some View {
