@@ -35,7 +35,7 @@ struct SignUpView: View {
 
                     ZStack {
                         Circle()
-                            .fill(Theme.accent)
+                            .fill(Theme.buttonBackground)
                             .frame(width: 100, height: 100)
 
                         Image(systemName: "camera.fill")
@@ -100,7 +100,7 @@ struct SignUpView: View {
                         onComplete()
                     }
                     .font(.subheadline)
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.secondaryText)
 
                     Spacer(minLength: 40)
                 }

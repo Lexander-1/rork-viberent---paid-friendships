@@ -59,7 +59,7 @@ struct MyCalendarView: View {
                     .foregroundStyle(.white)
                 Text("$\(Int(user.hourlyRate))/hr")
                     .font(.headline.bold())
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(.white)
             }
 
             HStack(spacing: 12) {
@@ -94,8 +94,13 @@ struct MyCalendarView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 14)
-                        .background(rateSaved ? Color.green : Theme.accent)
+                        .background(rateSaved ? Color.green : Theme.buttonBackground)
                         .clipShape(.rect(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                        )
+                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
                 }
             }
 
@@ -221,8 +226,13 @@ struct MyCalendarView: View {
                                         .foregroundStyle(.white)
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 10)
-                                        .background(Theme.accent)
+                                        .background(Theme.buttonBackground)
                                         .clipShape(.rect(cornerRadius: 12))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                        )
+                                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
                                 }
                             }
                         }
@@ -257,13 +267,13 @@ struct MyCalendarView: View {
 
             VStack(spacing: 12) {
                 DatePicker("Date", selection: $availabilityDate, displayedComponents: .date)
-                    .tint(Theme.accent)
+                    .tint(.white)
 
                 DatePicker("Start Time", selection: $startTime, displayedComponents: .hourAndMinute)
-                    .tint(Theme.accent)
+                    .tint(.white)
 
                 DatePicker("End Time", selection: $endTime, displayedComponents: .hourAndMinute)
-                    .tint(Theme.accent)
+                    .tint(.white)
             }
             .padding(14)
             .background(Theme.cardBackground)
@@ -286,8 +296,13 @@ struct MyCalendarView: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(Theme.accent)
+                    .background(Theme.buttonBackground)
                     .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                    )
+                    .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
             }
 
             if !availabilitySlots.isEmpty {
@@ -345,7 +360,7 @@ struct RescheduleSheet: View {
                     displayedComponents: [.date, .hourAndMinute]
                 )
                 .datePickerStyle(.graphical)
-                .tint(Theme.accent)
+                .tint(.white)
                 .padding(14)
                 .background(Theme.cardBackground)
                 .clipShape(.rect(cornerRadius: 12))
@@ -364,8 +379,13 @@ struct RescheduleSheet: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(Theme.accent)
+                        .background(Theme.buttonBackground)
                         .clipShape(.rect(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                        )
+                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
                 }
 
                 Spacer()

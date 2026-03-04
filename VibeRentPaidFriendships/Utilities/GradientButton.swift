@@ -29,8 +29,13 @@ struct GradientButton: View {
             .frame(maxWidth: isFullWidth ? .infinity : nil)
             .padding(.horizontal, isSmall ? 16 : 24)
             .padding(.vertical, isSmall ? 10 : 16)
-            .background(Theme.accent)
+            .background(Theme.buttonBackground)
             .clipShape(.rect(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
+            )
+            .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
         }
     }
 }

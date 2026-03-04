@@ -145,7 +145,7 @@ struct ProfileView: View {
 
     private var menuSection: some View {
         VStack(spacing: 2) {
-            profileMenuItem(icon: "pencil.circle.fill", title: "Edit Profile", color: Theme.accent) {
+            profileMenuItem(icon: "pencil.circle.fill", title: "Edit Profile", color: Theme.secondaryText) {
                 viewModel.startEditing(user: user)
             }
 
@@ -157,11 +157,11 @@ struct ProfileView: View {
                 profileMenuItem(icon: "shield.checkmark.fill", title: "Background Check — $9.99", color: .green) { }
             }
 
-            profileMenuItem(icon: "crown.fill", title: "Subscriptions", color: Theme.accent) {
+            profileMenuItem(icon: "crown.fill", title: "Subscriptions", color: Theme.secondaryText) {
                 showSubscriptions = true
             }
 
-            profileMenuItem(icon: "gift.fill", title: "Refer & Earn $15", color: Theme.accent) {
+            profileMenuItem(icon: "gift.fill", title: "Refer & Earn $15", color: Theme.secondaryText) {
                 showReferral = true
             }
 
@@ -199,8 +199,13 @@ struct ProfileView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
-                .background(Theme.accent)
+                .background(Theme.buttonBackground)
                 .clipShape(.rect(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                )
+                .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
             }
             .padding(.horizontal, 16)
 
@@ -275,7 +280,7 @@ struct ProfileView: View {
 
             Toggle("", isOn: $user.isGhostMode)
                 .labelsHidden()
-                .tint(Theme.accent)
+                .tint(Theme.secondaryText)
         }
         .padding(16)
         .background(Theme.cardBackground)
@@ -305,10 +310,10 @@ struct ProfileView: View {
             Text(user.role.title)
                 .font(.caption2.bold())
         }
-        .foregroundStyle(Theme.accent)
+        .foregroundStyle(Theme.secondaryText)
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
-        .background(Theme.accent.opacity(0.15))
+        .background(Theme.buttonBackground)
         .clipShape(.capsule)
     }
 

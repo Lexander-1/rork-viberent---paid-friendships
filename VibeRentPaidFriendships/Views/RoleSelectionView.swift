@@ -7,16 +7,57 @@ struct RoleSelectionView: View {
         ZStack {
             Theme.background.ignoresSafeArea()
 
-            VStack(spacing: 48) {
+            VStack(spacing: 32) {
                 Spacer()
 
                 Text("Choose your role")
-                    .font(.system(.title, weight: .bold))
+                    .font(.title.bold())
                     .foregroundStyle(.white)
 
-                HStack(spacing: 16) {
-                    RoleCard(role: .host, onSelect: onSelect)
-                    RoleCard(role: .customer, onSelect: onSelect)
+                VStack(spacing: 16) {
+                    Button {
+                        onSelect(.host)
+                    } label: {
+                        VStack(spacing: 8) {
+                            Text("Host")
+                                .font(.title3.bold())
+                                .foregroundStyle(.white)
+                            Text("Offer my time and earn money")
+                                .font(.subheadline)
+                                .foregroundStyle(Theme.secondaryText)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(24)
+                        .background(Theme.buttonBackground)
+                        .clipShape(.rect(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                        )
+                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                    }
+
+                    Button {
+                        onSelect(.customer)
+                    } label: {
+                        VStack(spacing: 8) {
+                            Text("Customer")
+                                .font(.title3.bold())
+                                .foregroundStyle(.white)
+                            Text("Book time to hang out")
+                                .font(.subheadline)
+                                .foregroundStyle(Theme.secondaryText)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(24)
+                        .background(Theme.buttonBackground)
+                        .clipShape(.rect(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                        )
+                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                    }
                 }
                 .padding(.horizontal, 24)
 
@@ -25,41 +66,5 @@ struct RoleSelectionView: View {
             }
         }
         .preferredColorScheme(.dark)
-    }
-}
-
-struct RoleCard: View {
-    let role: UserRole
-    let onSelect: (UserRole) -> Void
-
-    var body: some View {
-        Button {
-            onSelect(role)
-        } label: {
-            VStack(spacing: 16) {
-                Image(systemName: role.icon)
-                    .font(.system(size: 32))
-                    .foregroundStyle(Theme.accent)
-
-                Text(role.title)
-                    .font(.headline)
-                    .foregroundStyle(.white)
-
-                Text(role.subtitle)
-                    .font(.caption)
-                    .foregroundStyle(Theme.secondaryText)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(3)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(16)
-            .background(Theme.cardBackground)
-            .clipShape(.rect(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Theme.border, lineWidth: 1)
-            )
-        }
     }
 }

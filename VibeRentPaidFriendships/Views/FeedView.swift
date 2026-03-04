@@ -61,7 +61,7 @@ struct FeedView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(Theme.secondaryText)
                     }
                 }
             }
@@ -130,10 +130,10 @@ struct FeedPostCard: View {
                 if post.isBoosted {
                     Text("Boosted")
                         .font(.caption2.bold())
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(Theme.secondaryText)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Theme.accent.opacity(0.15))
+                        .background(Theme.buttonBackground)
                         .clipShape(.capsule)
                 }
 
@@ -165,14 +165,14 @@ struct FeedPostCard: View {
                             if tagged.isHost {
                                 Text("Book this Vibe")
                                     .font(.caption2.bold())
-                                    .foregroundStyle(Theme.accent)
+                                    .foregroundStyle(Theme.secondaryText)
                             }
                         }
                         Spacer()
                         if tagged.isHost {
                             Image(systemName: "calendar.badge.plus")
                                 .font(.subheadline)
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.secondaryText)
                         }
                     }
                     .padding(12)
@@ -300,8 +300,13 @@ struct SharePostSheet: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(linkCopied ? Color.green : Theme.accent)
+                    .background(linkCopied ? Color.green : Theme.buttonBackground)
                     .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                    )
+                    .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
                 }
 
                 Button {

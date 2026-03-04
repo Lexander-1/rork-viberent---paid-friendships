@@ -22,7 +22,7 @@ struct CitySelectorView: View {
                         HStack {
                             Image(systemName: "globe")
                                 .font(.title3)
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.secondaryText)
                                 .frame(width: 32)
 
                             VStack(alignment: .leading, spacing: 2) {
@@ -38,7 +38,7 @@ struct CitySelectorView: View {
 
                             if selectedCity == "All Cities" {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(Theme.accent)
+                                    .foregroundStyle(.white)
                             }
                         }
                     }
@@ -52,7 +52,7 @@ struct CitySelectorView: View {
                             HStack {
                                 Image(systemName: city.id == "virtual" ? "video.fill" : "mappin.circle.fill")
                                     .font(.title3)
-                                    .foregroundStyle(Theme.accent)
+                                    .foregroundStyle(Theme.secondaryText)
                                     .frame(width: 32)
 
                                 VStack(alignment: .leading, spacing: 2) {
@@ -68,7 +68,7 @@ struct CitySelectorView: View {
 
                                 if selectedCity == city.name {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(Theme.accent)
+                                        .foregroundStyle(.white)
                                 }
                             }
                         }
@@ -82,7 +82,6 @@ struct CitySelectorView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
-                        .foregroundStyle(Theme.accent)
                 }
             }
         }

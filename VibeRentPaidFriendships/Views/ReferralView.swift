@@ -12,7 +12,7 @@ struct ReferralView: View {
                     VStack(spacing: 16) {
                         Image(systemName: "gift.fill")
                             .font(.system(size: 48))
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(Theme.secondaryText)
 
                         Text("Refer & Earn")
                             .font(.title.bold())
@@ -55,7 +55,7 @@ struct ReferralView: View {
                                 Text(copied ? "Copied!" : "Copy Code")
                             }
                             .font(.subheadline.bold())
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(Theme.secondaryText)
                         }
                     }
 
@@ -72,7 +72,7 @@ struct ReferralView: View {
                                     .foregroundStyle(Theme.secondaryText)
                                 Text("$\(Int(user.referralCredits))")
                                     .font(.title.bold())
-                                    .foregroundStyle(Theme.accent)
+                                    .foregroundStyle(.white)
                             }
                             Spacer()
                         }

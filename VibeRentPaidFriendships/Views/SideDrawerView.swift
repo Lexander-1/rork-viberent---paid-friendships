@@ -35,7 +35,7 @@ struct SideDrawerView: View {
                             }
                             .padding(.vertical, 14)
                             .padding(.horizontal, 24)
-                            .background(selectedPage == page ? Theme.accent.opacity(0.12) : .clear)
+                            .background(selectedPage == page ? Theme.buttonBackground.opacity(0.5) : .clear)
                         }
                     }
 

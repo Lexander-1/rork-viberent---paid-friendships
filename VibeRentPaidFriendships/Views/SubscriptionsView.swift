@@ -12,7 +12,7 @@ struct SubscriptionsView: View {
                     VStack(spacing: 8) {
                         Image(systemName: "crown.fill")
                             .font(.system(size: 40))
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(Theme.secondaryText)
 
                         Text("Upgrade Your Vibe")
                             .font(.title2.bold())
@@ -58,7 +58,7 @@ struct SubscriptionsView: View {
                         HStack(spacing: 16) {
                             Image(systemName: "bolt.fill")
                                 .font(.title2)
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.secondaryText)
                                 .frame(width: 44)
 
                             VStack(alignment: .leading, spacing: 4) {
@@ -77,8 +77,13 @@ struct SubscriptionsView: View {
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 8)
-                                .background(Theme.accent)
+                                .background(Theme.buttonBackground)
                                 .clipShape(.rect(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                )
+                                .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
                         }
                         .padding(16)
                         .background(Theme.cardBackground)
@@ -110,7 +115,7 @@ struct SubscriptionsView: View {
             HStack {
                 Image(systemName: icon)
                     .font(.title2)
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.secondaryText)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(type.title)
@@ -118,7 +123,7 @@ struct SubscriptionsView: View {
                         .foregroundStyle(.white)
                     Text(type.price)
                         .font(.subheadline)
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(Theme.secondaryText)
                 }
 
                 Spacer()
@@ -150,8 +155,13 @@ struct SubscriptionsView: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(selectedPlan == type ? Color.green : Theme.accent)
+                    .background(selectedPlan == type ? Color.green : Theme.buttonBackground)
                     .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                    )
+                    .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
             }
         }
         .padding(16)

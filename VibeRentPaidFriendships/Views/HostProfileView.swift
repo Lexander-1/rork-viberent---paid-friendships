@@ -35,7 +35,7 @@ struct HostProfileView: View {
 
                         Text("$\(Int(host.hourlyRate))/hr")
                             .font(.title3.bold())
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(.white)
 
                         HStack(spacing: 12) {
                             HStack(spacing: 4) {
@@ -46,7 +46,7 @@ struct HostProfileView: View {
 
                             HStack(spacing: 4) {
                                 Image(systemName: "star.fill")
-                                    .foregroundStyle(Theme.accent)
+                                    .foregroundStyle(Theme.secondaryText)
                                 Text(String(format: "%.1f", host.rating))
                                     .fontWeight(.bold)
                                 Text("(\(host.reviewCount))")
@@ -84,12 +84,13 @@ struct HostProfileView: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(Theme.cardBackground)
+                        .background(Theme.buttonBackground)
                         .clipShape(.rect(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Theme.border, lineWidth: 1)
+                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
                         )
+                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
                     }
                     .padding(.horizontal, 24)
                 }
@@ -196,7 +197,7 @@ struct HostProfileView: View {
             Spacer()
             Text("$\(Int(total))")
                 .font(.subheadline.bold())
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(.white)
         }
         .padding(12)
         .background(Theme.cardBackground)
@@ -222,7 +223,7 @@ struct AllReviewsView: View {
                     VStack(spacing: 8) {
                         HStack(spacing: 4) {
                             Image(systemName: "star.fill")
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.secondaryText)
                             Text(String(format: "%.1f", host.rating))
                                 .font(.title.bold())
                                 .foregroundStyle(.white)
@@ -252,8 +253,13 @@ struct AllReviewsView: View {
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
-                            .background(Theme.accent)
+                            .background(Theme.buttonBackground)
                             .clipShape(.rect(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                            )
+                            .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
                         }
                     }
 
@@ -283,7 +289,6 @@ struct AllReviewsView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
-                        .foregroundStyle(Theme.accent)
                 }
             }
             .sheet(isPresented: $showWriteReview) {
@@ -334,7 +339,7 @@ struct ReviewCard: View {
                     ForEach(1...5, id: \.self) { star in
                         Image(systemName: star <= review.rating ? "star.fill" : "star")
                             .font(.caption2)
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(Theme.secondaryText)
                     }
                 }
             }

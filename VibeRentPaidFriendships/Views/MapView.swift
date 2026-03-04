@@ -71,7 +71,7 @@ struct MapTabView: View {
                 HStack {
                     Image(systemName: "mappin.and.ellipse")
                         .font(.caption)
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(Theme.secondaryText)
                     Text("Live users in \(selectedCity)")
                         .font(.caption)
                         .foregroundStyle(Theme.secondaryText)

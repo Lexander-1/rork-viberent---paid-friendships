@@ -101,7 +101,7 @@ struct AdminDashboardView: View {
 
                         Button("Review") { }
                             .font(.caption.bold())
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(.white)
                     }
                     .listRowBackground(Theme.cardBackground)
                 }
@@ -205,7 +205,7 @@ struct AdminDashboardView: View {
 
                         Button("Process") { }
                             .font(.caption.bold())
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(.white)
                     }
                     .listRowBackground(Theme.cardBackground)
                 }
@@ -219,10 +219,10 @@ struct AdminDashboardView: View {
         ScrollView {
             VStack(spacing: 16) {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    statCard(title: "Total Users", value: "12,847", icon: "person.2.fill", color: Theme.accent)
+                    statCard(title: "Total Users", value: "12,847", icon: "person.2.fill", color: Theme.secondaryText)
                     statCard(title: "Active Hosts", value: "3,421", icon: "person.crop.circle.badge.checkmark", color: .green)
-                    statCard(title: "Bookings Today", value: "847", icon: "calendar", color: Theme.accent)
-                    statCard(title: "Revenue (MTD)", value: "$128.4K", icon: "dollarsign.circle.fill", color: Theme.accent)
+                    statCard(title: "Bookings Today", value: "847", icon: "calendar", color: Theme.secondaryText)
+                    statCard(title: "Revenue (MTD)", value: "$128.4K", icon: "dollarsign.circle.fill", color: Theme.secondaryText)
                     statCard(title: "Verified Users", value: "9,234", icon: "checkmark.seal.fill", color: Theme.verifiedBlue)
                     statCard(title: "Flagged Posts", value: "23", icon: "flag.fill", color: Theme.dangerRed)
                 }
@@ -240,7 +240,7 @@ struct AdminDashboardView: View {
                             Spacer()
                             Text("\(city.activeUsers) users")
                                 .font(.subheadline.bold())
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.secondaryText)
                         }
                         .padding(12)
                         .background(Theme.cardBackground)

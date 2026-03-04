@@ -103,8 +103,13 @@ struct DiscoverView: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
-                    .background(Theme.accent)
+                    .background(Theme.buttonBackground)
                     .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                    )
+                    .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
             }
         }
         .padding(.top, 60)
@@ -141,7 +146,7 @@ struct HostListCard: View {
                 HStack(spacing: 4) {
                     Text("$\(Int(host.hourlyRate))/hr")
                         .font(.subheadline.bold())
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(.white)
                     Text("+ 25% fee")
                         .font(.caption2)
                         .foregroundStyle(Theme.secondaryText)
@@ -156,7 +161,7 @@ struct HostListCard: View {
                     HStack(spacing: 3) {
                         Image(systemName: "star.fill")
                             .font(.caption2)
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(Theme.secondaryText)
                         Text(String(format: "%.1f", host.rating))
                             .font(.caption2.bold())
                             .foregroundStyle(.white)
@@ -186,8 +191,13 @@ struct HostListCard: View {
                 .foregroundStyle(.white)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(Theme.accent)
+                .background(Theme.buttonBackground)
                 .clipShape(.rect(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                )
+                .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
         }
         .padding(16)
         .background(Theme.cardBackground)
@@ -218,11 +228,11 @@ struct FilterChip: View {
             .foregroundStyle(isActive ? .white : Theme.secondaryText)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(isActive ? Theme.accent : Theme.cardBackground)
+            .background(isActive ? Theme.buttonBackground : Theme.cardBackground)
             .clipShape(.rect(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(isActive ? Theme.accent : Theme.border, lineWidth: 1)
+                    .stroke(isActive ? Color.white.opacity(0.12) : Theme.border, lineWidth: 1)
             )
         }
     }
@@ -256,13 +266,13 @@ struct FilterSheet: View {
                         .foregroundStyle(Theme.secondaryText)
 
                         Slider(value: $viewModel.maxRate, in: 30...200, step: 5)
-                            .tint(Theme.accent)
+                            .tint(Theme.secondaryText)
                     }
                 }
 
                 Section {
                     Toggle("Verified Only", isOn: $viewModel.verifiedOnly)
-                        .tint(Theme.accent)
+                        .tint(Theme.secondaryText)
                 }
             }
             .navigationTitle("Filters")
@@ -270,7 +280,6 @@ struct FilterSheet: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Apply") { dismiss() }
-                        .foregroundStyle(Theme.accent)
                         .fontWeight(.bold)
                 }
             }

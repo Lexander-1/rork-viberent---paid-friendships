@@ -22,7 +22,7 @@ struct OnboardingView: View {
 
                             Image(systemName: page.icon)
                                 .font(.system(size: 56))
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.secondaryText)
 
                             VStack(spacing: 16) {
                                 Text(page.title)
@@ -49,7 +49,7 @@ struct OnboardingView: View {
                     HStack(spacing: 8) {
                         ForEach(0..<3, id: \.self) { index in
                             Capsule()
-                                .fill(index == currentPage ? Theme.accent : Color.white.opacity(0.2))
+                                .fill(index == currentPage ? Color.white : Color.white.opacity(0.2))
                                 .frame(width: index == currentPage ? 24 : 8, height: 8)
                         }
                     }
@@ -68,8 +68,13 @@ struct OnboardingView: View {
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
-                                .background(Color.white.opacity(0.1))
+                                .background(Theme.buttonBackground)
                                 .clipShape(.rect(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                )
+                                .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
                         }
                         .padding(.horizontal, 24)
                     }

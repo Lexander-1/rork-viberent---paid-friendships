@@ -65,7 +65,7 @@ struct BookingFlowView: View {
                         VStack(spacing: 16) {
                             ProgressView()
                                 .controlSize(.large)
-                                .tint(Theme.accent)
+                                .tint(.white)
                             Text("Processing...")
                                 .font(.subheadline)
                                 .foregroundStyle(Theme.secondaryText)
@@ -94,7 +94,7 @@ struct BookingFlowView: View {
                 }
                 Text("$\(Int(host.hourlyRate))/hr")
                     .font(.title3.bold())
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(.white)
             }
             Spacer()
         }
@@ -135,12 +135,13 @@ struct BookingFlowView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(isSelected ? Theme.accent.opacity(0.25) : Theme.cardBackground)
+                        .background(isSelected ? Theme.buttonBackground : Theme.cardBackground)
                         .clipShape(.rect(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(isSelected ? Theme.accent : Theme.border, lineWidth: 1)
+                                .stroke(isSelected ? Color.white.opacity(0.12) : Theme.border, lineWidth: 1)
                         )
+                        .shadow(color: isSelected ? .white.opacity(0.08) : .clear, radius: 6, x: 0, y: 0)
                     }
                 }
             }
@@ -198,7 +199,7 @@ struct BookingFlowView: View {
                     Spacer()
                     Text("$\(Int(pricing.total))")
                         .font(.title2.bold())
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(.white)
                 }
 
 
@@ -226,7 +227,7 @@ struct BookingFlowView: View {
                 displayedComponents: [.date, .hourAndMinute]
             )
             .datePickerStyle(.graphical)
-            .tint(Theme.accent)
+            .tint(.white)
             .padding(14)
             .background(Theme.cardBackground)
             .clipShape(.rect(cornerRadius: 12))
