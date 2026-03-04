@@ -10,16 +10,21 @@ struct MyCalendarView: View {
     @State private var rateSaved: Bool = false
 
     private let sampleBookings: [BookingEntry] = [
-        BookingEntry(seekerName: "Alex Morgan", date: Date().addingTimeInterval(86400), duration: "2 Hours", earnings: 67.50),
-        BookingEntry(seekerName: "Jordan Lee", date: Date().addingTimeInterval(86400 * 2), duration: "1 Hour", earnings: 30.00),
-        BookingEntry(seekerName: "Taylor Kim", date: Date().addingTimeInterval(86400 * 4), duration: "4 Hours", earnings: 150.00)
+        BookingEntry(seekerName: "Alex Morgan", date: Date().addingTimeInterval(86400), duration: "2 Hours", earnings: 100.00),
+        BookingEntry(seekerName: "Jordan Lee", date: Date().addingTimeInterval(86400 * 2), duration: "1 Hour", earnings: 45.00),
+        BookingEntry(seekerName: "Taylor Kim", date: Date().addingTimeInterval(86400 * 4), duration: "4 Hours", earnings: 200.00)
     ]
+
+    private var currentRate: Double {
+        max(Double(rateText) ?? 30, 30)
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     rateSection
+                    rateSplitPreview
                     bookingsSection
                     availabilitySection
                 }
@@ -35,9 +40,14 @@ struct MyCalendarView: View {
 
     private var rateSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("My Hourly Rate")
-                .font(.headline)
-                .foregroundStyle(.white)
+            HStack(spacing: 6) {
+                Text("My Current Rate:")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                Text("$\(Int(user.hourlyRate))/hr")
+                    .font(.headline.bold())
+                    .foregroundStyle(Theme.accent)
+            }
 
             HStack(spacing: 12) {
                 HStack(spacing: 4) {
@@ -79,6 +89,50 @@ struct MyCalendarView: View {
             Text("Minimum $30/hr")
                 .font(.caption)
                 .foregroundStyle(Theme.secondaryText)
+        }
+    }
+
+    private var rateSplitPreview: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Earnings Preview")
+                .font(.subheadline.bold())
+                .foregroundStyle(Theme.secondaryText)
+
+            let rate = user.hourlyRate
+            VStack(spacing: 8) {
+                splitRow(hours: 1, rate: rate)
+                splitRow(hours: 2, rate: rate)
+                splitRow(hours: 4, rate: rate)
+                splitRow(hours: 8, rate: rate)
+            }
+        }
+        .padding(14)
+        .background(Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
+    }
+
+    private func splitRow(hours: Int, rate: Double) -> some View {
+        let hostEarnings = rate * Double(hours)
+        let customerPays = hostEarnings * 1.25
+        return HStack {
+            Text("\(hours) hr\(hours == 1 ? "" : "s")")
+                .font(.subheadline)
+                .foregroundStyle(.white)
+                .frame(width: 50, alignment: .leading)
+            Spacer()
+            Text("They pay $\(Int(customerPays))")
+                .font(.caption)
+                .foregroundStyle(Theme.secondaryText)
+            Text("→")
+                .font(.caption)
+                .foregroundStyle(Theme.secondaryText.opacity(0.5))
+            Text("You get $\(Int(hostEarnings))")
+                .font(.caption.bold())
+                .foregroundStyle(.green)
         }
     }
 

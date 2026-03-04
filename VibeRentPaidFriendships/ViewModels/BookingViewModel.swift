@@ -5,13 +5,18 @@ import SwiftUI
 class BookingViewModel {
     var bookings: [Booking] = Booking.sampleBookings
     var selectedDuration: Booking.SessionDuration = .oneHour
+    var customHours: Int = 3
     var selectedDate: Date = Date().addingTimeInterval(86400)
     var showPlatonicConfirmation: Bool = false
     var showBookingSuccess: Bool = false
     var isProcessing: Bool = false
 
     func calculatePrice(for host: User) -> (total: Double, hostEarnings: Double, platformFee: Double) {
-        Booking.calculatePrice(hourlyRate: host.hourlyRate, duration: selectedDuration)
+        Booking.calculatePrice(hourlyRate: host.hourlyRate, duration: selectedDuration, customHours: customHours)
+    }
+
+    var effectiveHours: Int {
+        selectedDuration == .custom ? customHours : selectedDuration.hours
     }
 
     func createBooking(host: User, buyerId: String) async {

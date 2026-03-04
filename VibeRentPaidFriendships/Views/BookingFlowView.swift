@@ -5,122 +5,22 @@ struct BookingFlowView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel = BookingViewModel()
     @State private var showPlatonicPopup: Bool = false
+    @State private var customHoursText: String = "3"
 
     private var pricing: (total: Double, hostEarnings: Double, platformFee: Double) {
         viewModel.calculatePrice(for: host)
     }
 
+    private let presetDurations: [Booking.SessionDuration] = [.oneHour, .twoHours, .fourHours, .fullDay, .custom]
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    HStack(spacing: 14) {
-                        AvatarView(name: host.name, size: 50, userId: host.id, isVerified: host.isVerified)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(host.name)
-                                .font(.headline)
-                                .foregroundStyle(.white)
-                            Text("$\(Int(host.hourlyRate))/hr")
-                                .font(.subheadline)
-                                .foregroundStyle(Theme.accent)
-                        }
-                        Spacer()
-                    }
-                    .padding(16)
-                    .background(Theme.cardBackground)
-                    .clipShape(.rect(cornerRadius: 12))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Theme.border, lineWidth: 1)
-                    )
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Duration")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-
-                        ForEach(Booking.SessionDuration.allCases, id: \.self) { duration in
-                            let durationPricing = Booking.calculatePrice(hourlyRate: host.hourlyRate, duration: duration)
-                            Button {
-                                viewModel.selectedDuration = duration
-                            } label: {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(duration.label)
-                                            .font(.subheadline.bold())
-                                            .foregroundStyle(.white)
-                                        Text("\(duration.hours) hour\(duration.hours > 1 ? "s" : "")")
-                                            .font(.caption)
-                                            .foregroundStyle(Theme.secondaryText)
-                                    }
-                                    Spacer()
-                                    Text("$\(Int(durationPricing.total))")
-                                        .font(.headline.bold())
-                                        .foregroundStyle(viewModel.selectedDuration == duration ? .white : Theme.accent)
-                                }
-                                .padding(14)
-                                .background(viewModel.selectedDuration == duration ? Theme.accent.opacity(0.2) : Theme.cardBackground)
-                                .clipShape(.rect(cornerRadius: 12))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(viewModel.selectedDuration == duration ? Theme.accent : Theme.border, lineWidth: 1)
-                                )
-                            }
-                        }
-                    }
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Date & Time")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-
-                        DatePicker(
-                            "Select Date",
-                            selection: $viewModel.selectedDate,
-                            in: Date()...,
-                            displayedComponents: [.date, .hourAndMinute]
-                        )
-                        .datePickerStyle(.graphical)
-                        .tint(Theme.accent)
-                        .padding(14)
-                        .background(Theme.cardBackground)
-                        .clipShape(.rect(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Theme.border, lineWidth: 1)
-                        )
-                    }
-
-                    VStack(spacing: 12) {
-                        Text("Price Breakdown")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                        VStack(spacing: 8) {
-                            priceRow("Session (\(viewModel.selectedDuration.label))", value: "$\(Int(pricing.total))")
-                            priceRow("Host Earnings (75%)", value: "$\(Int(pricing.hostEarnings))")
-                            priceRow("Platform Fee (25%)", value: "$\(Int(pricing.platformFee))")
-                            Divider().background(Theme.border)
-                            HStack {
-                                Text("Total")
-                                    .font(.headline.bold())
-                                    .foregroundStyle(.white)
-                                Spacer()
-                                Text("$\(Int(pricing.total))")
-                                    .font(.title3.bold())
-                                    .foregroundStyle(Theme.accent)
-                            }
-                        }
-                        .padding(16)
-                        .background(Theme.cardBackground)
-                        .clipShape(.rect(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Theme.border, lineWidth: 1)
-                        )
-                    }
-
+                    hostHeader
+                    durationPicker
+                    priceBreakdown
+                    dateTimePicker
                     Spacer(minLength: 80)
                 }
                 .padding(16)
@@ -176,6 +76,183 @@ struct BookingFlowView: View {
             }
         }
         .preferredColorScheme(.dark)
+    }
+
+    private var hostHeader: some View {
+        HStack(spacing: 14) {
+            AvatarView(name: host.name, size: 56, userId: host.id, isVerified: host.isVerified)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(host.name)
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                    if host.isVerified {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.caption)
+                            .foregroundStyle(Theme.verifiedBlue)
+                    }
+                }
+                Text("$\(Int(host.hourlyRate))/hr")
+                    .font(.title3.bold())
+                    .foregroundStyle(Theme.accent)
+            }
+            Spacer()
+        }
+        .padding(16)
+        .background(Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
+    }
+
+    private var durationPicker: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Choose Duration")
+                .font(.headline)
+                .foregroundStyle(.white)
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                ForEach(presetDurations, id: \.self) { duration in
+                    Button {
+                        viewModel.selectedDuration = duration
+                        if duration == .custom {
+                            viewModel.customHours = Int(customHoursText) ?? 3
+                        }
+                    } label: {
+                        let isSelected = viewModel.selectedDuration == duration
+                        VStack(spacing: 4) {
+                            Text(duration.label)
+                                .font(.subheadline.bold())
+                                .foregroundStyle(.white)
+                            if duration != .custom {
+                                let p = Booking.calculatePrice(hourlyRate: host.hourlyRate, duration: duration)
+                                Text("$\(Int(p.total))")
+                                    .font(.caption.bold())
+                                    .foregroundStyle(isSelected ? .white.opacity(0.8) : Theme.secondaryText)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(isSelected ? Theme.accent.opacity(0.25) : Theme.cardBackground)
+                        .clipShape(.rect(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(isSelected ? Theme.accent : Theme.border, lineWidth: 1)
+                        )
+                    }
+                }
+            }
+
+            if viewModel.selectedDuration == .custom {
+                HStack(spacing: 12) {
+                    Text("Hours:")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.secondaryText)
+                    TextField("3", text: $customHoursText)
+                        .keyboardType(.numberPad)
+                        .font(.title3.bold())
+                        .foregroundStyle(.white)
+                        .frame(width: 60)
+                        .padding(10)
+                        .background(Theme.cardBackground)
+                        .clipShape(.rect(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Theme.border, lineWidth: 1)
+                        )
+                        .onChange(of: customHoursText) { _, newValue in
+                            let val = max(Int(newValue) ?? 1, 1)
+                            viewModel.customHours = val
+                        }
+                }
+                .padding(.top, 4)
+            }
+        }
+    }
+
+    private var priceBreakdown: some View {
+        VStack(spacing: 12) {
+            Text("Price Breakdown")
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            VStack(spacing: 10) {
+                let hours = viewModel.effectiveHours
+
+                priceRow("Host rate", value: "$\(Int(host.hourlyRate))/hr × \(hours) hr\(hours == 1 ? "" : "s")")
+
+                Divider().background(Theme.border)
+
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("You pay")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.secondaryText)
+                        Text("(includes 25% service fee)")
+                            .font(.caption2)
+                            .foregroundStyle(Theme.secondaryText.opacity(0.7))
+                    }
+                    Spacer()
+                    Text("$\(Int(pricing.total))")
+                        .font(.title2.bold())
+                        .foregroundStyle(Theme.accent)
+                }
+
+                HStack {
+                    Text("Host receives")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.secondaryText)
+                    Spacer()
+                    Text("$\(Int(pricing.hostEarnings))")
+                        .font(.headline.bold())
+                        .foregroundStyle(.green)
+                }
+
+                HStack {
+                    Text("Platform fee (25%)")
+                        .font(.caption)
+                        .foregroundStyle(Theme.secondaryText.opacity(0.7))
+                    Spacer()
+                    Text("$\(Int(pricing.platformFee))")
+                        .font(.caption.bold())
+                        .foregroundStyle(Theme.secondaryText.opacity(0.7))
+                }
+            }
+            .padding(16)
+            .background(Theme.cardBackground)
+            .clipShape(.rect(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Theme.border, lineWidth: 1)
+            )
+        }
+    }
+
+    private var dateTimePicker: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Date & Time")
+                .font(.headline)
+                .foregroundStyle(.white)
+
+            DatePicker(
+                "Select Date",
+                selection: $viewModel.selectedDate,
+                in: Date()...,
+                displayedComponents: [.date, .hourAndMinute]
+            )
+            .datePickerStyle(.graphical)
+            .tint(Theme.accent)
+            .padding(14)
+            .background(Theme.cardBackground)
+            .clipShape(.rect(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Theme.border, lineWidth: 1)
+            )
+        }
     }
 
     private func priceRow(_ title: String, value: String) -> some View {

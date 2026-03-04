@@ -16,9 +16,20 @@ struct HostProfileView: View {
                     AvatarView(name: host.name, size: 90, userId: host.id, isVerified: host.isVerified)
 
                     VStack(spacing: 6) {
-                        Text(host.name)
-                            .font(.title2.bold())
-                            .foregroundStyle(.white)
+                        HStack(spacing: 6) {
+                            Text(host.name)
+                                .font(.title2.bold())
+                                .foregroundStyle(.white)
+                            if host.isVerified {
+                                Image(systemName: "checkmark.seal.fill")
+                                    .font(.subheadline)
+                                    .foregroundStyle(Theme.verifiedBlue)
+                            }
+                        }
+
+                        Text("$\(Int(host.hourlyRate))/hr")
+                            .font(.title3.bold())
+                            .foregroundStyle(Theme.accent)
 
                         HStack(spacing: 12) {
                             HStack(spacing: 4) {
@@ -85,25 +96,10 @@ struct HostProfileView: View {
                         .foregroundStyle(.white)
 
                     VStack(spacing: 8) {
-                        ForEach(Booking.SessionDuration.allCases, id: \.self) { duration in
-                            let pricing = Booking.calculatePrice(hourlyRate: host.hourlyRate, duration: duration)
-                            HStack {
-                                Text(duration.label)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.white)
-                                Spacer()
-                                Text("$\(Int(pricing.total))")
-                                    .font(.subheadline.bold())
-                                    .foregroundStyle(Theme.accent)
-                            }
-                            .padding(12)
-                            .background(Theme.cardBackground)
-                            .clipShape(.rect(cornerRadius: 10))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Theme.border, lineWidth: 1)
-                            )
-                        }
+                        pricingRow(hours: 1)
+                        pricingRow(hours: 2)
+                        pricingRow(hours: 4)
+                        pricingRow(hours: 8)
                     }
                 }
                 .padding(16)
@@ -133,7 +129,7 @@ struct HostProfileView: View {
                         Text("$\(Int(host.hourlyRate))/hr")
                             .font(.title3.bold())
                             .foregroundStyle(.white)
-                        Text("75% goes to host")
+                        Text("+ 25% service fee")
                             .font(.caption)
                             .foregroundStyle(Theme.secondaryText)
                     }
@@ -170,6 +166,33 @@ struct HostProfileView: View {
         } message: {
             Text("This profile will be flagged for review.")
         }
+    }
+
+    private func pricingRow(hours: Int) -> some View {
+        let hostEarnings = host.hourlyRate * Double(hours)
+        let total = hostEarnings * 1.25
+        let label = hours == 8 ? "Full Day" : "\(hours) Hour\(hours > 1 ? "s" : "")"
+        return HStack {
+            Text(label)
+                .font(.subheadline)
+                .foregroundStyle(.white)
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("$\(Int(total))")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(Theme.accent)
+                Text("Host gets $\(Int(hostEarnings))")
+                    .font(.caption2)
+                    .foregroundStyle(Theme.secondaryText)
+            }
+        }
+        .padding(12)
+        .background(Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 10))
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Theme.border, lineWidth: 1)
+        )
     }
 }
 

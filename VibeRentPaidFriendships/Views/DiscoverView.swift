@@ -133,9 +133,14 @@ struct HostListCard: View {
                     }
                 }
 
-                Text("$\(Int(host.hourlyRate))/hr")
-                    .font(.caption.bold())
-                    .foregroundStyle(Theme.accent)
+                HStack(spacing: 4) {
+                    Text("$\(Int(host.hourlyRate))/hr")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(Theme.accent)
+                    Text("+ 25% fee")
+                        .font(.caption2)
+                        .foregroundStyle(Theme.secondaryText)
+                }
 
                 Text(host.bio)
                     .font(.caption)

@@ -23,13 +23,15 @@ nonisolated struct Booking: Identifiable, Hashable, Codable, Sendable {
         case twoHours = "2_hours"
         case fourHours = "4_hours"
         case fullDay = "full_day"
+        case custom = "custom"
 
         var label: String {
             switch self {
             case .oneHour: return "1 Hour"
             case .twoHours: return "2 Hours"
             case .fourHours: return "4 Hours"
-            case .fullDay: return "Full Day"
+            case .fullDay: return "Full Day (8 hrs)"
+            case .custom: return "Custom"
             }
         }
 
@@ -39,15 +41,7 @@ nonisolated struct Booking: Identifiable, Hashable, Codable, Sendable {
             case .twoHours: return 2
             case .fourHours: return 4
             case .fullDay: return 8
-            }
-        }
-
-        var minimumPrice: Double {
-            switch self {
-            case .oneHour: return 40
-            case .twoHours: return 70
-            case .fourHours: return 120
-            case .fullDay: return 200
+            case .custom: return 0
             }
         }
     }
@@ -83,10 +77,12 @@ nonisolated struct Booking: Identifiable, Hashable, Codable, Sendable {
         }
     }
 
-    static func calculatePrice(hourlyRate: Double, duration: SessionDuration) -> (total: Double, hostEarnings: Double, platformFee: Double) {
-        let base = max(hourlyRate * Double(duration.hours), duration.minimumPrice)
-        let fee = base * 0.25
-        return (total: base, hostEarnings: base - fee, platformFee: fee)
+    static func calculatePrice(hourlyRate: Double, duration: SessionDuration, customHours: Int = 0) -> (total: Double, hostEarnings: Double, platformFee: Double) {
+        let hours = duration == .custom ? customHours : duration.hours
+        let hostEarnings = hourlyRate * Double(hours)
+        let platformFee = hostEarnings * 0.25
+        let total = hostEarnings + platformFee
+        return (total: total, hostEarnings: hostEarnings, platformFee: platformFee)
     }
 }
 
