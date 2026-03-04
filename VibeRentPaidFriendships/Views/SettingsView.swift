@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    let appViewModel: AppViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var notificationsEnabled: Bool = true
     @State private var locationSharing: Bool = false
@@ -15,13 +16,13 @@ struct SettingsView: View {
                         Label("Email", systemImage: "envelope.fill")
                         Spacer()
                         Text("alex@example.com")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                     }
                     HStack {
                         Label("Phone", systemImage: "phone.fill")
                         Spacer()
                         Text("+1 (234) 567-899")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                     }
                 }
 
@@ -29,14 +30,14 @@ struct SettingsView: View {
                     Toggle(isOn: $notificationsEnabled) {
                         Label("Push Notifications", systemImage: "bell.fill")
                     }
-                    .tint(Theme.gradientStart)
+                    .tint(Theme.accent)
                 }
 
                 Section("Safety") {
                     Toggle(isOn: $locationSharing) {
                         Label("Live Location Sharing", systemImage: "location.fill")
                     }
-                    .tint(Theme.gradientStart)
+                    .tint(Theme.accent)
 
                     HStack {
                         Label("Emergency SOS", systemImage: "sos")
@@ -68,7 +69,7 @@ struct SettingsView: View {
                         Label("Version", systemImage: "info.circle")
                         Spacer()
                         Text("1.0.0")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                     }
                 }
 
@@ -76,7 +77,7 @@ struct SettingsView: View {
                     Button("Log Out") {
                         showLogoutAlert = true
                     }
-                    .foregroundStyle(Theme.gradientStart)
+                    .foregroundStyle(Theme.dangerRed)
 
                     Button("Delete Account", role: .destructive) {
                         showDeleteAlert = true
@@ -91,8 +92,15 @@ struct SettingsView: View {
                 }
             }
             .alert("Log Out?", isPresented: $showLogoutAlert) {
-                Button("Log Out", role: .destructive) { }
+                Button("Log Out", role: .destructive) {
+                    dismiss()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        appViewModel.logout()
+                    }
+                }
                 Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("You will be signed out of your account.")
             }
             .alert("Delete Account?", isPresented: $showDeleteAlert) {
                 Button("Delete", role: .destructive) { }

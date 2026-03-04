@@ -2,21 +2,12 @@ import SwiftUI
 
 struct DiscoverView: View {
     @Bindable var viewModel: DiscoverViewModel
-    let currentUserRole: UserRole
-    @State private var selectedSegment: DiscoverSegment = .hosts
-
-    private enum DiscoverSegment: String, CaseIterable {
-        case hosts = "Find Hosts"
-        case seekers = "Find Seekers"
-    }
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                segmentPicker
-
                 ScrollView {
-                    VStack(spacing: 16) {
+                    VStack(spacing: 12) {
                         filterBar
 
                         if viewModel.filteredHosts.isEmpty {
@@ -29,7 +20,7 @@ struct DiscoverView: View {
                     .padding(.bottom, 24)
                 }
             }
-            .background(Color.black)
+            .background(Theme.background)
             .navigationTitle("Discover")
             .searchable(text: $viewModel.searchText, prompt: "Search hosts, interests...")
             .navigationDestination(for: User.self) { host in
@@ -38,41 +29,7 @@ struct DiscoverView: View {
             .sheet(isPresented: $viewModel.showFilters) {
                 FilterSheet(viewModel: viewModel)
             }
-            .onAppear {
-                selectedSegment = currentUserRole == .host ? .seekers : .hosts
-            }
         }
-    }
-
-    private var segmentPicker: some View {
-        HStack(spacing: 0) {
-            ForEach(DiscoverSegment.allCases, id: \.self) { segment in
-                Button {
-                    withAnimation(.snappy(duration: 0.25)) {
-                        selectedSegment = segment
-                    }
-                } label: {
-                    Text(segment.rawValue)
-                        .font(.subheadline.bold())
-                        .foregroundStyle(selectedSegment == segment ? .white : .secondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(
-                            selectedSegment == segment
-                            ? Theme.gradientStart.opacity(0.2)
-                            : Color.clear
-                        )
-                        .overlay(alignment: .bottom) {
-                            if selectedSegment == segment {
-                                Rectangle()
-                                    .fill(Theme.gradientStart)
-                                    .frame(height: 2)
-                            }
-                        }
-                }
-            }
-        }
-        .background(Theme.surfaceBackground)
     }
 
     private var filterBar: some View {
@@ -109,7 +66,7 @@ struct DiscoverView: View {
     }
 
     private var hostList: some View {
-        LazyVStack(spacing: 12) {
+        LazyVStack(spacing: 10) {
             ForEach(viewModel.filteredHosts, id: \.id) { host in
                 NavigationLink(value: host) {
                     HostListCard(host: host)
@@ -123,13 +80,7 @@ struct DiscoverView: View {
         VStack(spacing: 20) {
             Image(systemName: "person.2.slash")
                 .font(.system(size: 48))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [Theme.gradientStart.opacity(0.6), Theme.gradientEnd.opacity(0.6)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .foregroundStyle(Theme.accent.opacity(0.6))
 
             VStack(spacing: 6) {
                 Text("No hosts nearby yet")
@@ -138,7 +89,7 @@ struct DiscoverView: View {
 
                 Text("Try another city or adjust your filters")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.secondaryText)
             }
 
             Button {
@@ -153,7 +104,7 @@ struct DiscoverView: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
                 .background(Theme.accent)
-                .clipShape(.capsule)
+                .clipShape(.rect(cornerRadius: 12))
             }
         }
         .padding(.top, 60)
@@ -168,59 +119,57 @@ struct HostListCard: View {
         HStack(spacing: 14) {
             AvatarView(
                 name: host.name,
-                size: 64,
+                size: 80,
                 userId: host.id,
-                isVerified: host.isVerified,
-                isFeatured: host.isFeatured
+                isVerified: host.isVerified
             )
 
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 6) {
                     Text(host.name)
-                        .font(.headline)
+                        .font(.subheadline.bold())
                         .foregroundStyle(.white)
                         .lineLimit(1)
 
                     if host.isVerified {
                         Image(systemName: "checkmark.seal.fill")
-                            .font(.caption)
+                            .font(.caption2)
                             .foregroundStyle(Theme.verifiedBlue)
                     }
                 }
 
+                Text("$\(Int(host.hourlyRate))/hr")
+                    .font(.caption.bold())
+                    .foregroundStyle(Theme.accent)
+
                 Text(host.bio)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.caption)
+                    .foregroundStyle(Theme.secondaryText)
                     .lineLimit(2)
 
-                HStack(spacing: 12) {
+                HStack(spacing: 8) {
                     HStack(spacing: 3) {
                         Image(systemName: "star.fill")
                             .font(.caption2)
-                            .foregroundStyle(.yellow)
+                            .foregroundStyle(Theme.accent)
                         Text(String(format: "%.1f", host.rating))
-                            .font(.caption.bold())
+                            .font(.caption2.bold())
                             .foregroundStyle(.white)
-                        Text("(\(host.reviewCount))")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
                     }
 
                     HStack(spacing: 3) {
                         Image(systemName: "mappin")
                             .font(.caption2)
                         Text(host.city)
-                            .font(.caption)
+                            .font(.caption2)
                     }
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.secondaryText)
                     .lineLimit(1)
 
                     if host.hasBackgroundCheck {
                         HStack(spacing: 2) {
                             Image(systemName: "shield.checkmark.fill")
                                 .font(.caption2)
-                            Text("BG")
-                                .font(.caption2.bold())
                         }
                         .foregroundStyle(.green)
                     }
@@ -229,39 +178,17 @@ struct HostListCard: View {
 
             Spacer(minLength: 0)
 
-            VStack(spacing: 8) {
-                Text("$\(Int(host.hourlyRate))")
-                    .font(.title3.bold())
-                    .foregroundStyle(.white)
-                Text("/hr")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-
-                Text("Book")
-                    .font(.caption.bold())
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 6)
-                    .background(Theme.accent)
-                    .clipShape(.capsule)
-            }
+            Text("Book Now")
+                .font(.caption.bold())
+                .foregroundStyle(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Theme.accent)
+                .clipShape(.rect(cornerRadius: 12))
         }
         .padding(16)
         .background(Theme.cardBackground)
-        .clipShape(.rect(cornerRadius: 16))
-        .overlay {
-            if host.isFeatured {
-                RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [Theme.goldBorder, Theme.goldBorder.opacity(0.3), Theme.goldBorder],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1.5
-                    )
-            }
-        }
+        .clipShape(.rect(cornerRadius: 12))
     }
 }
 
@@ -281,14 +208,15 @@ struct FilterChip: View {
                 Text(title)
                     .font(.caption.bold())
             }
-            .foregroundStyle(isActive ? .white : .secondary)
+            .foregroundStyle(isActive ? .white : Theme.secondaryText)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(isActive ? Theme.gradientStart.opacity(0.3) : Color.white.opacity(0.06))
-            .clipShape(.capsule)
+            .background(isActive ? Theme.accent.opacity(0.3) : Color.white.opacity(0.06))
+            .clipShape(.rect(cornerRadius: 8))
             .overlay {
                 if isActive {
-                    Capsule().strokeBorder(Theme.gradientStart.opacity(0.5), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 8)
+                        .strokeBorder(Theme.accent.opacity(0.5), lineWidth: 1)
                 }
             }
         }
@@ -320,16 +248,16 @@ struct FilterSheet: View {
                             Text("$\(Int(viewModel.maxRate))")
                                 .font(.subheadline.bold())
                         }
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondaryText)
 
                         Slider(value: $viewModel.maxRate, in: 30...200, step: 5)
-                            .tint(Theme.gradientStart)
+                            .tint(Theme.accent)
                     }
                 }
 
                 Section {
                     Toggle("Verified Only", isOn: $viewModel.verifiedOnly)
-                        .tint(Theme.gradientStart)
+                        .tint(Theme.accent)
                 }
             }
             .navigationTitle("Filters")
@@ -337,7 +265,7 @@ struct FilterSheet: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Apply") { dismiss() }
-                        .foregroundStyle(Theme.gradientStart)
+                        .foregroundStyle(Theme.accent)
                         .fontWeight(.bold)
                 }
             }

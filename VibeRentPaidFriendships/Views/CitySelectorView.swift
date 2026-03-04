@@ -22,7 +22,7 @@ struct CitySelectorView: View {
                         HStack {
                             Image(systemName: "globe")
                                 .font(.title3)
-                                .foregroundStyle(Theme.gradientStart)
+                                .foregroundStyle(Theme.accent)
                                 .frame(width: 32)
 
                             VStack(alignment: .leading, spacing: 2) {
@@ -31,14 +31,14 @@ struct CitySelectorView: View {
                                     .foregroundStyle(.white)
                                 Text("Show posts from everywhere")
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Theme.secondaryText)
                             }
 
                             Spacer()
 
                             if selectedCity == "All Cities" {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(Theme.gradientStart)
+                                    .foregroundStyle(Theme.accent)
                             }
                         }
                     }
@@ -52,7 +52,7 @@ struct CitySelectorView: View {
                             HStack {
                                 Image(systemName: city.id == "virtual" ? "video.fill" : "mappin.circle.fill")
                                     .font(.title3)
-                                    .foregroundStyle(city.id == "virtual" ? Theme.gradientEnd : Theme.gradientStart)
+                                    .foregroundStyle(Theme.accent)
                                     .frame(width: 32)
 
                                 VStack(alignment: .leading, spacing: 2) {
@@ -61,14 +61,14 @@ struct CitySelectorView: View {
                                         .foregroundStyle(.white)
                                     Text("\(city.activeUsers) active users")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Theme.secondaryText)
                                 }
 
                                 Spacer()
 
                                 if selectedCity == city.name {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(Theme.gradientStart)
+                                        .foregroundStyle(Theme.accent)
                                 }
                             }
                         }
@@ -82,7 +82,7 @@ struct CitySelectorView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
-                        .foregroundStyle(Theme.gradientStart)
+                        .foregroundStyle(Theme.accent)
                 }
             }
         }

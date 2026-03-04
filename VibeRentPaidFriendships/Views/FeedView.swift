@@ -34,7 +34,7 @@ struct FeedView: View {
                 .padding(.top, 8)
             }
             .refreshable { await viewModel.refresh() }
-            .background(Color.black)
+            .background(Theme.background)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -52,7 +52,7 @@ struct FeedView: View {
 
                             Image(systemName: "chevron.down")
                                 .font(.caption.bold())
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Theme.secondaryText)
                         }
                     }
                 }
@@ -63,7 +63,7 @@ struct FeedView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(Theme.gradientStart)
+                            .foregroundStyle(Theme.accent)
                     }
                 }
             }
@@ -128,7 +128,7 @@ struct FeedPostCard: View {
                                 .font(.caption)
                         }
                     }
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.secondaryText)
                 }
 
                 Spacer()
@@ -136,10 +136,10 @@ struct FeedPostCard: View {
                 if post.isBoosted {
                     Label("Boosted", systemImage: "bolt.fill")
                         .font(.caption2.bold())
-                        .foregroundStyle(Theme.gradientEnd)
+                        .foregroundStyle(Theme.accent)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Theme.gradientEnd.opacity(0.15))
+                        .background(Theme.accent.opacity(0.15))
                         .clipShape(.capsule)
                 }
 
@@ -149,7 +149,7 @@ struct FeedPostCard: View {
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.body)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondaryText)
                         .frame(width: 32, height: 32)
                 }
             }
@@ -172,14 +172,14 @@ struct FeedPostCard: View {
                             if tagged.isHost {
                                 Text("Book this Vibe")
                                     .font(.caption2.bold())
-                                    .foregroundStyle(Theme.gradientStart)
+                                    .foregroundStyle(Theme.accent)
                             }
                         }
                         Spacer()
                         if tagged.isHost {
                             Image(systemName: "calendar.badge.plus")
                                 .font(.subheadline)
-                                .foregroundStyle(Theme.gradientStart)
+                                .foregroundStyle(Theme.accent)
                         }
                     }
                     .padding(12)
@@ -203,11 +203,11 @@ struct FeedPostCard: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: post.isLiked ? "heart.fill" : "heart")
-                            .foregroundStyle(post.isLiked ? .red : .secondary)
+                            .foregroundStyle(post.isLiked ? .red : Theme.secondaryText)
                             .scaleEffect(heartScale)
                             .contentTransition(.symbolEffect(.replace))
                         Text("\(post.likeCount)")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                     }
                     .font(.subheadline)
                     .frame(maxWidth: .infinity)
@@ -221,7 +221,7 @@ struct FeedPostCard: View {
                         Text("\(post.commentCount)")
                     }
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.secondaryText)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                 }
@@ -232,7 +232,7 @@ struct FeedPostCard: View {
                         Text("Share")
                     }
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.secondaryText)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                 }

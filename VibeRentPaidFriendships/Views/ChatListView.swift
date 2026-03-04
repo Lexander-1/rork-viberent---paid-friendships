@@ -22,7 +22,7 @@ struct ChatListView: View {
                 }
             }
             .listStyle(.plain)
-            .background(Color.black)
+            .background(Theme.background)
             .scrollContentBackground(.hidden)
             .navigationTitle("Messages")
             .navigationDestination(for: Conversation.self) { conversation in
@@ -61,7 +61,7 @@ struct ConversationRow: View {
 
                 Text(conversation.lastMessage)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.secondaryText)
                     .lineLimit(2)
             }
 
@@ -70,7 +70,7 @@ struct ConversationRow: View {
                     .font(.caption2.bold())
                     .foregroundStyle(.white)
                     .frame(width: 20, height: 20)
-                    .background(Theme.gradientStart)
+                    .background(Theme.accent)
                     .clipShape(.circle)
             }
         }

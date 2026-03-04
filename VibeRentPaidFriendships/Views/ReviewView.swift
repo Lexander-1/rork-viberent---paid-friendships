@@ -21,14 +21,14 @@ struct ReviewView: View {
 
                         Text(booking.duration.label + " \u{2022} " + booking.city)
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                     }
                     .padding(.top, 24)
 
                     VStack(spacing: 12) {
                         Text("Your Rating")
                             .font(.subheadline.bold())
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
 
                         HStack(spacing: 12) {
                             ForEach(1...5, id: \.self) { star in
@@ -39,7 +39,7 @@ struct ReviewView: View {
                                 } label: {
                                     Image(systemName: star <= rating ? "star.fill" : "star")
                                         .font(.system(size: 36))
-                                        .foregroundStyle(star <= rating ? .yellow : .secondary)
+                                        .foregroundStyle(star <= rating ? Theme.accent : Theme.secondaryText)
                                         .scaleEffect(star <= rating ? 1.1 : 1.0)
                                 }
                                 .sensoryFeedback(.selection, trigger: rating)
@@ -50,7 +50,7 @@ struct ReviewView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Tell us about it")
                             .font(.subheadline.bold())
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
 
                         TextField("What made this hang great?", text: $reviewText, axis: .vertical)
                             .lineLimit(4...8)
@@ -66,7 +66,7 @@ struct ReviewView: View {
                         Text("Both parties must leave a review before the next booking unlocks.")
                             .font(.caption)
                     }
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.secondaryText)
                     .padding(.horizontal, 16)
 
                     GradientButton("Submit Review", icon: "paperplane.fill") {
@@ -80,7 +80,7 @@ struct ReviewView: View {
                     Spacer(minLength: 40)
                 }
             }
-            .background(Color.black)
+            .background(Theme.background)
             .navigationTitle("Leave a Review")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

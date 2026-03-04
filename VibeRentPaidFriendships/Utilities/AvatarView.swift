@@ -31,21 +31,12 @@ struct AvatarView: View {
                 .font(.system(size: size * 0.35, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
         }
-        .overlay {
-            if isFeatured {
-                Circle()
-                    .strokeBorder(
-                        LinearGradient(colors: [Theme.goldBorder, Theme.goldBorder.opacity(0.5), Theme.goldBorder], startPoint: .topLeading, endPoint: .bottomTrailing),
-                        lineWidth: 2.5
-                    )
-            }
-        }
         .overlay(alignment: .bottomTrailing) {
             if isVerified {
                 Image(systemName: "checkmark.seal.fill")
                     .font(.system(size: size * 0.3))
                     .foregroundStyle(Theme.verifiedBlue)
-                    .background(Circle().fill(Color.black).padding(1))
+                    .background(Circle().fill(Theme.background).padding(1))
                     .offset(x: 2, y: 2)
             }
         }

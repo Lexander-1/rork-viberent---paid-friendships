@@ -5,7 +5,6 @@ struct BookingFlowView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel = BookingViewModel()
     @State private var showPlatonicPopup: Bool = false
-    @State private var agreedToPlatonic: Bool = false
 
     private var pricing: (total: Double, hostEarnings: Double, platformFee: Double) {
         viewModel.calculatePrice(for: host)
@@ -16,20 +15,20 @@ struct BookingFlowView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     HStack(spacing: 16) {
-                        AvatarView(name: host.name, size: 56, userId: host.id, isVerified: host.isVerified, isFeatured: host.isFeatured)
+                        AvatarView(name: host.name, size: 56, userId: host.id, isVerified: host.isVerified)
                         VStack(alignment: .leading, spacing: 4) {
                             Text(host.name)
                                 .font(.headline)
                                 .foregroundStyle(.white)
                             Text("$\(Int(host.hourlyRate))/hr")
                                 .font(.subheadline)
-                                .foregroundStyle(Theme.gradientStart)
+                                .foregroundStyle(Theme.accent)
                         }
                         Spacer()
                     }
                     .padding(16)
                     .background(Theme.cardBackground)
-                    .clipShape(.rect(cornerRadius: 16))
+                    .clipShape(.rect(cornerRadius: 12))
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Duration")
@@ -50,20 +49,20 @@ struct BookingFlowView: View {
                                             .foregroundStyle(.white)
                                         Text("\(duration.hours) hour\(duration.hours > 1 ? "s" : "")")
                                             .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                            .foregroundStyle(Theme.secondaryText)
                                     }
                                     Spacer()
                                     Text("$\(Int(durationPricing.total))")
                                         .font(.headline.bold())
-                                        .foregroundStyle(viewModel.selectedDuration == duration ? .white : Theme.gradientStart)
+                                        .foregroundStyle(viewModel.selectedDuration == duration ? .white : Theme.accent)
                                 }
                                 .padding(16)
-                                .background(viewModel.selectedDuration == duration ? Theme.gradientStart.opacity(0.2) : Theme.cardBackground)
+                                .background(viewModel.selectedDuration == duration ? Theme.accent.opacity(0.2) : Theme.cardBackground)
                                 .clipShape(.rect(cornerRadius: 12))
                                 .overlay {
                                     if viewModel.selectedDuration == duration {
                                         RoundedRectangle(cornerRadius: 12)
-                                            .strokeBorder(Theme.gradientStart, lineWidth: 1.5)
+                                            .strokeBorder(Theme.accent, lineWidth: 1.5)
                                     }
                                 }
                             }
@@ -82,10 +81,10 @@ struct BookingFlowView: View {
                             displayedComponents: [.date, .hourAndMinute]
                         )
                         .datePickerStyle(.graphical)
-                        .tint(Theme.gradientStart)
+                        .tint(Theme.accent)
                         .padding(16)
                         .background(Theme.cardBackground)
-                        .clipShape(.rect(cornerRadius: 16))
+                        .clipShape(.rect(cornerRadius: 12))
                     }
 
                     VStack(spacing: 12) {
@@ -106,19 +105,19 @@ struct BookingFlowView: View {
                                 Spacer()
                                 Text("$\(Int(pricing.total))")
                                     .font(.title3.bold())
-                                    .foregroundStyle(Theme.gradientStart)
+                                    .foregroundStyle(Theme.accent)
                             }
                         }
                         .padding(16)
                         .background(Theme.cardBackground)
-                        .clipShape(.rect(cornerRadius: 16))
+                        .clipShape(.rect(cornerRadius: 12))
                     }
 
                     Spacer(minLength: 80)
                 }
                 .padding(16)
             }
-            .background(Color.black)
+            .background(Theme.background)
             .navigationTitle("Book \(host.name)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -158,10 +157,10 @@ struct BookingFlowView: View {
                         VStack(spacing: 16) {
                             ProgressView()
                                 .controlSize(.large)
-                                .tint(Theme.gradientStart)
+                                .tint(Theme.accent)
                             Text("Processing...")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Theme.secondaryText)
                         }
                     }
                     .ignoresSafeArea()
@@ -175,7 +174,7 @@ struct BookingFlowView: View {
         HStack {
             Text(title)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.secondaryText)
             Spacer()
             Text(value)
                 .font(.subheadline.bold())

@@ -6,14 +6,14 @@ struct PlatonicAgreementView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Theme.background.ignoresSafeArea()
 
             VStack(spacing: 32) {
                 Spacer()
 
                 Image(systemName: "hand.raised.fill")
                     .font(.system(size: 56))
-                    .foregroundStyle(Theme.gradientStart)
+                    .foregroundStyle(Theme.accent)
 
                 VStack(spacing: 16) {
                     Text("Platonic Only")
@@ -22,7 +22,7 @@ struct PlatonicAgreementView: View {
 
                     Text("VibeRent is a platonic-only marketplace for real friendship and companionship.")
                         .font(.body)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondaryText)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
                 }
@@ -47,7 +47,7 @@ struct PlatonicAgreementView: View {
                         HStack(spacing: 12) {
                             Image(systemName: hasChecked ? "checkmark.square.fill" : "square")
                                 .font(.title3)
-                                .foregroundStyle(hasChecked ? Theme.gradientStart : .secondary)
+                                .foregroundStyle(hasChecked ? Theme.accent : Theme.secondaryText)
                                 .contentTransition(.symbolEffect(.replace))
 
                             Text("I agree to the Platonic Only terms and understand that any violations will result in immediate account termination.")

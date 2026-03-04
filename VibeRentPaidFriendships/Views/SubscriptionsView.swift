@@ -11,9 +11,7 @@ struct SubscriptionsView: View {
                     VStack(spacing: 8) {
                         Image(systemName: "crown.fill")
                             .font(.system(size: 48))
-                            .foregroundStyle(
-                                LinearGradient(colors: [Theme.goldBorder, Theme.gradientEnd], startPoint: .top, endPoint: .bottom)
-                            )
+                            .foregroundStyle(Theme.accent)
 
                         Text("Upgrade Your Vibe")
                             .font(.title2.bold())
@@ -21,7 +19,7 @@ struct SubscriptionsView: View {
 
                         Text("Get more out of VibeRent")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                     }
                     .padding(.top, 16)
 
@@ -57,7 +55,7 @@ struct SubscriptionsView: View {
                         HStack(spacing: 16) {
                             Image(systemName: "bolt.fill")
                                 .font(.title2)
-                                .foregroundStyle(Theme.gradientEnd)
+                                .foregroundStyle(Theme.accent)
                                 .frame(width: 44)
 
                             VStack(alignment: .leading, spacing: 4) {
@@ -66,7 +64,7 @@ struct SubscriptionsView: View {
                                     .foregroundStyle(.white)
                                 Text("Show your post to 10,000 local users")
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Theme.secondaryText)
                             }
 
                             Spacer()
@@ -76,19 +74,19 @@ struct SubscriptionsView: View {
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 8)
-                                .background(Theme.gradientEnd)
-                                .clipShape(.capsule)
+                                .background(Theme.accent)
+                                .clipShape(.rect(cornerRadius: 12))
                         }
                         .padding(16)
                         .background(Theme.cardBackground)
-                        .clipShape(.rect(cornerRadius: 16))
+                        .clipShape(.rect(cornerRadius: 12))
                     }
 
                     Spacer(minLength: 40)
                 }
                 .padding(.horizontal, 16)
             }
-            .background(Color.black)
+            .background(Theme.background)
             .navigationTitle("Subscriptions")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -105,7 +103,7 @@ struct SubscriptionsView: View {
             HStack {
                 Image(systemName: icon)
                     .font(.title2)
-                    .foregroundStyle(type == .hostFeatured ? Theme.goldBorder : Theme.gradientStart)
+                    .foregroundStyle(Theme.accent)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(type.title)
@@ -113,14 +111,14 @@ struct SubscriptionsView: View {
                         .foregroundStyle(.white)
                     Text(type.price)
                         .font(.subheadline)
-                        .foregroundStyle(Theme.gradientStart)
+                        .foregroundStyle(Theme.accent)
                 }
 
                 Spacer()
 
                 if selectedPlan == type {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Theme.gradientStart)
+                        .foregroundStyle(Theme.accent)
                 }
             }
 
@@ -145,21 +143,12 @@ struct SubscriptionsView: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(selectedPlan == type ? Color.green : Theme.gradientStart)
-                    .clipShape(.capsule)
+                    .background(selectedPlan == type ? Color.green : Theme.accent)
+                    .clipShape(.rect(cornerRadius: 12))
             }
         }
         .padding(16)
         .background(Theme.cardBackground)
-        .clipShape(.rect(cornerRadius: 16))
-        .overlay {
-            if type == .hostFeatured {
-                RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(
-                        LinearGradient(colors: [Theme.goldBorder, Theme.goldBorder.opacity(0.3)], startPoint: .topLeading, endPoint: .bottomTrailing),
-                        lineWidth: 1.5
-                    )
-            }
-        }
+        .clipShape(.rect(cornerRadius: 12))
     }
 }

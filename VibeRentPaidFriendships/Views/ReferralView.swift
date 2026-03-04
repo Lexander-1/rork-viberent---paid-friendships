@@ -14,7 +14,7 @@ struct ReferralView: View {
                             Circle()
                                 .fill(
                                     RadialGradient(
-                                        colors: [Theme.gradientEnd.opacity(0.3), .clear],
+                                        colors: [Theme.accent.opacity(0.25), .clear],
                                         center: .center,
                                         startRadius: 20,
                                         endRadius: 80
@@ -24,7 +24,7 @@ struct ReferralView: View {
 
                             Image(systemName: "gift.fill")
                                 .font(.system(size: 56))
-                                .foregroundStyle(Theme.gradientEnd)
+                                .foregroundStyle(Theme.accent)
                         }
 
                         Text("Refer & Earn")
@@ -33,7 +33,7 @@ struct ReferralView: View {
 
                         Text("Both you and your friend get $15 credit after their first completed hang!")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 32)
                     }
@@ -42,7 +42,7 @@ struct ReferralView: View {
                     VStack(spacing: 12) {
                         Text("Your Referral Code")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
 
                         Text(user.referralCode)
                             .font(.system(.title, design: .monospaced).bold())
@@ -65,7 +65,7 @@ struct ReferralView: View {
                                 Text(copied ? "Copied!" : "Copy Code")
                             }
                             .font(.subheadline.bold())
-                            .foregroundStyle(Theme.gradientStart)
+                            .foregroundStyle(Theme.accent)
                         }
                         .sensoryFeedback(.success, trigger: copied)
                     }
@@ -80,10 +80,10 @@ struct ReferralView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Credit Balance")
                                     .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Theme.secondaryText)
                                 Text("$\(Int(user.referralCredits))")
                                     .font(.title.bold())
-                                    .foregroundStyle(Theme.gradientEnd)
+                                    .foregroundStyle(Theme.accent)
                             }
                             Spacer()
                         }
@@ -99,7 +99,7 @@ struct ReferralView: View {
                     Spacer(minLength: 40)
                 }
             }
-            .background(Color.black)
+            .background(Theme.background)
             .navigationTitle("Referral Program")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -2,26 +2,26 @@ import Foundation
 
 nonisolated enum UserRole: String, Codable, Sendable, CaseIterable {
     case host = "host"
-    case seeker = "seeker"
+    case customer = "customer"
 
     var title: String {
         switch self {
         case .host: return "Host"
-        case .seeker: return "Seeker"
+        case .customer: return "Customer"
         }
     }
 
     var subtitle: String {
         switch self {
-        case .host: return "Rent out your time for platonic hangouts and earn money"
-        case .seeker: return "Rent someone else's time for platonic hangouts"
+        case .host: return "Offer my time and earn money"
+        case .customer: return "Book time to hang out"
         }
     }
 
     var icon: String {
         switch self {
         case .host: return "clock.badge.checkmark"
-        case .seeker: return "binoculars.fill"
+        case .customer: return "person.2.fill"
         }
     }
 }
@@ -80,7 +80,7 @@ extension User {
         User(id: "6", name: "David Kim", email: "david@example.com", phone: "+1234567895", bio: "Museum hopper and street food connoisseur. Let me show you the hidden gems!", photoURL: nil, city: "San Jose", interests: ["Art", "Food", "Museums", "Travel"], isVerified: true, hasBackgroundCheck: false, isHost: true, hourlyRate: 55, rating: 4.85, reviewCount: 98, isFeatured: true, joinDate: Date().addingTimeInterval(-86400 * 150), isAdmin: false, referralCode: "DAVID15", referralCredits: 60, hasSubscription: true, subscriptionType: .hostFeatured, role: .host),
         User(id: "7", name: "Aisha Thompson", email: "aisha@example.com", phone: "+1234567896", bio: "Fitness coach by day, foodie by night. Let's hit a trail or try a new restaurant!", photoURL: nil, city: "Houston", interests: ["Fitness", "Food", "Hiking", "Cooking"], isVerified: true, hasBackgroundCheck: true, isHost: true, hourlyRate: 42, rating: 4.75, reviewCount: 67, isFeatured: false, joinDate: Date().addingTimeInterval(-86400 * 90), isAdmin: false, referralCode: "AISHA15", referralCredits: 15, hasSubscription: false, subscriptionType: nil, role: .host),
         User(id: "8", name: "Carlos Mendez", email: "carlos@example.com", phone: "+1234567897", bio: "Photographer and city explorer. I know the best sunset spots in town!", photoURL: nil, city: "San Diego", interests: ["Photography", "Travel", "Surfing", "Coffee"], isVerified: true, hasBackgroundCheck: false, isHost: true, hourlyRate: 38, rating: 4.65, reviewCount: 34, isFeatured: false, joinDate: Date().addingTimeInterval(-86400 * 45), isAdmin: false, referralCode: "CARL15", referralCredits: 0, hasSubscription: false, subscriptionType: nil, role: .host),
-        User(id: "current", name: "Alex Morgan", email: "alex@example.com", phone: "+1234567899", bio: "New to VibeRent! Excited to meet cool people.", photoURL: nil, city: "New York City", interests: ["Music", "Coffee", "Travel"], isVerified: true, hasBackgroundCheck: false, isHost: false, hourlyRate: 0, rating: 4.5, reviewCount: 3, isFeatured: false, joinDate: Date(), isAdmin: false, referralCode: "ALEX15", referralCredits: 0, hasSubscription: false, subscriptionType: nil, role: .seeker)
+        User(id: "current", name: "Alex Morgan", email: "alex@example.com", phone: "+1234567899", bio: "New to VibeRent! Excited to meet cool people.", photoURL: nil, city: "New York City", interests: ["Music", "Coffee", "Travel"], isVerified: true, hasBackgroundCheck: false, isHost: false, hourlyRate: 0, rating: 4.5, reviewCount: 3, isFeatured: false, joinDate: Date(), isAdmin: false, referralCode: "ALEX15", referralCredits: 0, hasSubscription: false, subscriptionType: nil, role: .customer)
     ]
 
     static var currentUser: User { sampleUsers.last! }

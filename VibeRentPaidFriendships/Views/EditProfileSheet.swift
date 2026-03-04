@@ -16,13 +16,15 @@ struct EditProfileSheet: View {
                     profilePhotoSection
                     personalInfoSection
                     interestsSection
-                    hostModeSection
+                    if user.role == .host {
+                        hostModeSection
+                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 16)
                 .padding(.bottom, 40)
             }
-            .background(Color.black)
+            .background(Theme.background)
             .navigationTitle("Edit Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -40,11 +42,11 @@ struct EditProfileSheet: View {
                     } label: {
                         if isSaving {
                             ProgressView()
-                                .tint(Theme.gradientStart)
+                                .tint(Theme.accent)
                         } else {
                             Text("Save")
                                 .fontWeight(.bold)
-                                .foregroundStyle(Theme.gradientStart)
+                                .foregroundStyle(Theme.accent)
                         }
                     }
                     .disabled(isSaving)
@@ -94,7 +96,7 @@ struct EditProfileSheet: View {
 
             Text("Tap to change photo")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.secondaryText)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
@@ -113,7 +115,7 @@ struct EditProfileSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("City", systemImage: "location.fill")
                         .font(.subheadline.bold())
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondaryText)
 
                     Picker("City", selection: $viewModel.editCity) {
                         ForEach(City.allCities, id: \.name) { city in
@@ -147,43 +149,27 @@ struct EditProfileSheet: View {
                 .font(.headline)
                 .foregroundStyle(.white)
 
-            HStack {
-                Label("Enable Host Mode", systemImage: "clock.badge.checkmark")
-                    .font(.subheadline)
-                    .foregroundStyle(.white)
-                Spacer()
-                Toggle("", isOn: $viewModel.isHostMode)
-                    .tint(Theme.gradientStart)
-                    .labelsHidden()
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Hourly Rate")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.secondaryText)
+                    Spacer()
+                    Text("$\(Int(viewModel.editHourlyRate))/hr")
+                        .font(.headline.bold())
+                        .foregroundStyle(Theme.accent)
+                }
+
+                Slider(value: $viewModel.editHourlyRate, in: 30...200, step: 5)
+                    .tint(Theme.accent)
+
+                Text("Minimum $30/hr")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
             }
             .padding(14)
             .background(Theme.cardBackground)
             .clipShape(.rect(cornerRadius: 12))
-
-            if viewModel.isHostMode {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Hourly Rate")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        Text("$\(Int(viewModel.editHourlyRate))/hr")
-                            .font(.headline.bold())
-                            .foregroundStyle(Theme.gradientStart)
-                    }
-
-                    Slider(value: $viewModel.editHourlyRate, in: 30...200, step: 5)
-                        .tint(Theme.gradientStart)
-
-                    Text("Minimum $30/hr")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                }
-                .padding(14)
-                .background(Theme.cardBackground)
-                .clipShape(.rect(cornerRadius: 12))
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
         }
     }
 
@@ -191,7 +177,7 @@ struct EditProfileSheet: View {
         VStack(alignment: .leading, spacing: 8) {
             Label(placeholder, systemImage: icon)
                 .font(.subheadline.bold())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.secondaryText)
 
             if isMultiline {
                 TextField(placeholder, text: text, axis: .vertical)

@@ -15,7 +15,7 @@ struct CreatePostView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("What's the vibe?", systemImage: "text.quote")
                             .font(.subheadline.bold())
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
 
                         TextField("Share your hang experience...", text: $caption, axis: .vertical)
                             .lineLimit(4...8)
@@ -27,7 +27,7 @@ struct CreatePostView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Tag your companion", systemImage: "person.fill")
                             .font(.subheadline.bold())
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
 
                         ForEach(pastCompanions, id: \.self) { name in
                             Button {
@@ -41,11 +41,11 @@ struct CreatePostView: View {
                                     Spacer()
                                     if selectedCompanion == name {
                                         Image(systemName: "checkmark.circle.fill")
-                                            .foregroundStyle(Theme.gradientStart)
+                                            .foregroundStyle(Theme.accent)
                                     }
                                 }
                                 .padding(12)
-                                .background(selectedCompanion == name ? Theme.gradientStart.opacity(0.1) : Theme.cardBackground)
+                                .background(selectedCompanion == name ? Theme.accent.opacity(0.1) : Theme.cardBackground)
                                 .clipShape(.rect(cornerRadius: 12))
                             }
                         }
@@ -54,7 +54,7 @@ struct CreatePostView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Location", systemImage: "mappin")
                             .font(.subheadline.bold())
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
 
                         Picker("City", selection: $selectedCity) {
                             ForEach(City.allCities, id: \.name) { city in
@@ -72,17 +72,17 @@ struct CreatePostView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Photos", systemImage: "photo.on.rectangle")
                             .font(.subheadline.bold())
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
 
                         Button {
                         } label: {
                             VStack(spacing: 12) {
                                 Image(systemName: "camera.fill")
                                     .font(.title2)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Theme.secondaryText)
                                 Text("Add up to 10 photos")
                                     .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Theme.secondaryText)
                             }
                             .frame(maxWidth: .infinity)
                             .frame(height: 120)
@@ -91,14 +91,14 @@ struct CreatePostView: View {
                             .overlay {
                                 RoundedRectangle(cornerRadius: 12)
                                     .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [8]))
-                                    .foregroundStyle(.secondary.opacity(0.3))
+                                    .foregroundStyle(Theme.secondaryText.opacity(0.3))
                             }
                         }
                     }
                 }
                 .padding(16)
             }
-            .background(Color.black)
+            .background(Theme.background)
             .navigationTitle("New Post")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -108,7 +108,7 @@ struct CreatePostView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Post") { dismiss() }
                         .fontWeight(.bold)
-                        .foregroundStyle(Theme.gradientStart)
+                        .foregroundStyle(Theme.accent)
                         .disabled(caption.isEmpty || selectedCompanion.isEmpty)
                 }
             }

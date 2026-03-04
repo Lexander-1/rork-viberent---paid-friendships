@@ -8,6 +8,7 @@ struct ProfileView: View {
     @State private var showReferral: Bool = false
     @State private var showSettings: Bool = false
     @State private var showAdmin: Bool = false
+    @State private var showLogoutAlert: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -18,8 +19,7 @@ struct ProfileView: View {
                             name: user.name,
                             size: 90,
                             userId: user.id,
-                            isVerified: user.isVerified,
-                            isFeatured: user.isFeatured
+                            isVerified: user.isVerified
                         )
 
                         VStack(spacing: 6) {
@@ -33,7 +33,7 @@ struct ProfileView: View {
                                 Text(user.city)
                                     .font(.subheadline)
                             }
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                         }
 
                         HStack(spacing: 8) {
@@ -49,7 +49,7 @@ struct ProfileView: View {
 
                         Text(user.bio)
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 32)
 
@@ -79,13 +79,8 @@ struct ProfileView: View {
                     }
 
                     VStack(spacing: 2) {
-                        profileMenuItem(icon: "pencil.circle.fill", title: "Edit Profile", color: Theme.gradientStart) {
+                        profileMenuItem(icon: "pencil.circle.fill", title: "Edit Profile", color: Theme.accent) {
                             viewModel.startEditing(user: user)
-                        }
-
-                        profileMenuItem(icon: "arrow.left.arrow.right.circle.fill", title: "Switch to \(user.role == .host ? "Seeker" : "Host")", color: Theme.gradientEnd) {
-                            let newRole: UserRole = user.role == .host ? .seeker : .host
-                            appViewModel.switchRole(to: newRole)
                         }
 
                         if !user.isVerified {
@@ -96,15 +91,15 @@ struct ProfileView: View {
                             profileMenuItem(icon: "shield.checkmark.fill", title: "Background Check — $9.99", color: .green) { }
                         }
 
-                        profileMenuItem(icon: "crown.fill", title: "Subscriptions", color: Theme.goldBorder) {
+                        profileMenuItem(icon: "crown.fill", title: "Subscriptions", color: Theme.accent) {
                             showSubscriptions = true
                         }
 
-                        profileMenuItem(icon: "gift.fill", title: "Refer & Earn $15", color: Theme.gradientEnd) {
+                        profileMenuItem(icon: "gift.fill", title: "Refer & Earn $15", color: Theme.accent) {
                             showReferral = true
                         }
 
-                        profileMenuItem(icon: "gearshape.fill", title: "Settings", color: .secondary) {
+                        profileMenuItem(icon: "gearshape.fill", title: "Settings", color: Theme.secondaryText) {
                             showSettings = true
                         }
 
@@ -116,10 +111,19 @@ struct ProfileView: View {
                     }
                     .padding(.horizontal, 16)
 
+                    Button {
+                        showLogoutAlert = true
+                    } label: {
+                        Text("Log Out")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.dangerRed)
+                    }
+                    .padding(.top, 8)
+
                     Spacer(minLength: 40)
                 }
             }
-            .background(Color.black)
+            .background(Theme.background)
             .navigationTitle("Profile")
             .sheet(isPresented: $viewModel.isEditing) {
                 EditProfileSheet(viewModel: viewModel, user: $user)
@@ -131,10 +135,18 @@ struct ProfileView: View {
                 ReferralView(user: user)
             }
             .sheet(isPresented: $showSettings) {
-                SettingsView()
+                SettingsView(appViewModel: appViewModel)
             }
             .fullScreenCover(isPresented: $showAdmin) {
                 AdminDashboardView()
+            }
+            .alert("Log Out?", isPresented: $showLogoutAlert) {
+                Button("Log Out", role: .destructive) {
+                    appViewModel.logout()
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("You will be signed out of your account.")
             }
         }
     }
@@ -146,10 +158,10 @@ struct ProfileView: View {
             Text(user.role.title)
                 .font(.caption2.bold())
         }
-        .foregroundStyle(user.role == .host ? Theme.gradientEnd : Theme.gradientStart)
+        .foregroundStyle(Theme.accent)
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
-        .background((user.role == .host ? Theme.gradientEnd : Theme.gradientStart).opacity(0.15))
+        .background(Theme.accent.opacity(0.15))
         .clipShape(.capsule)
     }
 
@@ -160,7 +172,7 @@ struct ProfileView: View {
                 .foregroundStyle(.white)
             Text(label)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.secondaryText)
         }
     }
 

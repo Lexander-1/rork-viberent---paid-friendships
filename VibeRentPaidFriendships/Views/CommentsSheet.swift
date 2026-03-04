@@ -35,7 +35,7 @@ struct CommentsSheet: View {
                     } label: {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.title2)
-                            .foregroundStyle(newComment.isEmpty ? .secondary : Theme.gradientStart)
+                            .foregroundStyle(newComment.isEmpty ? Theme.secondaryText : Theme.accent)
                     }
                     .disabled(newComment.isEmpty)
                 }

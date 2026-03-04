@@ -21,7 +21,7 @@ struct ChatDetailView: View {
                     .foregroundStyle(.green)
                 Text("This chat is monitored for safety. Platonic interactions only.")
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.secondaryText)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
@@ -53,7 +53,7 @@ struct ChatDetailView: View {
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.title2)
-                        .foregroundStyle(viewModel.newMessageText.isEmpty ? .secondary : Theme.gradientStart)
+                        .foregroundStyle(viewModel.newMessageText.isEmpty ? Theme.secondaryText : Theme.accent)
                 }
                 .disabled(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 .sensoryFeedback(.impact(flexibility: .soft), trigger: messages.count)
@@ -62,7 +62,7 @@ struct ChatDetailView: View {
             .padding(.vertical, 10)
             .background(.ultraThinMaterial)
         }
-        .background(Color.black)
+        .background(Theme.background)
         .navigationTitle(otherName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -73,7 +73,7 @@ struct ChatDetailView: View {
                     Button("Emergency SOS", systemImage: "sos", role: .destructive) { }
                 } label: {
                     Image(systemName: "ellipsis.circle")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondaryText)
                 }
             }
         }
@@ -93,7 +93,7 @@ struct MessageBubble: View {
                 if !isFromCurrentUser {
                     Text(message.senderName)
                         .font(.caption2.bold())
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondaryText)
                 }
 
                 Text(message.text)
@@ -101,17 +101,7 @@ struct MessageBubble: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(
-                        isFromCurrentUser ?
-                            AnyShapeStyle(
-                                LinearGradient(
-                                    colors: [Theme.gradientStart, Theme.gradientStart.opacity(0.8)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            ) :
-                            AnyShapeStyle(Color.white.opacity(0.1))
-                    )
+                    .background(isFromCurrentUser ? Theme.accent : Color.white.opacity(0.1))
                     .clipShape(.rect(cornerRadius: 18, style: .continuous))
 
                 Text(message.createdAt, style: .time)

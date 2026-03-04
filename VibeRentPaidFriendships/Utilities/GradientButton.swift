@@ -30,7 +30,7 @@ struct GradientButton: View {
             .padding(.horizontal, isSmall ? 16 : 24)
             .padding(.vertical, isSmall ? 10 : 16)
             .background(Theme.accent)
-            .clipShape(.capsule)
+            .clipShape(.rect(cornerRadius: 12))
         }
     }
 }

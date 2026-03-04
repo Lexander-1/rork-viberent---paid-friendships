@@ -12,7 +12,7 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Theme.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 TabView(selection: $currentPage) {
@@ -24,7 +24,7 @@ struct OnboardingView: View {
                                 Circle()
                                     .fill(
                                         RadialGradient(
-                                            colors: [Theme.gradientStart.opacity(0.3), .clear],
+                                            colors: [Theme.accent.opacity(0.25), .clear],
                                             center: .center,
                                             startRadius: 20,
                                             endRadius: 100
@@ -34,13 +34,7 @@ struct OnboardingView: View {
 
                                 Image(systemName: page.icon)
                                     .font(.system(size: 64))
-                                    .foregroundStyle(
-                                        LinearGradient(
-                                            colors: [Theme.gradientStart, Theme.gradientEnd],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                    )
+                                    .foregroundStyle(Theme.accent)
                             }
 
                             VStack(spacing: 16) {
@@ -51,7 +45,7 @@ struct OnboardingView: View {
 
                                 Text(page.subtitle)
                                     .font(.body)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Theme.secondaryText)
                                     .multilineTextAlignment(.center)
                                     .padding(.horizontal, 32)
                             }
@@ -68,9 +62,7 @@ struct OnboardingView: View {
                     HStack(spacing: 8) {
                         ForEach(0..<3, id: \.self) { index in
                             Capsule()
-                                .fill(index == currentPage ?
-                                    AnyShapeStyle(Theme.accent) :
-                                    AnyShapeStyle(Color.white.opacity(0.2)))
+                                .fill(index == currentPage ? Theme.accent : Color.white.opacity(0.2))
                                 .frame(width: index == currentPage ? 24 : 8, height: 8)
                                 .animation(.snappy, value: currentPage)
                         }
@@ -94,7 +86,7 @@ struct OnboardingView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
                                 .background(Color.white.opacity(0.1))
-                                .clipShape(.capsule)
+                                .clipShape(.rect(cornerRadius: 12))
                         }
                         .padding(.horizontal, 24)
                     }
@@ -104,7 +96,7 @@ struct OnboardingView: View {
                             onComplete()
                         }
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondaryText)
                     }
                 }
                 .padding(.bottom, 32)

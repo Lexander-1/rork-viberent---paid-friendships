@@ -17,31 +17,28 @@ struct HostProfileView: View {
                         name: host.name,
                         size: 100,
                         userId: host.id,
-                        isVerified: host.isVerified,
-                        isFeatured: host.isFeatured
+                        isVerified: host.isVerified
                     )
 
                     VStack(spacing: 6) {
-                        HStack(spacing: 8) {
-                            Text(host.name)
-                                .font(.title2.bold())
-                                .foregroundStyle(.white)
-                        }
+                        Text(host.name)
+                            .font(.title2.bold())
+                            .foregroundStyle(.white)
 
                         HStack(spacing: 12) {
                             HStack(spacing: 4) {
                                 Image(systemName: "mappin.circle.fill")
-                                    .foregroundStyle(Theme.gradientStart)
+                                    .foregroundStyle(Theme.accent)
                                 Text(host.city)
                             }
 
                             HStack(spacing: 4) {
                                 Image(systemName: "star.fill")
-                                    .foregroundStyle(.yellow)
+                                    .foregroundStyle(Theme.accent)
                                 Text(String(format: "%.1f", host.rating))
                                     .fontWeight(.bold)
                                 Text("(\(host.reviewCount) reviews)")
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Theme.secondaryText)
                             }
                         }
                         .font(.subheadline)
@@ -54,9 +51,6 @@ struct HostProfileView: View {
                         }
                         if host.hasBackgroundCheck {
                             BadgePill(icon: "shield.checkmark.fill", text: "BG Check", color: .green)
-                        }
-                        if host.isFeatured {
-                            BadgePill(icon: "star.fill", text: "Featured", color: Theme.goldBorder)
                         }
                     }
 
@@ -105,7 +99,7 @@ struct HostProfileView: View {
                                 Spacer()
                                 Text("$\(Int(pricing.total))")
                                     .font(.subheadline.bold())
-                                    .foregroundStyle(Theme.gradientStart)
+                                    .foregroundStyle(Theme.accent)
                             }
                             .padding(12)
                             .background(Color.white.opacity(0.04))
@@ -131,7 +125,7 @@ struct HostProfileView: View {
                 Spacer(minLength: 100)
             }
         }
-        .background(Color.black)
+        .background(Theme.background)
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 0) {
                 Divider()
@@ -142,7 +136,7 @@ struct HostProfileView: View {
                             .foregroundStyle(.white)
                         Text("75% goes to host")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                     }
 
                     Spacer()
@@ -164,7 +158,7 @@ struct HostProfileView: View {
                     Button("Share", systemImage: "square.and.arrow.up") { }
                 } label: {
                     Image(systemName: "ellipsis.circle")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondaryText)
                 }
             }
         }
@@ -220,7 +214,7 @@ struct ReviewCard: View {
                     ForEach(1...5, id: \.self) { star in
                         Image(systemName: star <= review.rating ? "star.fill" : "star")
                             .font(.caption2)
-                            .foregroundStyle(.yellow)
+                            .foregroundStyle(Theme.accent)
                     }
                 }
             }

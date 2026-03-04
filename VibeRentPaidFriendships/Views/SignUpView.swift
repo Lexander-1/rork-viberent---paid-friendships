@@ -19,7 +19,7 @@ struct SignUpView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Theme.background.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 32) {
@@ -29,15 +29,13 @@ struct SignUpView: View {
                             .foregroundStyle(.white)
                         Text("Join the VibeRent community")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.secondaryText)
                     }
                     .padding(.top, 24)
 
                     ZStack {
                         Circle()
-                            .fill(
-                                LinearGradient(colors: [Theme.gradientStart, Theme.gradientEnd], startPoint: .topLeading, endPoint: .bottomTrailing)
-                            )
+                            .fill(Theme.accent)
                             .frame(width: 100, height: 100)
 
                         Image(systemName: "camera.fill")
@@ -53,7 +51,7 @@ struct SignUpView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Label("City", systemImage: "location.fill")
                                 .font(.subheadline.bold())
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Theme.secondaryText)
 
                             Picker("City", selection: $selectedCity) {
                                 ForEach(City.allCities, id: \.name) { city in
@@ -71,7 +69,7 @@ struct SignUpView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Label("Bio", systemImage: "text.quote")
                                 .font(.subheadline.bold())
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Theme.secondaryText)
 
                             TextField("Tell people about yourself...", text: $bio, axis: .vertical)
                                 .lineLimit(3...6)
@@ -94,7 +92,7 @@ struct SignUpView: View {
                         onComplete()
                     }
                     .font(.subheadline)
-                    .foregroundStyle(Theme.gradientStart)
+                    .foregroundStyle(Theme.accent)
 
                     Spacer(minLength: 40)
                 }
@@ -108,7 +106,7 @@ struct SignUpView: View {
         VStack(alignment: .leading, spacing: 8) {
             Label(placeholder, systemImage: icon)
                 .font(.subheadline.bold())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.secondaryText)
 
             TextField(placeholder, text: text)
                 .keyboardType(keyboard)
