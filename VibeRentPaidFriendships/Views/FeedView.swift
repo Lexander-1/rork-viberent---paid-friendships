@@ -35,15 +35,11 @@ struct FeedView: View {
             .background(Theme.background)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .principal) {
                     Button {
                         viewModel.showCitySelector = true
                     } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "line.3.horizontal")
-                                .font(.body.bold())
-                                .foregroundStyle(.white)
-
+                        HStack(spacing: 6) {
                             Text(viewModel.selectedCity)
                                 .font(.headline)
                                 .foregroundStyle(.white)
@@ -53,6 +49,10 @@ struct FeedView: View {
                                 .foregroundStyle(Theme.secondaryText)
                         }
                     }
+                }
+
+                ToolbarItem(placement: .topBarLeading) {
+                    Color.clear.frame(width: 44, height: 44)
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {

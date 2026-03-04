@@ -8,11 +8,14 @@ struct MyCalendarView: View {
     @State private var endTime: Date = Date().addingTimeInterval(3600)
     @State private var availabilitySlots: [AvailabilitySlot] = []
     @State private var rateSaved: Bool = false
+    @State private var showCancelAlert: Bool = false
+    @State private var showRescheduleSheet: Bool = false
+    @State private var selectedBookingIndex: Int?
 
-    private let sampleBookings: [BookingEntry] = [
-        BookingEntry(seekerName: "Alex Morgan", date: Date().addingTimeInterval(86400), duration: "2 Hours", earnings: 100.00),
-        BookingEntry(seekerName: "Jordan Lee", date: Date().addingTimeInterval(86400 * 2), duration: "1 Hour", earnings: 45.00),
-        BookingEntry(seekerName: "Taylor Kim", date: Date().addingTimeInterval(86400 * 4), duration: "4 Hours", earnings: 200.00)
+    @State private var sampleBookings: [BookingEntry] = [
+        BookingEntry(id: "be1", seekerName: "Alex Morgan", date: Date().addingTimeInterval(86400), duration: "2 Hours", earnings: 100.00, status: .confirmed),
+        BookingEntry(id: "be2", seekerName: "Jordan Lee", date: Date().addingTimeInterval(86400 * 2), duration: "1 Hour", earnings: 45.00, status: .confirmed),
+        BookingEntry(id: "be3", seekerName: "Taylor Kim", date: Date().addingTimeInterval(86400 * 4), duration: "4 Hours", earnings: 200.00, status: .confirmed)
     ]
 
     private var currentRate: Double {
@@ -32,9 +35,19 @@ struct MyCalendarView: View {
             }
             .background(Theme.background)
             .navigationTitle("My Calendar")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Color.clear.frame(width: 44, height: 44)
+                }
+            }
         }
         .onAppear {
             rateText = "\(Int(user.hourlyRate))"
+        }
+        .sheet(isPresented: $showRescheduleSheet) {
+            if let index = selectedBookingIndex, index < sampleBookings.count {
+                RescheduleSheet(booking: $sampleBookings[index])
+            }
         }
     }
 
@@ -149,28 +162,70 @@ struct MyCalendarView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 24)
             } else {
-                ForEach(sampleBookings, id: \.seekerName) { booking in
-                    HStack(spacing: 12) {
-                        AvatarView(name: booking.seekerName, size: 40, userId: booking.seekerName)
+                ForEach(Array(sampleBookings.enumerated()), id: \.element.id) { index, booking in
+                    VStack(spacing: 12) {
+                        HStack(spacing: 12) {
+                            AvatarView(name: booking.seekerName, size: 40, userId: booking.seekerName)
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(booking.seekerName)
-                                .font(.subheadline.bold())
-                                .foregroundStyle(.white)
-                            HStack(spacing: 8) {
-                                Text(booking.duration)
-                                    .font(.caption)
-                                Text(booking.date, style: .date)
-                                    .font(.caption)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(booking.seekerName)
+                                    .font(.subheadline.bold())
+                                    .foregroundStyle(.white)
+                                HStack(spacing: 8) {
+                                    Text(booking.duration)
+                                        .font(.caption)
+                                    Text(booking.date, style: .date)
+                                        .font(.caption)
+                                }
+                                .foregroundStyle(Theme.secondaryText)
+
+                                if booking.status == .rescheduleRequested {
+                                    Text("Reschedule requested")
+                                        .font(.caption2.bold())
+                                        .foregroundStyle(.orange)
+                                } else if booking.status == .cancelRequested {
+                                    Text("Cancel requested")
+                                        .font(.caption2.bold())
+                                        .foregroundStyle(Theme.dangerRed)
+                                }
                             }
-                            .foregroundStyle(Theme.secondaryText)
+
+                            Spacer()
+
+                            Text("+$\(String(format: "%.2f", booking.earnings))")
+                                .font(.subheadline.bold())
+                                .foregroundStyle(.green)
                         }
 
-                        Spacer()
+                        if booking.status == .confirmed {
+                            HStack(spacing: 10) {
+                                Button {
+                                    selectedBookingIndex = index
+                                    showCancelAlert = true
+                                } label: {
+                                    Text("Cancel")
+                                        .font(.caption.bold())
+                                        .foregroundStyle(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 10)
+                                        .background(Theme.dangerRed)
+                                        .clipShape(.rect(cornerRadius: 12))
+                                }
 
-                        Text("+$\(String(format: "%.2f", booking.earnings))")
-                            .font(.subheadline.bold())
-                            .foregroundStyle(.green)
+                                Button {
+                                    selectedBookingIndex = index
+                                    showRescheduleSheet = true
+                                } label: {
+                                    Text("Reschedule")
+                                        .font(.caption.bold())
+                                        .foregroundStyle(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 10)
+                                        .background(Theme.accent)
+                                        .clipShape(.rect(cornerRadius: 12))
+                                }
+                            }
+                        }
                     }
                     .padding(14)
                     .background(Theme.cardBackground)
@@ -181,6 +236,16 @@ struct MyCalendarView: View {
                     )
                 }
             }
+        }
+        .alert("Cancel Booking?", isPresented: $showCancelAlert) {
+            Button("Cancel Booking", role: .destructive) {
+                if let index = selectedBookingIndex, index < sampleBookings.count {
+                    sampleBookings[index].status = .cancelRequested
+                }
+            }
+            Button("Keep Booking", role: .cancel) { }
+        } message: {
+            Text("The other party must also confirm cancellation. A refund will be processed via Stripe once both sides agree.")
         }
     }
 
@@ -255,6 +320,72 @@ struct MyCalendarView: View {
     }
 }
 
+struct RescheduleSheet: View {
+    @Binding var booking: BookingEntry
+    @Environment(\.dismiss) private var dismiss
+    @State private var newDate: Date = Date().addingTimeInterval(86400)
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                VStack(spacing: 8) {
+                    Text("Reschedule with \(booking.seekerName)")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                    Text("Pick a new date and time. The other party must agree for the change to lock in.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.secondaryText)
+                        .multilineTextAlignment(.center)
+                }
+
+                DatePicker(
+                    "New Date & Time",
+                    selection: $newDate,
+                    in: Date()...,
+                    displayedComponents: [.date, .hourAndMinute]
+                )
+                .datePickerStyle(.graphical)
+                .tint(Theme.accent)
+                .padding(14)
+                .background(Theme.cardBackground)
+                .clipShape(.rect(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Theme.border, lineWidth: 1)
+                )
+
+                Button {
+                    booking.status = .rescheduleRequested
+                    booking.date = newDate
+                    dismiss()
+                } label: {
+                    Text("Request Reschedule")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Theme.accent)
+                        .clipShape(.rect(cornerRadius: 12))
+                }
+
+                Spacer()
+            }
+            .padding(16)
+            .background(Theme.background)
+            .navigationTitle("Reschedule")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .preferredColorScheme(.dark)
+    }
+}
+
 nonisolated struct AvailabilitySlot: Identifiable, Sendable {
     let id: String = UUID().uuidString
     let date: Date
@@ -262,9 +393,18 @@ nonisolated struct AvailabilitySlot: Identifiable, Sendable {
     let endTime: Date
 }
 
-nonisolated struct BookingEntry: Sendable {
+struct BookingEntry: Identifiable, Sendable {
+    let id: String
     let seekerName: String
-    let date: Date
+    var date: Date
     let duration: String
     let earnings: Double
+    var status: BookingEntryStatus
+
+    nonisolated enum BookingEntryStatus: String, Sendable {
+        case confirmed
+        case cancelRequested
+        case rescheduleRequested
+        case cancelled
+    }
 }

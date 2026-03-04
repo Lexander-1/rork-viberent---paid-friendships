@@ -22,6 +22,11 @@ struct DiscoverView: View {
             }
             .background(Theme.background)
             .navigationTitle("Discover")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Color.clear.frame(width: 44, height: 44)
+                }
+            }
             .searchable(text: $viewModel.searchText, prompt: "Search hosts, interests...")
             .navigationDestination(for: User.self) { host in
                 HostProfileView(host: host)

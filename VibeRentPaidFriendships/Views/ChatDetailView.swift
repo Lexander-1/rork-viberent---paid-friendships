@@ -4,6 +4,10 @@ struct ChatDetailView: View {
     let conversation: Conversation
     @Bindable var viewModel: ChatViewModel
     @FocusState private var isInputFocused: Bool
+    @State private var showCancelAlert: Bool = false
+    @State private var showRescheduleSheet: Bool = false
+    @State private var bookingActive: Bool = true
+    @State private var bookingStatus: String = "Active"
 
     private var messages: [ChatMessage] {
         viewModel.messages[conversation.id] ?? []
@@ -27,6 +31,10 @@ struct ChatDetailView: View {
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity)
             .background(Color.green.opacity(0.08))
+
+            if bookingActive {
+                bookingActionsBar
+            }
 
             ScrollView {
                 LazyVStack(spacing: 8) {
@@ -80,6 +88,124 @@ struct ChatDetailView: View {
             }
         }
         .scrollDismissesKeyboard(.interactively)
+        .alert("Cancel Booking?", isPresented: $showCancelAlert) {
+            Button("Request Cancel", role: .destructive) {
+                bookingStatus = "Cancel Requested"
+            }
+            Button("Keep Booking", role: .cancel) { }
+        } message: {
+            Text("Both parties must confirm cancellation. A refund will be processed via Stripe once both sides agree.")
+        }
+        .sheet(isPresented: $showRescheduleSheet) {
+            ChatRescheduleSheet(otherName: otherName) { newDate in
+                bookingStatus = "Reschedule Requested"
+            }
+        }
+    }
+
+    private var bookingActionsBar: some View {
+        VStack(spacing: 8) {
+            if bookingStatus != "Active" {
+                Text(bookingStatus)
+                    .font(.caption2.bold())
+                    .foregroundStyle(bookingStatus.contains("Cancel") ? Theme.dangerRed : .orange)
+            }
+
+            HStack(spacing: 10) {
+                Button {
+                    showCancelAlert = true
+                } label: {
+                    Text("Cancel Booking")
+                        .font(.caption.bold())
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(Theme.dangerRed)
+                        .clipShape(.rect(cornerRadius: 10))
+                }
+
+                Button {
+                    showRescheduleSheet = true
+                } label: {
+                    Text("Reschedule")
+                        .font(.caption.bold())
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(Theme.accent)
+                        .clipShape(.rect(cornerRadius: 10))
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(Theme.cardBackground)
+        }
+    }
+}
+
+struct ChatRescheduleSheet: View {
+    let otherName: String
+    let onReschedule: (Date) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var newDate: Date = Date().addingTimeInterval(86400)
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                VStack(spacing: 8) {
+                    Text("Reschedule with \(otherName)")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                    Text("Pick a new date and time. The other party must tap \"Agree to New Time\" for the change to lock in.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.secondaryText)
+                        .multilineTextAlignment(.center)
+                }
+
+                DatePicker(
+                    "New Date & Time",
+                    selection: $newDate,
+                    in: Date()...,
+                    displayedComponents: [.date, .hourAndMinute]
+                )
+                .datePickerStyle(.graphical)
+                .tint(Theme.accent)
+                .padding(14)
+                .background(Theme.cardBackground)
+                .clipShape(.rect(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Theme.border, lineWidth: 1)
+                )
+
+                Button {
+                    onReschedule(newDate)
+                    dismiss()
+                } label: {
+                    Text("Request Reschedule")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Theme.accent)
+                        .clipShape(.rect(cornerRadius: 12))
+                }
+
+                Spacer()
+            }
+            .padding(16)
+            .background(Theme.background)
+            .navigationTitle("Reschedule")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .preferredColorScheme(.dark)
     }
 }
 

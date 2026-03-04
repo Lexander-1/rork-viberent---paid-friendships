@@ -4,8 +4,10 @@ import MapKit
 struct MapTabView: View {
     let users: [User]
     let selectedCity: String
+    var feedViewModel: FeedViewModel?
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedUser: User?
+    @State private var showCitySelector: Bool = false
 
     private var visibleUsers: [User] {
         users.filter { user in
@@ -85,14 +87,39 @@ struct MapTabView: View {
                 .clipShape(.capsule)
                 .padding(.bottom, 16)
             }
-            .navigationTitle("Map")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Button {
+                        showCitySelector = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(selectedCity)
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                            Image(systemName: "chevron.down")
+                                .font(.caption.bold())
+                                .foregroundStyle(Theme.secondaryText)
+                        }
+                    }
+                }
+
+                ToolbarItem(placement: .topBarLeading) {
+                    Color.clear.frame(width: 44, height: 44)
+                }
+            }
             .sheet(item: $selectedUser) { user in
                 NavigationStack {
                     HostProfileView(host: user)
                 }
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
+            }
+            .fullScreenCover(isPresented: $showCitySelector) {
+                CitySelectorView(selectedCity: selectedCity) { city in
+                    feedViewModel?.selectCity(city)
+                    showCitySelector = false
+                }
             }
             .onAppear {
                 updateCameraPosition()

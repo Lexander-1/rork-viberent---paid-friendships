@@ -5,6 +5,8 @@ struct ContentView: View {
     @State private var feedViewModel = FeedViewModel()
     @State private var discoverViewModel = DiscoverViewModel()
     @State private var chatViewModel = ChatViewModel()
+    @State private var selectedPage: AppPage = .feed
+    @State private var isDrawerOpen: Bool = false
 
     var body: some View {
         Group {
@@ -25,67 +27,53 @@ struct ContentView: View {
                     appViewModel.selectRole(role)
                 }
             } else {
-                if appViewModel.currentUser.role == .customer {
-                    customerTabView
-                } else {
-                    hostTabView
-                }
+                mainAppView
             }
         }
         .preferredColorScheme(.dark)
     }
 
-    private var customerTabView: some View {
-        TabView(selection: $appViewModel.selectedTab) {
-            Tab("Feed", systemImage: "house.fill", value: 0) {
-                FeedView(viewModel: feedViewModel, users: User.sampleUsers)
-            }
+    private var mainAppView: some View {
+        ZStack {
+            currentPageView
+                .overlay(alignment: .topLeading) {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.25)) { isDrawerOpen = true }
+                    } label: {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.title3.bold())
+                            .foregroundStyle(.white)
+                            .frame(width: 44, height: 44)
+                    }
+                    .padding(.leading, 8)
+                    .padding(.top, 4)
+                }
 
-            Tab("Discover", systemImage: "magnifyingglass", value: 1) {
-                DiscoverView(viewModel: discoverViewModel)
-            }
-
-            Tab("Map", systemImage: "map.fill", value: 2) {
-                MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity)
-            }
-
-            Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill", value: 3) {
-                ChatListView(viewModel: chatViewModel)
-            }
-
-            Tab("Profile", systemImage: "person.fill", value: 4) {
-                ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel, feedViewModel: feedViewModel)
-            }
+            SideDrawerView(
+                userRole: appViewModel.currentUser.role,
+                selectedPage: $selectedPage,
+                isOpen: $isDrawerOpen
+            )
         }
-        .tint(Theme.accent)
     }
 
-    private var hostTabView: some View {
-        TabView(selection: $appViewModel.selectedTab) {
-            Tab("Feed", systemImage: "house.fill", value: 0) {
-                FeedView(viewModel: feedViewModel, users: User.sampleUsers)
-            }
-
-            Tab("Calendar", systemImage: "calendar", value: 1) {
-                MyCalendarView(user: $appViewModel.currentUser)
-            }
-
-            Tab("Map", systemImage: "map.fill", value: 2) {
-                MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity)
-            }
-
-            Tab("Earnings", systemImage: "dollarsign.circle.fill", value: 3) {
-                EarningsView()
-            }
-
-            Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill", value: 4) {
-                ChatListView(viewModel: chatViewModel)
-            }
-
-            Tab("Profile", systemImage: "person.fill", value: 5) {
-                ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel, feedViewModel: feedViewModel)
-            }
+    @ViewBuilder
+    private var currentPageView: some View {
+        switch selectedPage {
+        case .feed:
+            FeedView(viewModel: feedViewModel, users: User.sampleUsers)
+        case .discover:
+            DiscoverView(viewModel: discoverViewModel)
+        case .calendar:
+            MyCalendarView(user: $appViewModel.currentUser)
+        case .map:
+            MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity, feedViewModel: feedViewModel)
+        case .earnings:
+            EarningsView()
+        case .chat:
+            ChatListView(viewModel: chatViewModel)
+        case .profile:
+            ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel, feedViewModel: feedViewModel)
         }
-        .tint(Theme.accent)
     }
 }

@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct EarningsView: View {
+    @State private var showCashOut: Bool = false
+    @State private var cashOutSuccess: Bool = false
+
     private let samplePayouts: [(String, Double, Date)] = [
         ("Session with Alex M.", 33.75, Date().addingTimeInterval(-86400)),
         ("Session with Jordan L.", 52.50, Date().addingTimeInterval(-86400 * 3)),
@@ -38,6 +41,22 @@ struct EarningsView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(Theme.border, lineWidth: 1)
                     )
+
+                    Button {
+                        showCashOut = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "banknote")
+                                .font(.body.bold())
+                            Text("Cash Out")
+                                .font(.body.bold())
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Theme.accent)
+                        .clipShape(.rect(cornerRadius: 12))
+                    }
 
                     HStack(spacing: 12) {
                         earningsStat(title: "This Week", value: "$86.25")
@@ -80,6 +99,24 @@ struct EarningsView: View {
             }
             .background(Theme.background)
             .navigationTitle("Earnings")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Color.clear.frame(width: 44, height: 44)
+                }
+            }
+            .alert("Cash Out", isPresented: $showCashOut) {
+                Button("Cash Out Now") {
+                    cashOutSuccess = true
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Your current balance of $\(String(format: "%.2f", totalEarnings)) will be sent to your linked bank account via Stripe. Minimum payout is $10.00.")
+            }
+            .alert("Payout Initiated!", isPresented: $cashOutSuccess) {
+                Button("Done") { }
+            } message: {
+                Text("$\(String(format: "%.2f", totalEarnings)) is on its way to your bank account. This usually takes 1-3 business days.")
+            }
         }
     }
 

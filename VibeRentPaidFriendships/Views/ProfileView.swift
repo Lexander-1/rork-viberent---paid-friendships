@@ -39,6 +39,11 @@ struct ProfileView: View {
             }
             .background(Theme.background)
             .navigationTitle("Profile")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Color.clear.frame(width: 44, height: 44)
+                }
+            }
             .sheet(isPresented: $viewModel.isEditing) {
                 EditProfileSheet(viewModel: viewModel, user: $user)
             }

@@ -21,11 +21,12 @@ struct CommentsSheet: View {
                         }
 
                         ForEach(localComments, id: \.id) { comment in
-                            CommentRow(
+                            RecursiveCommentRow(
                                 comment: comment,
                                 currentUserId: currentUserId,
-                                onReply: { replyingTo = comment },
-                                onDelete: { deleteComment(comment.id) }
+                                depth: 0,
+                                onReply: { target in replyingTo = target },
+                                onDelete: { id in deleteComment(id) }
                             )
                         }
                     }
@@ -105,9 +106,7 @@ struct CommentsSheet: View {
         )
 
         if let parent = replyingTo {
-            if let index = localComments.firstIndex(where: { $0.id == parent.id }) {
-                localComments[index].replies.append(comment)
-            }
+            addReplyRecursive(to: parent.id, reply: comment, in: &localComments)
             feedViewModel?.addReply(to: post.id, parentCommentId: parent.id, reply: comment)
             replyingTo = nil
         } else {
@@ -117,29 +116,51 @@ struct CommentsSheet: View {
         newComment = ""
     }
 
-    private func deleteComment(_ commentId: String) {
-        localComments.removeAll { $0.id == commentId }
-        for i in localComments.indices {
-            localComments[i].replies.removeAll { $0.id == commentId }
+    private func addReplyRecursive(to parentId: String, reply: FeedPost.Comment, in comments: inout [FeedPost.Comment]) {
+        for i in comments.indices {
+            if comments[i].id == parentId {
+                comments[i].replies.append(reply)
+                return
+            }
+            addReplyRecursive(to: parentId, reply: reply, in: &comments[i].replies)
         }
+    }
+
+    private func deleteComment(_ commentId: String) {
+        removeCommentRecursive(commentId, from: &localComments)
         feedViewModel?.deleteComment(from: post.id, commentId: commentId)
+    }
+
+    private func removeCommentRecursive(_ commentId: String, from comments: inout [FeedPost.Comment]) {
+        if comments.contains(where: { $0.id == commentId }) {
+            comments.removeAll { $0.id == commentId }
+            return
+        }
+        for i in comments.indices {
+            removeCommentRecursive(commentId, from: &comments[i].replies)
+        }
     }
 }
 
-struct CommentRow: View {
+struct RecursiveCommentRow: View {
     let comment: FeedPost.Comment
     let currentUserId: String
-    let onReply: () -> Void
-    let onDelete: () -> Void
+    let depth: Int
+    let onReply: (FeedPost.Comment) -> Void
+    let onDelete: (String) -> Void
+
+    private var indent: CGFloat {
+        min(CGFloat(depth) * 24, 72)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                AvatarView(name: comment.authorName, size: 32, userId: comment.authorId, isVerified: comment.authorIsVerified)
+                AvatarView(name: comment.authorName, size: depth == 0 ? 32 : 24, userId: comment.authorId, isVerified: comment.authorIsVerified)
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text(comment.authorName)
-                        .font(.subheadline.bold())
+                        .font(depth == 0 ? .subheadline.bold() : .caption.bold())
                         .foregroundStyle(.white)
                     Text(comment.createdAt, style: .relative)
                         .font(.caption2)
@@ -150,57 +171,45 @@ struct CommentRow: View {
 
                 if comment.authorId == currentUserId {
                     Button {
-                        onDelete()
+                        onDelete(comment.id)
                     } label: {
                         Image(systemName: "trash")
-                            .font(.caption)
+                            .font(.caption2)
                             .foregroundStyle(Theme.dangerRed.opacity(0.7))
                     }
                 }
             }
 
             Text(comment.text)
-                .font(.subheadline)
+                .font(depth == 0 ? .subheadline : .caption)
                 .foregroundStyle(.white.opacity(0.9))
-                .padding(.leading, 40)
+                .padding(.leading, depth == 0 ? 40 : 32)
 
             Button {
-                onReply()
+                onReply(comment)
             } label: {
                 Text("Reply")
                     .font(.caption.bold())
                     .foregroundStyle(Theme.secondaryText)
             }
-            .padding(.leading, 40)
+            .padding(.leading, depth == 0 ? 40 : 32)
 
             if !comment.replies.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(comment.replies, id: \.id) { reply in
-                        HStack(alignment: .top, spacing: 8) {
-                            AvatarView(name: reply.authorName, size: 24, userId: reply.authorId, isVerified: reply.authorIsVerified)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(reply.authorName).font(.caption.bold()).foregroundStyle(.white)
-                                Text(reply.text).font(.caption).foregroundStyle(.white.opacity(0.85))
-                                Text(reply.createdAt, style: .relative)
-                                    .font(.caption2)
-                                    .foregroundStyle(.tertiary)
-                            }
-                            Spacer()
-                            if reply.authorId == currentUserId {
-                                Button {
-                                    onDelete()
-                                } label: {
-                                    Image(systemName: "trash")
-                                        .font(.caption2)
-                                        .foregroundStyle(Theme.dangerRed.opacity(0.7))
-                                }
-                            }
-                        }
+                        RecursiveCommentRow(
+                            comment: reply,
+                            currentUserId: currentUserId,
+                            depth: depth + 1,
+                            onReply: onReply,
+                            onDelete: onDelete
+                        )
                     }
                 }
-                .padding(.leading, 40)
+                .padding(.leading, 24)
                 .padding(.top, 4)
             }
         }
+        .padding(.leading, depth > 0 ? 0 : 0)
     }
 }

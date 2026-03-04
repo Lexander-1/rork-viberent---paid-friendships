@@ -4,9 +4,15 @@ struct HostProfileView: View {
     let host: User
     @State private var showBooking: Bool = false
     @State private var showReport: Bool = false
+    @State private var showReviews: Bool = false
+    @State private var showWriteReview: Bool = false
 
     private var hostReviews: [Review] {
         Review.sampleReviews.filter { $0.revieweeId == host.id }
+    }
+
+    private var hasBookedBefore: Bool {
+        Booking.sampleBookings.contains { $0.buyerId == "current" && $0.hostId == host.id && $0.status == .completed }
     }
 
     var body: some View {
@@ -65,6 +71,27 @@ struct HostProfileView: View {
                         .foregroundStyle(.white.opacity(0.85))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
+
+                    Button {
+                        showReviews = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "star.bubble")
+                                .font(.subheadline)
+                            Text("See Reviews (\(host.reviewCount))")
+                                .font(.subheadline.bold())
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Theme.cardBackground)
+                        .clipShape(.rect(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Theme.border, lineWidth: 1)
+                        )
+                    }
+                    .padding(.horizontal, 24)
                 }
                 .padding(.vertical, 24)
 
@@ -103,19 +130,6 @@ struct HostProfileView: View {
                     }
                 }
                 .padding(16)
-
-                if !hostReviews.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Reviews")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-
-                        ForEach(hostReviews, id: \.id) { review in
-                            ReviewCard(review: review)
-                        }
-                    }
-                    .padding(16)
-                }
 
                 Spacer(minLength: 100)
             }
@@ -160,6 +174,9 @@ struct HostProfileView: View {
         .sheet(isPresented: $showBooking) {
             BookingFlowView(host: host)
         }
+        .fullScreenCover(isPresented: $showReviews) {
+            AllReviewsView(host: host, reviews: hostReviews, hasBookedBefore: hasBookedBefore)
+        }
         .alert("Report User", isPresented: $showReport) {
             Button("Report", role: .destructive) { }
             Button("Cancel", role: .cancel) { }
@@ -188,6 +205,92 @@ struct HostProfileView: View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Theme.border, lineWidth: 1)
         )
+    }
+}
+
+struct AllReviewsView: View {
+    let host: User
+    let reviews: [Review]
+    let hasBookedBefore: Bool
+    @Environment(\.dismiss) private var dismiss
+    @State private var showWriteReview: Bool = false
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 20) {
+                    VStack(spacing: 8) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "star.fill")
+                                .foregroundStyle(Theme.accent)
+                            Text(String(format: "%.1f", host.rating))
+                                .font(.title.bold())
+                                .foregroundStyle(.white)
+                        }
+                        Text("\(host.reviewCount) reviews")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.secondaryText)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(20)
+                    .background(Theme.cardBackground)
+                    .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
+
+                    if hasBookedBefore {
+                        Button {
+                            showWriteReview = true
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "pencil.line")
+                                Text("Write a Review")
+                            }
+                            .font(.subheadline.bold())
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(Theme.accent)
+                            .clipShape(.rect(cornerRadius: 12))
+                        }
+                    }
+
+                    if reviews.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "text.bubble")
+                                .font(.system(size: 32))
+                                .foregroundStyle(Theme.secondaryText)
+                            Text("No reviews yet")
+                                .font(.subheadline)
+                                .foregroundStyle(Theme.secondaryText)
+                        }
+                        .padding(.top, 40)
+                    } else {
+                        LazyVStack(spacing: 12) {
+                            ForEach(reviews, id: \.id) { review in
+                                ReviewCard(review: review)
+                            }
+                        }
+                    }
+                }
+                .padding(16)
+            }
+            .background(Theme.background)
+            .navigationTitle("Reviews")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                        .foregroundStyle(Theme.accent)
+                }
+            }
+            .sheet(isPresented: $showWriteReview) {
+                ReviewView(booking: Booking.sampleBookings.first!) { }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 

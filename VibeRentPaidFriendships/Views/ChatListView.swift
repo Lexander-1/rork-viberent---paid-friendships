@@ -25,6 +25,11 @@ struct ChatListView: View {
             .background(Theme.background)
             .scrollContentBackground(.hidden)
             .navigationTitle("Messages")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Color.clear.frame(width: 44, height: 44)
+                }
+            }
             .navigationDestination(for: Conversation.self) { conversation in
                 ChatDetailView(conversation: conversation, viewModel: viewModel)
             }
