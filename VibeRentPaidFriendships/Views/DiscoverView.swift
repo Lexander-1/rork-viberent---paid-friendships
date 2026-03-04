@@ -77,34 +77,29 @@ struct DiscoverView: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 16) {
             Image(systemName: "person.2.slash")
-                .font(.system(size: 48))
-                .foregroundStyle(Theme.accent.opacity(0.6))
+                .font(.system(size: 40))
+                .foregroundStyle(Theme.secondaryText)
 
-            VStack(spacing: 6) {
-                Text("No hosts nearby yet")
-                    .font(.title3.bold())
-                    .foregroundStyle(.white)
+            Text("No hosts nearby yet")
+                .font(.title3.bold())
+                .foregroundStyle(.white)
 
-                Text("Try another city or adjust your filters")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.secondaryText)
-            }
+            Text("Try another city or adjust your filters")
+                .font(.subheadline)
+                .foregroundStyle(Theme.secondaryText)
 
             Button {
                 viewModel.showFilters = true
             } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "mappin.circle.fill")
-                    Text("Change City")
-                }
-                .font(.subheadline.bold())
-                .foregroundStyle(.white)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
-                .background(Theme.accent)
-                .clipShape(.rect(cornerRadius: 12))
+                Text("Change City")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(Theme.accent)
+                    .clipShape(.rect(cornerRadius: 12))
             }
         }
         .padding(.top, 60)
@@ -119,12 +114,12 @@ struct HostListCard: View {
         HStack(spacing: 14) {
             AvatarView(
                 name: host.name,
-                size: 80,
+                size: 60,
                 userId: host.id,
                 isVerified: host.isVerified
             )
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
                     Text(host.name)
                         .font(.subheadline.bold())
@@ -167,21 +162,19 @@ struct HostListCard: View {
                     .lineLimit(1)
 
                     if host.hasBackgroundCheck {
-                        HStack(spacing: 2) {
-                            Image(systemName: "shield.checkmark.fill")
-                                .font(.caption2)
-                        }
-                        .foregroundStyle(.green)
+                        Image(systemName: "shield.checkmark.fill")
+                            .font(.caption2)
+                            .foregroundStyle(.green)
                     }
                 }
             }
 
             Spacer(minLength: 0)
 
-            Text("Book Now")
+            Text("Book")
                 .font(.caption.bold())
                 .foregroundStyle(.white)
-                .padding(.horizontal, 12)
+                .padding(.horizontal, 14)
                 .padding(.vertical, 8)
                 .background(Theme.accent)
                 .clipShape(.rect(cornerRadius: 12))
@@ -189,6 +182,10 @@ struct HostListCard: View {
         .padding(16)
         .background(Theme.cardBackground)
         .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
     }
 }
 
@@ -211,14 +208,12 @@ struct FilterChip: View {
             .foregroundStyle(isActive ? .white : Theme.secondaryText)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(isActive ? Theme.accent.opacity(0.3) : Color.white.opacity(0.06))
+            .background(isActive ? Theme.accent : Theme.cardBackground)
             .clipShape(.rect(cornerRadius: 8))
-            .overlay {
-                if isActive {
-                    RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(Theme.accent.opacity(0.5), lineWidth: 1)
-                }
-            }
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isActive ? Theme.accent : Theme.border, lineWidth: 1)
+            )
         }
     }
 }

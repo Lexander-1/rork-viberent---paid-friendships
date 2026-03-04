@@ -56,7 +56,10 @@ struct RoleCard: View {
             .padding(16)
             .background(Theme.cardBackground)
             .clipShape(.rect(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Theme.border, lineWidth: 1)
+            )
         }
-        .sensoryFeedback(.selection, trigger: role)
     }
 }

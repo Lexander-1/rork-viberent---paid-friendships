@@ -12,13 +12,8 @@ struct HostProfileView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                VStack(spacing: 16) {
-                    AvatarView(
-                        name: host.name,
-                        size: 100,
-                        userId: host.id,
-                        isVerified: host.isVerified
-                    )
+                VStack(spacing: 14) {
+                    AvatarView(name: host.name, size: 90, userId: host.id, isVerified: host.isVerified)
 
                     VStack(spacing: 6) {
                         Text(host.name)
@@ -27,8 +22,8 @@ struct HostProfileView: View {
 
                         HStack(spacing: 12) {
                             HStack(spacing: 4) {
-                                Image(systemName: "mappin.circle.fill")
-                                    .foregroundStyle(Theme.accent)
+                                Image(systemName: "mappin")
+                                    .font(.caption)
                                 Text(host.city)
                             }
 
@@ -37,7 +32,7 @@ struct HostProfileView: View {
                                     .foregroundStyle(Theme.accent)
                                 Text(String(format: "%.1f", host.rating))
                                     .fontWeight(.bold)
-                                Text("(\(host.reviewCount) reviews)")
+                                Text("(\(host.reviewCount))")
                                     .foregroundStyle(Theme.secondaryText)
                             }
                         }
@@ -84,7 +79,7 @@ struct HostProfileView: View {
                 }
                 .padding(16)
 
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 12) {
                     Text("Pricing")
                         .font(.headline)
                         .foregroundStyle(.white)
@@ -102,15 +97,19 @@ struct HostProfileView: View {
                                     .foregroundStyle(Theme.accent)
                             }
                             .padding(12)
-                            .background(Color.white.opacity(0.04))
+                            .background(Theme.cardBackground)
                             .clipShape(.rect(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Theme.border, lineWidth: 1)
+                            )
                         }
                     }
                 }
                 .padding(16)
 
                 if !hostReviews.isEmpty {
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 12) {
                         Text("Reviews")
                             .font(.headline)
                             .foregroundStyle(.white)
@@ -223,8 +222,12 @@ struct ReviewCard: View {
                 .foregroundStyle(.white.opacity(0.85))
         }
         .padding(12)
-        .background(Color.white.opacity(0.04))
+        .background(Theme.cardBackground)
         .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
     }
 }
 

@@ -5,7 +5,6 @@ struct AvatarView: View {
     let size: CGFloat
     let userId: String
     var isVerified: Bool = false
-    var isFeatured: Bool = false
 
     private var initials: String {
         let parts = name.split(separator: " ")
@@ -15,20 +14,20 @@ struct AvatarView: View {
         return String(name.prefix(2)).uppercased()
     }
 
+    private var backgroundColor: Color {
+        let hash = abs(userId.hashValue)
+        let hue = Double(hash % 360) / 360.0
+        return Color(hue: hue, saturation: 0.35, brightness: 0.45)
+    }
+
     var body: some View {
         ZStack {
             Circle()
-                .fill(
-                    LinearGradient(
-                        colors: Theme.avatarColors(for: userId),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .fill(backgroundColor)
                 .frame(width: size, height: size)
 
             Text(initials)
-                .font(.system(size: size * 0.35, weight: .bold, design: .rounded))
+                .font(.system(size: size * 0.35, weight: .bold))
                 .foregroundStyle(.white)
         }
         .overlay(alignment: .bottomTrailing) {

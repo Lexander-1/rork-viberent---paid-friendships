@@ -23,7 +23,7 @@ struct EarningsView: View {
                             .foregroundStyle(Theme.secondaryText)
 
                         Text("$\(String(format: "%.2f", totalEarnings))")
-                            .font(.system(size: 40, weight: .bold, design: .rounded))
+                            .font(.system(size: 36, weight: .bold))
                             .foregroundStyle(.white)
 
                         Text("You keep 75% of every booking")
@@ -34,6 +34,10 @@ struct EarningsView: View {
                     .padding(24)
                     .background(Theme.cardBackground)
                     .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
 
                     HStack(spacing: 12) {
                         earningsStat(title: "This Week", value: "$86.25")
@@ -65,6 +69,10 @@ struct EarningsView: View {
                             .padding(14)
                             .background(Theme.cardBackground)
                             .clipShape(.rect(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Theme.border, lineWidth: 1)
+                            )
                         }
                     }
                 }
@@ -88,5 +96,9 @@ struct EarningsView: View {
         .padding(16)
         .background(Theme.cardBackground)
         .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
     }
 }

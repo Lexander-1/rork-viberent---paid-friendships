@@ -12,7 +12,7 @@ struct PlatonicAgreementView: View {
                 Spacer()
 
                 Image(systemName: "hand.raised.fill")
-                    .font(.system(size: 56))
+                    .font(.system(size: 48))
                     .foregroundStyle(Theme.accent)
 
                 VStack(spacing: 16) {
@@ -36,19 +36,22 @@ struct PlatonicAgreementView: View {
                 .padding(24)
                 .background(Theme.cardBackground)
                 .clipShape(.rect(cornerRadius: 16))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Theme.border, lineWidth: 1)
+                )
                 .padding(.horizontal, 24)
 
                 Spacer()
 
                 VStack(spacing: 20) {
                     Button {
-                        withAnimation(.snappy) { hasChecked.toggle() }
+                        hasChecked.toggle()
                     } label: {
                         HStack(spacing: 12) {
                             Image(systemName: hasChecked ? "checkmark.square.fill" : "square")
                                 .font(.title3)
                                 .foregroundStyle(hasChecked ? Theme.accent : Theme.secondaryText)
-                                .contentTransition(.symbolEffect(.replace))
 
                             Text("I agree to the Platonic Only terms and understand that any violations will result in immediate account termination.")
                                 .font(.subheadline)

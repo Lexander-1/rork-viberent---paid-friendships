@@ -12,7 +12,7 @@ struct ReviewView: View {
             ScrollView {
                 VStack(spacing: 32) {
                     VStack(spacing: 16) {
-                        AvatarView(name: booking.hostName, size: 80, userId: booking.hostId)
+                        AvatarView(name: booking.hostName, size: 70, userId: booking.hostId)
 
                         Text("How was your hang with \(booking.hostName)?")
                             .font(.title3.bold())
@@ -33,16 +33,12 @@ struct ReviewView: View {
                         HStack(spacing: 12) {
                             ForEach(1...5, id: \.self) { star in
                                 Button {
-                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
-                                        rating = star
-                                    }
+                                    rating = star
                                 } label: {
                                     Image(systemName: star <= rating ? "star.fill" : "star")
-                                        .font(.system(size: 36))
+                                        .font(.system(size: 32))
                                         .foregroundStyle(star <= rating ? Theme.accent : Theme.secondaryText)
-                                        .scaleEffect(star <= rating ? 1.1 : 1.0)
                                 }
-                                .sensoryFeedback(.selection, trigger: rating)
                             }
                         }
                     }
@@ -57,6 +53,10 @@ struct ReviewView: View {
                             .padding(16)
                             .background(Theme.cardBackground)
                             .clipShape(.rect(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Theme.border, lineWidth: 1)
+                            )
                     }
                     .padding(.horizontal, 16)
 

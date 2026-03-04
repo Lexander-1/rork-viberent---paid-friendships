@@ -20,22 +20,9 @@ struct OnboardingView: View {
                         VStack(spacing: 32) {
                             Spacer()
 
-                            ZStack {
-                                Circle()
-                                    .fill(
-                                        RadialGradient(
-                                            colors: [Theme.accent.opacity(0.25), .clear],
-                                            center: .center,
-                                            startRadius: 20,
-                                            endRadius: 100
-                                        )
-                                    )
-                                    .frame(width: 200, height: 200)
-
-                                Image(systemName: page.icon)
-                                    .font(.system(size: 64))
-                                    .foregroundStyle(Theme.accent)
-                            }
+                            Image(systemName: page.icon)
+                                .font(.system(size: 56))
+                                .foregroundStyle(Theme.accent)
 
                             VStack(spacing: 16) {
                                 Text(page.title)
@@ -64,7 +51,6 @@ struct OnboardingView: View {
                             Capsule()
                                 .fill(index == currentPage ? Theme.accent : Color.white.opacity(0.2))
                                 .frame(width: index == currentPage ? 24 : 8, height: 8)
-                                .animation(.snappy, value: currentPage)
                         }
                     }
 
@@ -73,12 +59,9 @@ struct OnboardingView: View {
                             onComplete()
                         }
                         .padding(.horizontal, 24)
-                        .transition(.scale.combined(with: .opacity))
                     } else {
                         Button {
-                            withAnimation(.snappy) {
-                                currentPage += 1
-                            }
+                            currentPage += 1
                         } label: {
                             Text("Next")
                                 .font(.body.bold())
@@ -100,7 +83,6 @@ struct OnboardingView: View {
                     }
                 }
                 .padding(.bottom, 32)
-                .animation(.snappy, value: currentPage)
             }
         }
         .preferredColorScheme(.dark)

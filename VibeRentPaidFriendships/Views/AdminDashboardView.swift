@@ -69,13 +69,11 @@ struct AdminDashboardView: View {
                         Spacer()
 
                         HStack(spacing: 8) {
-                            Button {
-                            } label: {
+                            Button { } label: {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundStyle(.green)
                             }
-                            Button {
-                            } label: {
+                            Button { } label: {
                                 Image(systemName: "xmark.circle.fill")
                                     .foregroundStyle(Theme.dangerRed)
                             }
@@ -163,8 +161,7 @@ struct AdminDashboardView: View {
                         Spacer()
 
                         HStack(spacing: 8) {
-                            Button {
-                            } label: {
+                            Button { } label: {
                                 Text("Approve")
                                     .font(.caption2.bold())
                                     .foregroundStyle(.white)
@@ -173,8 +170,7 @@ struct AdminDashboardView: View {
                                     .background(.green)
                                     .clipShape(.capsule)
                             }
-                            Button {
-                            } label: {
+                            Button { } label: {
                                 Text("Deny")
                                     .font(.caption2.bold())
                                     .foregroundStyle(.white)
@@ -249,6 +245,10 @@ struct AdminDashboardView: View {
                         .padding(12)
                         .background(Theme.cardBackground)
                         .clipShape(.rect(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Theme.border, lineWidth: 1)
+                        )
                     }
                 }
             }
@@ -274,5 +274,9 @@ struct AdminDashboardView: View {
         .padding(16)
         .background(Theme.cardBackground)
         .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
     }
 }

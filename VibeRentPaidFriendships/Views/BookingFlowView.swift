@@ -13,9 +13,9 @@ struct BookingFlowView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    HStack(spacing: 16) {
-                        AvatarView(name: host.name, size: 56, userId: host.id, isVerified: host.isVerified)
+                VStack(spacing: 20) {
+                    HStack(spacing: 14) {
+                        AvatarView(name: host.name, size: 50, userId: host.id, isVerified: host.isVerified)
                         VStack(alignment: .leading, spacing: 4) {
                             Text(host.name)
                                 .font(.headline)
@@ -29,6 +29,10 @@ struct BookingFlowView: View {
                     .padding(16)
                     .background(Theme.cardBackground)
                     .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Duration")
@@ -38,9 +42,7 @@ struct BookingFlowView: View {
                         ForEach(Booking.SessionDuration.allCases, id: \.self) { duration in
                             let durationPricing = Booking.calculatePrice(hourlyRate: host.hourlyRate, duration: duration)
                             Button {
-                                withAnimation(.snappy) {
-                                    viewModel.selectedDuration = duration
-                                }
+                                viewModel.selectedDuration = duration
                             } label: {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
@@ -56,15 +58,13 @@ struct BookingFlowView: View {
                                         .font(.headline.bold())
                                         .foregroundStyle(viewModel.selectedDuration == duration ? .white : Theme.accent)
                                 }
-                                .padding(16)
+                                .padding(14)
                                 .background(viewModel.selectedDuration == duration ? Theme.accent.opacity(0.2) : Theme.cardBackground)
                                 .clipShape(.rect(cornerRadius: 12))
-                                .overlay {
-                                    if viewModel.selectedDuration == duration {
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .strokeBorder(Theme.accent, lineWidth: 1.5)
-                                    }
-                                }
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(viewModel.selectedDuration == duration ? Theme.accent : Theme.border, lineWidth: 1)
+                                )
                             }
                         }
                     }
@@ -82,9 +82,13 @@ struct BookingFlowView: View {
                         )
                         .datePickerStyle(.graphical)
                         .tint(Theme.accent)
-                        .padding(16)
+                        .padding(14)
                         .background(Theme.cardBackground)
                         .clipShape(.rect(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Theme.border, lineWidth: 1)
+                        )
                     }
 
                     VStack(spacing: 12) {
@@ -97,7 +101,7 @@ struct BookingFlowView: View {
                             priceRow("Session (\(viewModel.selectedDuration.label))", value: "$\(Int(pricing.total))")
                             priceRow("Host Earnings (75%)", value: "$\(Int(pricing.hostEarnings))")
                             priceRow("Platform Fee (25%)", value: "$\(Int(pricing.platformFee))")
-                            Divider().background(Color.white.opacity(0.1))
+                            Divider().background(Theme.border)
                             HStack {
                                 Text("Total")
                                     .font(.headline.bold())
@@ -111,6 +115,10 @@ struct BookingFlowView: View {
                         .padding(16)
                         .background(Theme.cardBackground)
                         .clipShape(.rect(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Theme.border, lineWidth: 1)
+                        )
                     }
 
                     Spacer(minLength: 80)

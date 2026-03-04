@@ -1,95 +1,216 @@
 import SwiftUI
 
 struct MyCalendarView: View {
-    @State private var selectedDate: Date = Date()
+    @Binding var user: User
+    @State private var rateText: String = ""
+    @State private var availabilityDate: Date = Date()
+    @State private var startTime: Date = Date()
+    @State private var endTime: Date = Date().addingTimeInterval(3600)
+    @State private var availabilitySlots: [AvailabilitySlot] = []
+    @State private var rateSaved: Bool = false
 
-    private let sampleBookings: [(String, String, Date)] = [
-        ("Coffee Chat", "Alex Morgan", Date().addingTimeInterval(86400)),
-        ("City Walk", "Jordan Lee", Date().addingTimeInterval(86400 * 2)),
-        ("Board Games", "Taylor Swift", Date().addingTimeInterval(86400 * 4))
+    private let sampleBookings: [BookingEntry] = [
+        BookingEntry(seekerName: "Alex Morgan", date: Date().addingTimeInterval(86400), duration: "2 Hours", earnings: 67.50),
+        BookingEntry(seekerName: "Jordan Lee", date: Date().addingTimeInterval(86400 * 2), duration: "1 Hour", earnings: 30.00),
+        BookingEntry(seekerName: "Taylor Kim", date: Date().addingTimeInterval(86400 * 4), duration: "4 Hours", earnings: 150.00)
     ]
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
-                    DatePicker(
-                        "Select Date",
-                        selection: $selectedDate,
-                        displayedComponents: [.date]
-                    )
-                    .datePickerStyle(.graphical)
-                    .tint(Theme.accent)
-                    .padding(16)
-                    .background(Theme.cardBackground)
-                    .clipShape(.rect(cornerRadius: 12))
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Upcoming Bookings")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-
-                        if sampleBookings.isEmpty {
-                            Text("No upcoming bookings")
-                                .font(.subheadline)
-                                .foregroundStyle(Theme.secondaryText)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 32)
-                        } else {
-                            ForEach(sampleBookings, id: \.0) { booking in
-                                HStack(spacing: 14) {
-                                    Circle()
-                                        .fill(Theme.accent)
-                                        .frame(width: 8, height: 8)
-
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(booking.0)
-                                            .font(.subheadline.bold())
-                                            .foregroundStyle(.white)
-                                        Text("with \(booking.1)")
-                                            .font(.caption)
-                                            .foregroundStyle(Theme.secondaryText)
-                                    }
-
-                                    Spacer()
-
-                                    Text(booking.2, style: .date)
-                                        .font(.caption)
-                                        .foregroundStyle(Theme.secondaryText)
-                                }
-                                .padding(14)
-                                .background(Theme.cardBackground)
-                                .clipShape(.rect(cornerRadius: 12))
-                            }
-                        }
-                    }
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Availability")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-
-                        HStack(spacing: 8) {
-                            ForEach(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], id: \.self) { day in
-                                Text(day)
-                                    .font(.caption2.bold())
-                                    .foregroundStyle(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 10)
-                                    .background(["Mon", "Wed", "Fri", "Sat"].contains(day) ? Theme.accent : Theme.cardBackground)
-                                    .clipShape(.rect(cornerRadius: 8))
-                            }
-                        }
-
-                        Text("Tap days to toggle availability")
-                            .font(.caption)
-                            .foregroundStyle(Theme.secondaryText)
-                    }
+                VStack(spacing: 24) {
+                    rateSection
+                    bookingsSection
+                    availabilitySection
                 }
                 .padding(16)
             }
             .background(Theme.background)
             .navigationTitle("My Calendar")
         }
+        .onAppear {
+            rateText = "\(Int(user.hourlyRate))"
+        }
     }
+
+    private var rateSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("My Hourly Rate")
+                .font(.headline)
+                .foregroundStyle(.white)
+
+            HStack(spacing: 12) {
+                HStack(spacing: 4) {
+                    Text("$")
+                        .font(.title3.bold())
+                        .foregroundStyle(Theme.secondaryText)
+                    TextField("30", text: $rateText)
+                        .keyboardType(.numberPad)
+                        .font(.title3.bold())
+                        .foregroundStyle(.white)
+                }
+                .padding(14)
+                .background(Theme.cardBackground)
+                .clipShape(.rect(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Theme.border, lineWidth: 1)
+                )
+
+                Button {
+                    let value = max(Double(rateText) ?? 30, 30)
+                    user.hourlyRate = value
+                    rateText = "\(Int(value))"
+                    rateSaved = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        rateSaved = false
+                    }
+                } label: {
+                    Text(rateSaved ? "Saved!" : "Save Rate")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 14)
+                        .background(rateSaved ? Color.green : Theme.accent)
+                        .clipShape(.rect(cornerRadius: 12))
+                }
+            }
+
+            Text("Minimum $30/hr")
+                .font(.caption)
+                .foregroundStyle(Theme.secondaryText)
+        }
+    }
+
+    private var bookingsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Upcoming Bookings")
+                .font(.headline)
+                .foregroundStyle(.white)
+
+            if sampleBookings.isEmpty {
+                Text("No upcoming bookings")
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.secondaryText)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 24)
+            } else {
+                ForEach(sampleBookings, id: \.seekerName) { booking in
+                    HStack(spacing: 12) {
+                        AvatarView(name: booking.seekerName, size: 40, userId: booking.seekerName)
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(booking.seekerName)
+                                .font(.subheadline.bold())
+                                .foregroundStyle(.white)
+                            HStack(spacing: 8) {
+                                Text(booking.duration)
+                                    .font(.caption)
+                                Text(booking.date, style: .date)
+                                    .font(.caption)
+                            }
+                            .foregroundStyle(Theme.secondaryText)
+                        }
+
+                        Spacer()
+
+                        Text("+$\(String(format: "%.2f", booking.earnings))")
+                            .font(.subheadline.bold())
+                            .foregroundStyle(.green)
+                    }
+                    .padding(14)
+                    .background(Theme.cardBackground)
+                    .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
+                }
+            }
+        }
+    }
+
+    private var availabilitySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Add Availability")
+                .font(.headline)
+                .foregroundStyle(.white)
+
+            VStack(spacing: 12) {
+                DatePicker("Date", selection: $availabilityDate, displayedComponents: .date)
+                    .tint(Theme.accent)
+
+                DatePicker("Start Time", selection: $startTime, displayedComponents: .hourAndMinute)
+                    .tint(Theme.accent)
+
+                DatePicker("End Time", selection: $endTime, displayedComponents: .hourAndMinute)
+                    .tint(Theme.accent)
+            }
+            .padding(14)
+            .background(Theme.cardBackground)
+            .clipShape(.rect(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Theme.border, lineWidth: 1)
+            )
+
+            Button {
+                let slot = AvailabilitySlot(
+                    date: availabilityDate,
+                    startTime: startTime,
+                    endTime: endTime
+                )
+                availabilitySlots.append(slot)
+            } label: {
+                Text("Add Availability")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(Theme.accent)
+                    .clipShape(.rect(cornerRadius: 12))
+            }
+
+            if !availabilitySlots.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Your Slots")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(Theme.secondaryText)
+
+                    ForEach(availabilitySlots, id: \.id) { slot in
+                        HStack {
+                            Text(slot.date, style: .date)
+                                .font(.subheadline)
+                                .foregroundStyle(.white)
+                            Spacer()
+                            Text("\(slot.startTime, style: .time) – \(slot.endTime, style: .time)")
+                                .font(.caption)
+                                .foregroundStyle(Theme.secondaryText)
+                        }
+                        .padding(12)
+                        .background(Theme.cardBackground)
+                        .clipShape(.rect(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Theme.border, lineWidth: 1)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+nonisolated struct AvailabilitySlot: Identifiable, Sendable {
+    let id: String = UUID().uuidString
+    let date: Date
+    let startTime: Date
+    let endTime: Date
+}
+
+nonisolated struct BookingEntry: Sendable {
+    let seekerName: String
+    let date: Date
+    let duration: String
+    let earnings: Double
 }

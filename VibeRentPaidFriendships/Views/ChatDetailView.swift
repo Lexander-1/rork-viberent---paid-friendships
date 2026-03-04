@@ -38,7 +38,7 @@ struct ChatDetailView: View {
             }
             .defaultScrollAnchor(.bottom)
 
-            Divider().background(Color.white.opacity(0.1))
+            Divider().background(Theme.border)
 
             HStack(spacing: 12) {
                 TextField("Message...", text: $viewModel.newMessageText, axis: .vertical)
@@ -47,6 +47,9 @@ struct ChatDetailView: View {
                     .padding(12)
                     .background(Theme.cardBackground)
                     .clipShape(.capsule)
+                    .overlay(
+                        Capsule().stroke(Theme.border, lineWidth: 1)
+                    )
 
                 Button {
                     viewModel.sendMessage(in: conversation.id, senderId: "current", senderName: "Alex Morgan")
@@ -56,7 +59,6 @@ struct ChatDetailView: View {
                         .foregroundStyle(viewModel.newMessageText.isEmpty ? Theme.secondaryText : Theme.accent)
                 }
                 .disabled(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                .sensoryFeedback(.impact(flexibility: .soft), trigger: messages.count)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)

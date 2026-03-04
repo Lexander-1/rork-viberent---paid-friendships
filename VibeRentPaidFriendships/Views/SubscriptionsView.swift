@@ -3,6 +3,7 @@ import SwiftUI
 struct SubscriptionsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedPlan: User.SubscriptionType?
+    var userRole: UserRole = .customer
 
     var body: some View {
         NavigationStack {
@@ -10,7 +11,7 @@ struct SubscriptionsView: View {
                 VStack(spacing: 24) {
                     VStack(spacing: 8) {
                         Image(systemName: "crown.fill")
-                            .font(.system(size: 48))
+                            .font(.system(size: 40))
                             .foregroundStyle(Theme.accent)
 
                         Text("Upgrade Your Vibe")
@@ -23,28 +24,30 @@ struct SubscriptionsView: View {
                     }
                     .padding(.top, 16)
 
-                    subscriptionCard(
-                        type: .buyer,
-                        icon: "sparkles",
-                        features: [
-                            "Unlimited browsing",
-                            "Priority in search results",
-                            "Ad-free social feed",
-                            "Exclusive badges"
-                        ]
-                    )
-
-                    subscriptionCard(
-                        type: .hostFeatured,
-                        icon: "star.circle.fill",
-                        features: [
-                            "Pinned at top of city searches",
-                            "Gold border on your profile",
-                            "5x more profile views",
-                            "Priority booking notifications",
-                            "Featured badge"
-                        ]
-                    )
+                    if userRole == .customer {
+                        subscriptionCard(
+                            type: .buyer,
+                            icon: "sparkles",
+                            features: [
+                                "Unlimited bookings",
+                                "Priority in Discover search",
+                                "Ad-free social feed",
+                                "Your profile posts get boosted"
+                            ]
+                        )
+                    } else {
+                        subscriptionCard(
+                            type: .hostFeatured,
+                            icon: "star.circle.fill",
+                            features: [
+                                "Pinned at top of city searches",
+                                "Gold border on your profile",
+                                "5x more profile views",
+                                "Priority booking notifications",
+                                "Earnings boost"
+                            ]
+                        )
+                    }
 
                     VStack(spacing: 12) {
                         Text("One-Time Boost")
@@ -80,6 +83,10 @@ struct SubscriptionsView: View {
                         .padding(16)
                         .background(Theme.cardBackground)
                         .clipShape(.rect(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Theme.border, lineWidth: 1)
+                        )
                     }
 
                     Spacer(minLength: 40)
@@ -118,7 +125,7 @@ struct SubscriptionsView: View {
 
                 if selectedPlan == type {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(.green)
                 }
             }
 
@@ -136,7 +143,7 @@ struct SubscriptionsView: View {
             }
 
             Button {
-                withAnimation(.snappy) { selectedPlan = type }
+                selectedPlan = type
             } label: {
                 Text(selectedPlan == type ? "Selected" : "Subscribe")
                     .font(.subheadline.bold())
@@ -150,5 +157,9 @@ struct SubscriptionsView: View {
         .padding(16)
         .background(Theme.cardBackground)
         .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
     }
 }

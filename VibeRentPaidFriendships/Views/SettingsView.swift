@@ -50,16 +50,13 @@ struct SettingsView: View {
                 }
 
                 Section("Legal") {
-                    Button {
-                    } label: {
+                    Button { } label: {
                         Label("Terms of Service", systemImage: "doc.text")
                     }
-                    Button {
-                    } label: {
+                    Button { } label: {
                         Label("Privacy Policy", systemImage: "hand.raised.fill")
                     }
-                    Button {
-                    } label: {
+                    Button { } label: {
                         Label("Platonic Only Agreement", systemImage: "shield.fill")
                     }
                 }

@@ -16,9 +16,6 @@ struct EditProfileSheet: View {
                     profilePhotoSection
                     personalInfoSection
                     interestsSection
-                    if user.role == .host {
-                        hostModeSection
-                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 16)
@@ -76,12 +73,7 @@ struct EditProfileSheet: View {
                             .frame(width: 100, height: 100)
                             .clipShape(Circle())
                     } else {
-                        AvatarView(
-                            name: user.name,
-                            size: 100,
-                            userId: user.id,
-                            isVerified: user.isVerified
-                        )
+                        AvatarView(name: user.name, size: 100, userId: user.id, isVerified: user.isVerified)
                     }
 
                     Circle()
@@ -128,6 +120,10 @@ struct EditProfileSheet: View {
                     .padding(14)
                     .background(Theme.cardBackground)
                     .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
                 }
             }
         }
@@ -143,36 +139,6 @@ struct EditProfileSheet: View {
         }
     }
 
-    private var hostModeSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Host Settings")
-                .font(.headline)
-                .foregroundStyle(.white)
-
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Hourly Rate")
-                        .font(.subheadline)
-                        .foregroundStyle(Theme.secondaryText)
-                    Spacer()
-                    Text("$\(Int(viewModel.editHourlyRate))/hr")
-                        .font(.headline.bold())
-                        .foregroundStyle(Theme.accent)
-                }
-
-                Slider(value: $viewModel.editHourlyRate, in: 30...200, step: 5)
-                    .tint(Theme.accent)
-
-                Text("Minimum $30/hr")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(14)
-            .background(Theme.cardBackground)
-            .clipShape(.rect(cornerRadius: 12))
-        }
-    }
-
     private func editField(_ placeholder: String, text: Binding<String>, icon: String, isMultiline: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Label(placeholder, systemImage: icon)
@@ -185,11 +151,19 @@ struct EditProfileSheet: View {
                     .padding(14)
                     .background(Theme.cardBackground)
                     .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
             } else {
                 TextField(placeholder, text: text)
                     .padding(14)
                     .background(Theme.cardBackground)
                     .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
             }
         }
     }

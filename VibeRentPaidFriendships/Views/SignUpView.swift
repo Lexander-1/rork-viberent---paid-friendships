@@ -64,6 +64,10 @@ struct SignUpView: View {
                             .padding(16)
                             .background(Theme.cardBackground)
                             .clipShape(.rect(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Theme.border, lineWidth: 1)
+                            )
                         }
 
                         VStack(alignment: .leading, spacing: 8) {
@@ -77,6 +81,10 @@ struct SignUpView: View {
                                 .padding(16)
                                 .background(Theme.cardBackground)
                                 .clipShape(.rect(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Theme.border, lineWidth: 1)
+                                )
                         }
                     }
                     .padding(.horizontal, 24)
@@ -115,6 +123,10 @@ struct SignUpView: View {
                 .padding(16)
                 .background(Theme.cardBackground)
                 .clipShape(.rect(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Theme.border, lineWidth: 1)
+                )
         }
     }
 }

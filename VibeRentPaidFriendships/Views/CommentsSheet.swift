@@ -2,7 +2,9 @@ import SwiftUI
 
 struct CommentsSheet: View {
     let post: FeedPost
+    var feedViewModel: FeedViewModel?
     @State private var newComment: String = ""
+    @State private var localComments: [FeedPost.Comment] = []
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -10,12 +12,12 @@ struct CommentsSheet: View {
             VStack(spacing: 0) {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 16) {
-                        if post.comments.isEmpty {
+                        if allComments.isEmpty {
                             ContentUnavailableView("No Comments Yet", systemImage: "bubble.left", description: Text("Be the first to comment!"))
                                 .padding(.top, 40)
                         }
 
-                        ForEach(post.comments, id: \.id) { comment in
+                        ForEach(allComments, id: \.id) { comment in
                             CommentRow(comment: comment)
                         }
                     }
@@ -23,21 +25,25 @@ struct CommentsSheet: View {
                 }
 
                 Divider()
+                    .background(Theme.border)
 
                 HStack(spacing: 12) {
                     TextField("Add a comment...", text: $newComment)
                         .padding(12)
                         .background(Theme.cardBackground)
                         .clipShape(.capsule)
+                        .overlay(
+                            Capsule().stroke(Theme.border, lineWidth: 1)
+                        )
 
                     Button {
-                        newComment = ""
+                        postComment()
                     } label: {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.title2)
                             .foregroundStyle(newComment.isEmpty ? Theme.secondaryText : Theme.accent)
                     }
-                    .disabled(newComment.isEmpty)
+                    .disabled(newComment.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
@@ -54,6 +60,30 @@ struct CommentsSheet: View {
         .presentationDragIndicator(.visible)
         .presentationContentInteraction(.scrolls)
         .preferredColorScheme(.dark)
+        .onAppear {
+            localComments = post.comments
+        }
+    }
+
+    private var allComments: [FeedPost.Comment] {
+        localComments
+    }
+
+    private func postComment() {
+        let trimmed = newComment.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        let comment = FeedPost.Comment(
+            id: UUID().uuidString,
+            authorId: "current",
+            authorName: "Alex Morgan",
+            authorIsVerified: true,
+            text: trimmed,
+            createdAt: Date(),
+            replies: []
+        )
+        localComments.append(comment)
+        feedViewModel?.addComment(to: post.id, comment: comment)
+        newComment = ""
     }
 }
 

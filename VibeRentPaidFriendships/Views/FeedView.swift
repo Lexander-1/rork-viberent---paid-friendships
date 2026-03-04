@@ -3,7 +3,6 @@ import SwiftUI
 struct FeedView: View {
     @Bindable var viewModel: FeedViewModel
     let users: [User]
-    @State private var likeAnimationPostId: String?
 
     var body: some View {
         NavigationStack {
@@ -12,14 +11,13 @@ struct FeedView: View {
                     ForEach(viewModel.filteredPosts, id: \.id) { post in
                         FeedPostCard(
                             post: post,
-                            likeAnimationPostId: $likeAnimationPostId,
                             onLike: { viewModel.toggleLike(for: post.id) },
-                            users: users
+                            users: users,
+                            feedViewModel: viewModel
                         )
-                        .padding(.bottom, 8)
 
                         Divider()
-                            .background(Color.white.opacity(0.06))
+                            .background(Theme.border)
                     }
 
                     if viewModel.filteredPosts.isEmpty {
@@ -73,7 +71,7 @@ struct FeedView: View {
                 }
             }
             .sheet(isPresented: $viewModel.showCreatePost) {
-                CreatePostView()
+                CreatePostView(feedViewModel: viewModel)
             }
         }
     }
@@ -81,12 +79,11 @@ struct FeedView: View {
 
 struct FeedPostCard: View {
     let post: FeedPost
-    @Binding var likeAnimationPostId: String?
     let onLike: () -> Void
     let users: [User]
+    var feedViewModel: FeedViewModel?
     @State private var showComments: Bool = false
     @State private var showReport: Bool = false
-    @State private var heartScale: CGFloat = 1.0
 
     private var author: User? { users.first(where: { $0.id == post.authorId }) }
     private var taggedUser: User? { users.first(where: { $0.id == post.taggedUserId }) }
@@ -96,10 +93,10 @@ struct FeedPostCard: View {
             HStack(spacing: 12) {
                 if let author {
                     NavigationLink(value: author) {
-                        AvatarView(name: post.authorName, size: 44, userId: post.authorId, isVerified: post.authorIsVerified)
+                        AvatarView(name: post.authorName, size: 40, userId: post.authorId, isVerified: post.authorIsVerified)
                     }
                 } else {
-                    AvatarView(name: post.authorName, size: 44, userId: post.authorId, isVerified: post.authorIsVerified)
+                    AvatarView(name: post.authorName, size: 40, userId: post.authorId, isVerified: post.authorIsVerified)
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -116,17 +113,10 @@ struct FeedPostCard: View {
                     }
 
                     HStack(spacing: 4) {
-                        if let locationTag = post.locationTag {
-                            Image(systemName: "mappin")
-                                .font(.caption2)
-                            Text(locationTag)
-                                .font(.caption)
-                        } else {
-                            Image(systemName: "mappin")
-                                .font(.caption2)
-                            Text(post.city)
-                                .font(.caption)
-                        }
+                        Image(systemName: "mappin")
+                            .font(.caption2)
+                        Text(post.locationTag ?? post.city)
+                            .font(.caption)
                     }
                     .foregroundStyle(Theme.secondaryText)
                 }
@@ -134,7 +124,7 @@ struct FeedPostCard: View {
                 Spacer()
 
                 if post.isBoosted {
-                    Label("Boosted", systemImage: "bolt.fill")
+                    Text("Boosted")
                         .font(.caption2.bold())
                         .foregroundStyle(Theme.accent)
                         .padding(.horizontal, 8)
@@ -183,29 +173,23 @@ struct FeedPostCard: View {
                         }
                     }
                     .padding(12)
-                    .background(Color.white.opacity(0.05))
+                    .background(Theme.cardBackground)
                     .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
                 }
                 .padding(.horizontal, 16)
             }
 
             HStack(spacing: 0) {
                 Button {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
-                        heartScale = 1.3
-                    }
                     onLike()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                            heartScale = 1.0
-                        }
-                    }
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: post.isLiked ? "heart.fill" : "heart")
                             .foregroundStyle(post.isLiked ? .red : Theme.secondaryText)
-                            .scaleEffect(heartScale)
-                            .contentTransition(.symbolEffect(.replace))
                         Text("\(post.likeCount)")
                             .foregroundStyle(Theme.secondaryText)
                     }
@@ -213,7 +197,6 @@ struct FeedPostCard: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                 }
-                .sensoryFeedback(.impact(flexibility: .soft), trigger: post.isLiked)
 
                 Button { showComments = true } label: {
                     HStack(spacing: 6) {
@@ -247,7 +230,7 @@ struct FeedPostCard: View {
         }
         .padding(.vertical, 12)
         .sheet(isPresented: $showComments) {
-            CommentsSheet(post: post)
+            CommentsSheet(post: post, feedViewModel: feedViewModel)
         }
         .alert("Report Post", isPresented: $showReport) {
             Button("Report", role: .destructive) { }

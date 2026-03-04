@@ -10,19 +10,19 @@ struct ContentView: View {
         Group {
             if !appViewModel.isOnboarded {
                 OnboardingView {
-                    withAnimation(.snappy) { appViewModel.completeOnboarding() }
+                    appViewModel.completeOnboarding()
                 }
             } else if !appViewModel.hasAgreedToPlatonic {
                 PlatonicAgreementView {
-                    withAnimation(.snappy) { appViewModel.agreeToPlatatonicTerms() }
+                    appViewModel.agreeToPlatatonicTerms()
                 }
             } else if !appViewModel.isLoggedIn {
                 SignUpView {
-                    withAnimation(.snappy) { appViewModel.login() }
+                    appViewModel.login()
                 }
             } else if !appViewModel.hasSelectedRole {
                 RoleSelectionView { role in
-                    withAnimation(.snappy) { appViewModel.selectRole(role) }
+                    appViewModel.selectRole(role)
                 }
             } else {
                 if appViewModel.currentUser.role == .customer {
@@ -50,7 +50,7 @@ struct ContentView: View {
             }
 
             Tab("Profile", systemImage: "person.fill", value: 3) {
-                ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel)
+                ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel, feedViewModel: feedViewModel)
             }
         }
         .tint(Theme.accent)
@@ -63,7 +63,7 @@ struct ContentView: View {
             }
 
             Tab("Calendar", systemImage: "calendar", value: 1) {
-                MyCalendarView()
+                MyCalendarView(user: $appViewModel.currentUser)
             }
 
             Tab("Earnings", systemImage: "dollarsign.circle.fill", value: 2) {
@@ -75,7 +75,7 @@ struct ContentView: View {
             }
 
             Tab("Profile", systemImage: "person.fill", value: 4) {
-                ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel)
+                ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel, feedViewModel: feedViewModel)
             }
         }
         .tint(Theme.accent)

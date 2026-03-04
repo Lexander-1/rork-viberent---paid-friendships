@@ -10,22 +10,9 @@ struct ReferralView: View {
             ScrollView {
                 VStack(spacing: 32) {
                     VStack(spacing: 16) {
-                        ZStack {
-                            Circle()
-                                .fill(
-                                    RadialGradient(
-                                        colors: [Theme.accent.opacity(0.25), .clear],
-                                        center: .center,
-                                        startRadius: 20,
-                                        endRadius: 80
-                                    )
-                                )
-                                .frame(width: 160, height: 160)
-
-                            Image(systemName: "gift.fill")
-                                .font(.system(size: 56))
-                                .foregroundStyle(Theme.accent)
-                        }
+                        Image(systemName: "gift.fill")
+                            .font(.system(size: 48))
+                            .foregroundStyle(Theme.accent)
 
                         Text("Refer & Earn")
                             .font(.title.bold())
@@ -51,23 +38,25 @@ struct ReferralView: View {
                             .padding(.vertical, 16)
                             .background(Theme.cardBackground)
                             .clipShape(.rect(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Theme.border, lineWidth: 1)
+                            )
 
                         Button {
                             UIPasteboard.general.string = user.referralCode
-                            withAnimation { copied = true }
+                            copied = true
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                withAnimation { copied = false }
+                                copied = false
                             }
                         } label: {
                             HStack(spacing: 8) {
                                 Image(systemName: copied ? "checkmark" : "doc.on.doc")
-                                    .contentTransition(.symbolEffect(.replace))
                                 Text(copied ? "Copied!" : "Copy Code")
                             }
                             .font(.subheadline.bold())
                             .foregroundStyle(Theme.accent)
                         }
-                        .sensoryFeedback(.success, trigger: copied)
                     }
 
                     VStack(spacing: 12) {
@@ -90,6 +79,10 @@ struct ReferralView: View {
                         .padding(16)
                         .background(Theme.cardBackground)
                         .clipShape(.rect(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Theme.border, lineWidth: 1)
+                        )
                     }
                     .padding(.horizontal, 16)
 

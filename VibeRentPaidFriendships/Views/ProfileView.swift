@@ -3,122 +3,35 @@ import SwiftUI
 struct ProfileView: View {
     @Binding var user: User
     let appViewModel: AppViewModel
+    let feedViewModel: FeedViewModel
     @State private var viewModel = ProfileViewModel()
     @State private var showSubscriptions: Bool = false
     @State private var showReferral: Bool = false
     @State private var showSettings: Bool = false
     @State private var showAdmin: Bool = false
     @State private var showLogoutAlert: Bool = false
+    @State private var showCreatePost: Bool = false
+
+    private var userPosts: [FeedPost] {
+        feedViewModel.postsForUser(user.id)
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    VStack(spacing: 16) {
-                        AvatarView(
-                            name: user.name,
-                            size: 90,
-                            userId: user.id,
-                            isVerified: user.isVerified
-                        )
-
-                        VStack(spacing: 6) {
-                            Text(user.name)
-                                .font(.title2.bold())
-                                .foregroundStyle(.white)
-
-                            HStack(spacing: 4) {
-                                Image(systemName: "mappin")
-                                    .font(.caption)
-                                Text(user.city)
-                                    .font(.subheadline)
-                            }
-                            .foregroundStyle(Theme.secondaryText)
-                        }
-
-                        HStack(spacing: 8) {
-                            rolePill
-
-                            if user.isVerified {
-                                BadgePill(icon: "checkmark.seal.fill", text: "Verified", color: Theme.verifiedBlue)
-                            }
-                            if user.hasBackgroundCheck {
-                                BadgePill(icon: "shield.checkmark.fill", text: "BG Check", color: .green)
-                            }
-                        }
-
-                        Text(user.bio)
-                            .font(.subheadline)
-                            .foregroundStyle(Theme.secondaryText)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-
-                        HStack(spacing: 32) {
-                            statItem(value: "\(user.reviewCount)", label: "Reviews")
-                            statItem(value: String(format: "%.1f", user.rating), label: "Rating")
-                            if user.isHost {
-                                statItem(value: "$\(Int(user.hourlyRate))", label: "Per Hour")
-                            }
-                        }
-                    }
-                    .padding(.top, 8)
+                VStack(spacing: 20) {
+                    profileHeader
+                    badgesRow
+                    bioSection
+                    statsRow
 
                     if !user.interests.isEmpty {
-                        FlowLayout(spacing: 8) {
-                            ForEach(user.interests, id: \.self) { interest in
-                                Text(interest)
-                                    .font(.caption.bold())
-                                    .foregroundStyle(.white.opacity(0.9))
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.white.opacity(0.08))
-                                    .clipShape(.capsule)
-                            }
-                        }
-                        .padding(.horizontal, 16)
+                        interestsSection
                     }
 
-                    VStack(spacing: 2) {
-                        profileMenuItem(icon: "pencil.circle.fill", title: "Edit Profile", color: Theme.accent) {
-                            viewModel.startEditing(user: user)
-                        }
-
-                        if !user.isVerified {
-                            profileMenuItem(icon: "checkmark.seal.fill", title: "Get Verified", color: Theme.verifiedBlue) { }
-                        }
-
-                        if !user.hasBackgroundCheck {
-                            profileMenuItem(icon: "shield.checkmark.fill", title: "Background Check — $9.99", color: .green) { }
-                        }
-
-                        profileMenuItem(icon: "crown.fill", title: "Subscriptions", color: Theme.accent) {
-                            showSubscriptions = true
-                        }
-
-                        profileMenuItem(icon: "gift.fill", title: "Refer & Earn $15", color: Theme.accent) {
-                            showReferral = true
-                        }
-
-                        profileMenuItem(icon: "gearshape.fill", title: "Settings", color: Theme.secondaryText) {
-                            showSettings = true
-                        }
-
-                        if user.isAdmin {
-                            profileMenuItem(icon: "lock.shield.fill", title: "Admin Dashboard", color: Theme.dangerRed) {
-                                showAdmin = true
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 16)
-
-                    Button {
-                        showLogoutAlert = true
-                    } label: {
-                        Text("Log Out")
-                            .font(.subheadline)
-                            .foregroundStyle(Theme.dangerRed)
-                    }
-                    .padding(.top, 8)
+                    menuSection
+                    myPostsSection
+                    logoutButton
 
                     Spacer(minLength: 40)
                 }
@@ -129,7 +42,7 @@ struct ProfileView: View {
                 EditProfileSheet(viewModel: viewModel, user: $user)
             }
             .sheet(isPresented: $showSubscriptions) {
-                SubscriptionsView()
+                SubscriptionsView(userRole: user.role)
             }
             .sheet(isPresented: $showReferral) {
                 ReferralView(user: user)
@@ -140,6 +53,9 @@ struct ProfileView: View {
             .fullScreenCover(isPresented: $showAdmin) {
                 AdminDashboardView()
             }
+            .sheet(isPresented: $showCreatePost) {
+                CreatePostView(feedViewModel: feedViewModel)
+            }
             .alert("Log Out?", isPresented: $showLogoutAlert) {
                 Button("Log Out", role: .destructive) {
                     appViewModel.logout()
@@ -149,6 +65,199 @@ struct ProfileView: View {
                 Text("You will be signed out of your account.")
             }
         }
+    }
+
+    private var profileHeader: some View {
+        VStack(spacing: 12) {
+            AvatarView(
+                name: user.name,
+                size: 80,
+                userId: user.id,
+                isVerified: user.isVerified
+            )
+
+            Text(user.name)
+                .font(.title2.bold())
+                .foregroundStyle(.white)
+
+            HStack(spacing: 4) {
+                Image(systemName: "mappin")
+                    .font(.caption)
+                Text(user.city)
+                    .font(.subheadline)
+            }
+            .foregroundStyle(Theme.secondaryText)
+        }
+        .padding(.top, 8)
+    }
+
+    private var badgesRow: some View {
+        HStack(spacing: 8) {
+            rolePill
+
+            if user.isVerified {
+                BadgePill(icon: "checkmark.seal.fill", text: "Verified", color: Theme.verifiedBlue)
+            }
+            if user.hasBackgroundCheck {
+                BadgePill(icon: "shield.checkmark.fill", text: "BG Check", color: .green)
+            }
+        }
+    }
+
+    private var bioSection: some View {
+        Text(user.bio)
+            .font(.subheadline)
+            .foregroundStyle(Theme.secondaryText)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 32)
+    }
+
+    private var statsRow: some View {
+        HStack(spacing: 32) {
+            statItem(value: "\(user.reviewCount)", label: "Reviews")
+            statItem(value: String(format: "%.1f", user.rating), label: "Rating")
+            if user.isHost {
+                statItem(value: "$\(Int(user.hourlyRate))", label: "Per Hour")
+            }
+        }
+    }
+
+    private var interestsSection: some View {
+        FlowLayout(spacing: 8) {
+            ForEach(user.interests, id: \.self) { interest in
+                Text(interest)
+                    .font(.caption.bold())
+                    .foregroundStyle(.white.opacity(0.9))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(.capsule)
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+
+    private var menuSection: some View {
+        VStack(spacing: 2) {
+            profileMenuItem(icon: "pencil.circle.fill", title: "Edit Profile", color: Theme.accent) {
+                viewModel.startEditing(user: user)
+            }
+
+            if !user.isVerified {
+                profileMenuItem(icon: "checkmark.seal.fill", title: "Get Verified", color: Theme.verifiedBlue) { }
+            }
+
+            if !user.hasBackgroundCheck {
+                profileMenuItem(icon: "shield.checkmark.fill", title: "Background Check — $9.99", color: .green) { }
+            }
+
+            profileMenuItem(icon: "crown.fill", title: "Subscriptions", color: Theme.accent) {
+                showSubscriptions = true
+            }
+
+            profileMenuItem(icon: "gift.fill", title: "Refer & Earn $15", color: Theme.accent) {
+                showReferral = true
+            }
+
+            profileMenuItem(icon: "gearshape.fill", title: "Settings", color: Theme.secondaryText) {
+                showSettings = true
+            }
+
+            if user.isAdmin {
+                profileMenuItem(icon: "lock.shield.fill", title: "Admin Dashboard", color: Theme.dangerRed) {
+                    showAdmin = true
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+
+    private var myPostsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("My Posts")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+
+            Button {
+                showCreatePost = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus.circle.fill")
+                    Text("Create Post")
+                }
+                .font(.subheadline.bold())
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Theme.accent)
+                .clipShape(.rect(cornerRadius: 12))
+            }
+            .padding(.horizontal, 16)
+
+            if userPosts.isEmpty {
+                Text("No posts yet. Share your first vibe!")
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.secondaryText)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 24)
+            } else {
+                ForEach(userPosts, id: \.id) { post in
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(post.caption)
+                            .font(.subheadline)
+                            .foregroundStyle(.white)
+                            .lineLimit(3)
+
+                        HStack(spacing: 16) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "heart.fill")
+                                    .font(.caption2)
+                                Text("\(post.likeCount)")
+                                    .font(.caption)
+                            }
+                            .foregroundStyle(Theme.secondaryText)
+
+                            HStack(spacing: 4) {
+                                Image(systemName: "bubble.right")
+                                    .font(.caption2)
+                                Text("\(post.commentCount)")
+                                    .font(.caption)
+                            }
+                            .foregroundStyle(Theme.secondaryText)
+
+                            Spacer()
+
+                            Text(post.createdAt, style: .relative)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                    .padding(14)
+                    .background(Theme.cardBackground)
+                    .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
+                    .padding(.horizontal, 16)
+                }
+            }
+        }
+    }
+
+    private var logoutButton: some View {
+        Button {
+            showLogoutAlert = true
+        } label: {
+            Text("Log Out")
+                .font(.subheadline)
+                .foregroundStyle(Theme.dangerRed)
+        }
+        .padding(.top, 8)
     }
 
     private var rolePill: some View {
@@ -197,6 +306,10 @@ struct ProfileView: View {
             .padding(16)
             .background(Theme.cardBackground)
             .clipShape(.rect(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Theme.border, lineWidth: 1)
+            )
         }
     }
 }
