@@ -53,7 +53,7 @@ struct MapTabView: View {
                             } label: {
                                 VStack(spacing: 2) {
                                     AvatarView(name: user.name, size: 36, userId: user.id, isVerified: user.isVerified)
-                                        .shadow(color: .black.opacity(0.3), radius: 4, y: 2)
+                                        .shadow(color: Theme.accentRed.opacity(0.5), radius: 6, y: 0)
                                     Text(user.name.split(separator: " ").first.map(String.init) ?? user.name)
                                         .font(.caption2.bold())
                                         .foregroundStyle(.white)

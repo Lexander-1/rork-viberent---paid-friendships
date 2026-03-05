@@ -46,7 +46,7 @@ struct HostProfileView: View {
 
                             HStack(spacing: 4) {
                                 Image(systemName: "star.fill")
-                                    .foregroundStyle(Theme.secondaryText)
+                                    .foregroundStyle(Theme.accentRed)
                                 Text(String(format: "%.1f", host.rating))
                                     .fontWeight(.bold)
                                 Text("(\(host.reviewCount))")
@@ -223,7 +223,7 @@ struct AllReviewsView: View {
                     VStack(spacing: 8) {
                         HStack(spacing: 4) {
                             Image(systemName: "star.fill")
-                                .foregroundStyle(Theme.secondaryText)
+                                .foregroundStyle(Theme.accentRed)
                             Text(String(format: "%.1f", host.rating))
                                 .font(.title.bold())
                                 .foregroundStyle(.white)
@@ -339,7 +339,7 @@ struct ReviewCard: View {
                     ForEach(1...5, id: \.self) { star in
                         Image(systemName: star <= review.rating ? "star.fill" : "star")
                             .font(.caption2)
-                            .foregroundStyle(Theme.secondaryText)
+                            .foregroundStyle(star <= review.rating ? Theme.accentRed : Theme.secondaryText)
                     }
                 }
             }

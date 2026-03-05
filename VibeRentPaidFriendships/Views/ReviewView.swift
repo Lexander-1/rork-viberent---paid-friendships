@@ -37,7 +37,7 @@ struct ReviewView: View {
                                 } label: {
                                     Image(systemName: star <= rating ? "star.fill" : "star")
                                         .font(.system(size: 32))
-                                        .foregroundStyle(star <= rating ? .white : Theme.secondaryText)
+                                        .foregroundStyle(star <= rating ? Theme.accentRed : Theme.secondaryText)
                                 }
                             }
                         }

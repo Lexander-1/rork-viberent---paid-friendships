@@ -42,6 +42,23 @@ struct EarningsView: View {
                             .stroke(Theme.border, lineWidth: 1)
                     )
 
+                    VStack(spacing: 8) {
+                        Text("Available Balance")
+                            .font(.caption)
+                            .foregroundStyle(Theme.secondaryText)
+                        Text("$\(String(format: "%.2f", totalEarnings))")
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundStyle(.white)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(16)
+                    .background(Theme.cardBackground)
+                    .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
+
                     Button {
                         showCashOut = true
                     } label: {
@@ -109,13 +126,13 @@ struct EarningsView: View {
                     Color.clear.frame(width: 44, height: 44)
                 }
             }
-            .alert("Cash Out", isPresented: $showCashOut) {
-                Button("Cash Out Now") {
+            .alert("Cash Out $\(String(format: "%.2f", totalEarnings))?", isPresented: $showCashOut) {
+                Button("Confirm Cash Out") {
                     cashOutSuccess = true
                 }
                 Button("Cancel", role: .cancel) { }
             } message: {
-                Text("Your current balance of $\(String(format: "%.2f", totalEarnings)) will be sent to your linked bank account via Stripe. Minimum payout is $10.00.")
+                Text("$\(String(format: "%.2f", totalEarnings)) will be sent to your linked bank via Stripe. Minimum $10.00.")
             }
             .alert("Payout Initiated!", isPresented: $cashOutSuccess) {
                 Button("Done") { }

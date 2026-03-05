@@ -73,6 +73,25 @@ struct FeedView: View {
             .sheet(isPresented: $viewModel.showCreatePost) {
                 CreatePostView(feedViewModel: viewModel)
             }
+            .overlay(alignment: .bottomTrailing) {
+                Button {
+                    viewModel.showCreatePost = true
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.title3.bold())
+                        .foregroundStyle(.white)
+                        .frame(width: 52, height: 52)
+                        .background(Theme.buttonBackground)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                        )
+                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                }
+                .padding(.trailing, 20)
+                .padding(.bottom, 24)
+            }
         }
     }
 }
@@ -87,10 +106,6 @@ struct FeedPostCard: View {
     @State private var showShareSheet: Bool = false
 
     private var author: User? { users.first(where: { $0.id == post.authorId }) }
-    private var taggedUser: User? {
-        guard let taggedId = post.taggedUserId else { return nil }
-        return users.first(where: { $0.id == taggedId })
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -154,45 +169,13 @@ struct FeedPostCard: View {
                 .lineSpacing(4)
                 .padding(.horizontal, 16)
 
-            if let tagged = taggedUser {
-                NavigationLink(value: tagged) {
-                    HStack(spacing: 8) {
-                        AvatarView(name: tagged.name, size: 28, userId: tagged.id, isVerified: tagged.isVerified)
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text("with \(tagged.name)")
-                                .font(.caption.bold())
-                                .foregroundStyle(.white.opacity(0.9))
-                            if tagged.isHost {
-                                Text("Book this Vibe")
-                                    .font(.caption2.bold())
-                                    .foregroundStyle(Theme.secondaryText)
-                            }
-                        }
-                        Spacer()
-                        if tagged.isHost {
-                            Image(systemName: "calendar.badge.plus")
-                                .font(.subheadline)
-                                .foregroundStyle(Theme.secondaryText)
-                        }
-                    }
-                    .padding(12)
-                    .background(Theme.cardBackground)
-                    .clipShape(.rect(cornerRadius: 12))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Theme.border, lineWidth: 1)
-                    )
-                }
-                .padding(.horizontal, 16)
-            }
-
             HStack(spacing: 0) {
                 Button {
                     onLike()
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: post.isLiked ? "heart.fill" : "heart")
-                            .foregroundStyle(post.isLiked ? .red : Theme.secondaryText)
+                            .foregroundStyle(post.isLiked ? Theme.accentRed : Theme.secondaryText)
                         Text("\(post.likeCount)")
                             .foregroundStyle(Theme.secondaryText)
                     }

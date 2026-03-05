@@ -39,6 +39,22 @@ class FeedViewModel {
         posts[postIndex].commentCount += 1
     }
 
+    func addReplyRecursive(to postId: String, parentCommentId: String, reply: FeedPost.Comment) {
+        guard let postIndex = posts.firstIndex(where: { $0.id == postId }) else { return }
+        addReplyToComments(parentId: parentCommentId, reply: reply, comments: &posts[postIndex].comments)
+        posts[postIndex].commentCount += 1
+    }
+
+    private func addReplyToComments(parentId: String, reply: FeedPost.Comment, comments: inout [FeedPost.Comment]) {
+        for i in comments.indices {
+            if comments[i].id == parentId {
+                comments[i].replies.append(reply)
+                return
+            }
+            addReplyToComments(parentId: parentId, reply: reply, comments: &comments[i].replies)
+        }
+    }
+
     func deleteComment(from postId: String, commentId: String) {
         guard let postIndex = posts.firstIndex(where: { $0.id == postId }) else { return }
         if posts[postIndex].comments.contains(where: { $0.id == commentId }) {

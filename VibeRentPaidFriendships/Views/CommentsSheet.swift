@@ -25,7 +25,7 @@ struct CommentsSheet: View {
                                 comment: comment,
                                 currentUserId: currentUserId,
                                 depth: 0,
-                                onReply: { target in replyingTo = target },
+                                onReply: { target in startReply(to: target) },
                                 onDelete: { id in deleteComment(id) }
                             )
                         }
@@ -38,12 +38,13 @@ struct CommentsSheet: View {
 
                 if let replying = replyingTo {
                     HStack {
-                        Text("Replying to \(replying.authorName)")
+                        Text("Replying to @\(replying.authorName)")
                             .font(.caption)
                             .foregroundStyle(Theme.secondaryText)
                         Spacer()
                         Button {
                             replyingTo = nil
+                            newComment = ""
                         } label: {
                             Image(systemName: "xmark.circle.fill")
                                 .font(.caption)
@@ -92,6 +93,11 @@ struct CommentsSheet: View {
         }
     }
 
+    private func startReply(to target: FeedPost.Comment) {
+        replyingTo = target
+        newComment = "@\(target.authorName) "
+    }
+
     private func postComment() {
         let trimmed = newComment.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
@@ -107,7 +113,7 @@ struct CommentsSheet: View {
 
         if let parent = replyingTo {
             addReplyRecursive(to: parent.id, reply: comment, in: &localComments)
-            feedViewModel?.addReply(to: post.id, parentCommentId: parent.id, reply: comment)
+            feedViewModel?.addReplyRecursive(to: post.id, parentCommentId: parent.id, reply: comment)
             replyingTo = nil
         } else {
             localComments.append(comment)
@@ -175,7 +181,7 @@ struct RecursiveCommentRow: View {
                     } label: {
                         Image(systemName: "trash")
                             .font(.caption2)
-                            .foregroundStyle(Theme.dangerRed.opacity(0.7))
+                            .foregroundStyle(Theme.accentRed.opacity(0.7))
                     }
                 }
             }
@@ -188,9 +194,13 @@ struct RecursiveCommentRow: View {
             Button {
                 onReply(comment)
             } label: {
-                Text("Reply")
-                    .font(.caption.bold())
-                    .foregroundStyle(Theme.secondaryText)
+                HStack(spacing: 4) {
+                    Image(systemName: "arrowshape.turn.up.left")
+                        .font(.caption2)
+                    Text("Reply")
+                        .font(.caption.bold())
+                }
+                .foregroundStyle(Theme.secondaryText)
             }
             .padding(.leading, depth == 0 ? 40 : 32)
 

@@ -9,7 +9,8 @@ enum Theme {
     static let secondaryText = Color(hex: 0xA0A0A0)
     static let border = Color(hex: 0x333333)
     static let verifiedBlue = Color(red: 0.7, green: 0.75, blue: 0.85)
-    static let dangerRed = Color(red: 0.9, green: 0.25, blue: 0.25)
+    static let accentRed = Color(hex: 0x9C2A2A)
+    static let dangerRed = Color(hex: 0x9C2A2A)
 }
 
 extension Color {
