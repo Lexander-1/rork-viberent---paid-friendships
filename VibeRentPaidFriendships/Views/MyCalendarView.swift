@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MyCalendarView: View {
     @Binding var user: User
+    @Binding var isDrawerOpen: Bool
     @State private var rateText: String = ""
     @State private var availabilityDate: Date = Date()
     @State private var startTime: Date = Date()
@@ -36,9 +37,7 @@ struct MyCalendarView: View {
             .background(Theme.background)
             .navigationTitle("My Calendar")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Color.clear.frame(width: 44, height: 44)
-                }
+                HamburgerButton(isDrawerOpen: $isDrawerOpen)
             }
         }
         .onAppear {

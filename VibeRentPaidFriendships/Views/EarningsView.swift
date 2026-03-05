@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct EarningsView: View {
+    @Binding var isDrawerOpen: Bool
     @State private var showCashOut: Bool = false
     @State private var cashOutSuccess: Bool = false
 
@@ -122,9 +123,7 @@ struct EarningsView: View {
             .background(Theme.background)
             .navigationTitle("Earnings")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Color.clear.frame(width: 44, height: 44)
-                }
+                HamburgerButton(isDrawerOpen: $isDrawerOpen)
             }
             .alert("Cash Out $\(String(format: "%.2f", totalEarnings))?", isPresented: $showCashOut) {
                 Button("Confirm Cash Out") {

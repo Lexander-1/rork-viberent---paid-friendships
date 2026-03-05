@@ -4,6 +4,7 @@ struct ProfileView: View {
     @Binding var user: User
     let appViewModel: AppViewModel
     let feedViewModel: FeedViewModel
+    @Binding var isDrawerOpen: Bool
     @State private var viewModel = ProfileViewModel()
     @State private var showSubscriptions: Bool = false
     @State private var showReferral: Bool = false
@@ -40,9 +41,7 @@ struct ProfileView: View {
             .background(Theme.background)
             .navigationTitle("Profile")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Color.clear.frame(width: 44, height: 44)
-                }
+                HamburgerButton(isDrawerOpen: $isDrawerOpen)
             }
             .sheet(isPresented: $viewModel.isEditing) {
                 EditProfileSheet(viewModel: viewModel, user: $user)

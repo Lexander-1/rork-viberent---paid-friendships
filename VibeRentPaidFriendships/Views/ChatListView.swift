@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ChatListView: View {
     @Bindable var viewModel: ChatViewModel
+    @Binding var isDrawerOpen: Bool
 
     var body: some View {
         NavigationStack {
@@ -26,9 +27,7 @@ struct ChatListView: View {
             .scrollContentBackground(.hidden)
             .navigationTitle("Messages")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Color.clear.frame(width: 44, height: 44)
-                }
+                HamburgerButton(isDrawerOpen: $isDrawerOpen)
             }
             .navigationDestination(for: Conversation.self) { conversation in
                 ChatDetailView(conversation: conversation, viewModel: viewModel)

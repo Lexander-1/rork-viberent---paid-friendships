@@ -36,19 +36,6 @@ struct ContentView: View {
     private var mainAppView: some View {
         ZStack {
             currentPageView
-                .overlay(alignment: .topLeading) {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.25)) { isDrawerOpen = true }
-                    } label: {
-                        Image(systemName: "line.3.horizontal")
-                            .font(.title3.bold())
-                            .foregroundStyle(.white)
-                            .frame(width: 44, height: 44)
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 8)
-                    .padding(.top, 4)
-                }
 
             SideDrawerView(
                 userRole: appViewModel.currentUser.role,
@@ -62,19 +49,19 @@ struct ContentView: View {
     private var currentPageView: some View {
         switch selectedPage {
         case .feed:
-            FeedView(viewModel: feedViewModel, users: User.sampleUsers)
+            FeedView(viewModel: feedViewModel, users: User.sampleUsers, isDrawerOpen: $isDrawerOpen)
         case .discover:
-            DiscoverView(viewModel: discoverViewModel)
+            DiscoverView(viewModel: discoverViewModel, isDrawerOpen: $isDrawerOpen)
         case .calendar:
-            MyCalendarView(user: $appViewModel.currentUser)
+            MyCalendarView(user: $appViewModel.currentUser, isDrawerOpen: $isDrawerOpen)
         case .map:
-            MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity, feedViewModel: feedViewModel)
+            MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity, feedViewModel: feedViewModel, isDrawerOpen: $isDrawerOpen)
         case .earnings:
-            EarningsView()
+            EarningsView(isDrawerOpen: $isDrawerOpen)
         case .chat:
-            ChatListView(viewModel: chatViewModel)
+            ChatListView(viewModel: chatViewModel, isDrawerOpen: $isDrawerOpen)
         case .profile:
-            ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel, feedViewModel: feedViewModel)
+            ProfileView(user: $appViewModel.currentUser, appViewModel: appViewModel, feedViewModel: feedViewModel, isDrawerOpen: $isDrawerOpen)
         }
     }
 }

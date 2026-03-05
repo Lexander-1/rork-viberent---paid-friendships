@@ -3,6 +3,7 @@ import SwiftUI
 struct FeedView: View {
     @Bindable var viewModel: FeedViewModel
     let users: [User]
+    @Binding var isDrawerOpen: Bool
 
     var body: some View {
         NavigationStack {
@@ -51,9 +52,7 @@ struct FeedView: View {
                     }
                 }
 
-                ToolbarItem(placement: .topBarLeading) {
-                    Color.clear.frame(width: 44, height: 44)
-                }
+                HamburgerButton(isDrawerOpen: $isDrawerOpen)
 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

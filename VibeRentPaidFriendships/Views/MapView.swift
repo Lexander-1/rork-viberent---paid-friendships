@@ -5,6 +5,7 @@ struct MapTabView: View {
     let users: [User]
     let selectedCity: String
     var feedViewModel: FeedViewModel?
+    @Binding var isDrawerOpen: Bool
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedUser: User?
     @State private var showCitySelector: Bool = false
@@ -104,9 +105,7 @@ struct MapTabView: View {
                     }
                 }
 
-                ToolbarItem(placement: .topBarLeading) {
-                    Color.clear.frame(width: 44, height: 44)
-                }
+                HamburgerButton(isDrawerOpen: $isDrawerOpen)
             }
             .sheet(item: $selectedUser) { user in
                 NavigationStack {
