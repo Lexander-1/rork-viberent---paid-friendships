@@ -3,6 +3,7 @@ import SwiftUI
 struct DiscoverView: View {
     @Bindable var viewModel: DiscoverViewModel
     @Binding var isDrawerOpen: Bool
+    @State private var selectedUser: User?
 
     var body: some View {
         NavigationStack {
@@ -27,11 +28,15 @@ struct DiscoverView: View {
                 HamburgerButton(isDrawerOpen: $isDrawerOpen)
             }
             .searchable(text: $viewModel.searchText, prompt: "Search hosts, interests...")
-            .navigationDestination(for: User.self) { host in
-                HostProfileView(host: host)
-            }
             .sheet(isPresented: $viewModel.showFilters) {
                 FilterSheet(viewModel: viewModel)
+            }
+            .sheet(item: $selectedUser) { user in
+                NavigationStack {
+                    HostProfileView(host: user)
+                }
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
             }
         }
     }
@@ -80,9 +85,12 @@ struct DiscoverView: View {
     private var hostList: some View {
         LazyVStack(spacing: 10) {
             ForEach(viewModel.filteredHosts, id: \.id) { host in
-                NavigationLink(value: host) {
+                Button {
+                    selectedUser = host
+                } label: {
                     HostListCard(host: host)
                 }
+                .buttonStyle(.plain)
             }
         }
         .padding(.horizontal, 16)

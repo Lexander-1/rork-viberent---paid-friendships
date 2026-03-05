@@ -37,6 +37,9 @@ struct FeedView: View {
             }
             .refreshable { await viewModel.refresh() }
             .background(themeManager.background)
+            .navigationDestination(for: User.self) { user in
+                HostProfileView(host: user)
+            }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -247,9 +250,6 @@ struct FeedPostCard: View {
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("This post will be flagged for review by our moderation team.")
-        }
-        .navigationDestination(for: User.self) { user in
-            HostProfileView(host: user)
         }
     }
 

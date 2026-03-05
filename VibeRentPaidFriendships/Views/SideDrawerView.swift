@@ -78,7 +78,7 @@ enum AppPage: String, Hashable, CaseIterable {
         case .customer:
             return [.feed, .discover, .map, .chat, .profile]
         case .host:
-            return [.feed, .calendar, .map, .earnings, .chat, .profile]
+            return [.feed, .discover, .calendar, .map, .earnings, .chat, .profile]
         }
     }
 }
