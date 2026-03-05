@@ -33,9 +33,32 @@ struct HostProfileView: View {
                             }
                         }
 
-                        Text("$\(Int(host.hourlyRate))/hr")
-                            .font(.title3.bold())
-                            .foregroundStyle(.white)
+                        HStack(spacing: 8) {
+                            Text("$\(Int(host.hourlyRate))/hr")
+                                .font(.title3.bold())
+                                .foregroundStyle(.white)
+
+                            if host.hostTier != .free {
+                                Text(host.hostTier.title)
+                                    .font(.caption2.bold())
+                                    .foregroundStyle(host.hostTier == .elite ? Theme.gold : Theme.secondaryText)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(host.hostTier == .elite ? Theme.gold.opacity(0.15) : Theme.buttonBackground)
+                                    .clipShape(.capsule)
+                            }
+                        }
+
+                        if host.isAvailableNow {
+                            HStack(spacing: 4) {
+                                Circle()
+                                    .fill(.green)
+                                    .frame(width: 8, height: 8)
+                                Text("Available Now")
+                                    .font(.caption.bold())
+                                    .foregroundStyle(.green)
+                            }
+                        }
 
                         HStack(spacing: 12) {
                             HStack(spacing: 4) {
@@ -63,6 +86,9 @@ struct HostProfileView: View {
                         }
                         if host.hasBackgroundCheck {
                             BadgePill(icon: "shield.checkmark.fill", text: "BG Check", color: .green)
+                        }
+                        if host.noShowCount == 0 {
+                            BadgePill(icon: "hand.thumbsup.fill", text: "Reliable", color: .green)
                         }
                     }
 
@@ -144,7 +170,7 @@ struct HostProfileView: View {
                         Text("$\(Int(host.hourlyRate))/hr")
                             .font(.title3.bold())
                             .foregroundStyle(.white)
-                        Text("+ 25% service fee")
+                        Text("+ \(host.hostTier.feeLabel) service fee")
                             .font(.caption)
                             .foregroundStyle(Theme.secondaryText)
                     }
@@ -187,15 +213,14 @@ struct HostProfileView: View {
     }
 
     private func pricingRow(hours: Int) -> some View {
-        let hostEarnings = host.hourlyRate * Double(hours)
-        let total = hostEarnings * 1.25
+        let pricing = Booking.calculatePrice(hourlyRate: host.hourlyRate, duration: hours == 1 ? .oneHour : hours == 2 ? .twoHours : hours == 4 ? .fourHours : .fullDay, hostTier: host.hostTier)
         let label = hours == 8 ? "Full Day" : "\(hours) Hour\(hours > 1 ? "s" : "")"
         return HStack {
             Text(label)
                 .font(.subheadline)
                 .foregroundStyle(.white)
             Spacer()
-            Text("$\(Int(total))")
+            Text("$\(Int(pricing.total))")
                 .font(.subheadline.bold())
                 .foregroundStyle(.white)
         }

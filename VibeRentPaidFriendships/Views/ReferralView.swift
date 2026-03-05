@@ -18,7 +18,7 @@ struct ReferralView: View {
                             .font(.title.bold())
                             .foregroundStyle(.white)
 
-                        Text("Both you and your friend get $15 credit after their first completed hang!")
+                        Text("Both you and your friend get $25 credit after their first completed booking!")
                             .font(.subheadline)
                             .foregroundStyle(Theme.secondaryText)
                             .multilineTextAlignment(.center)

@@ -9,6 +9,7 @@ class AppViewModel {
     var isLoggedIn: Bool = false
     var hasSelectedRole: Bool = false
     var selectedTab: Int = 0
+    var themeManager: ThemeManager = ThemeManager.shared
 
     func completeOnboarding() {
         isOnboarded = true
@@ -35,6 +36,11 @@ class AppViewModel {
         hasSelectedRole = true
     }
 
+    func setTheme(_ theme: AppTheme) {
+        currentUser.appTheme = theme
+        themeManager.currentTheme = theme
+    }
+
     func logout() {
         currentUser = User.currentUser
         isLoggedIn = false
@@ -42,5 +48,6 @@ class AppViewModel {
         hasAgreedToPlatonic = false
         hasSelectedRole = false
         selectedTab = 0
+        themeManager.currentTheme = .dark
     }
 }

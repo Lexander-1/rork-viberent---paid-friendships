@@ -4,6 +4,7 @@ struct FeedView: View {
     @Bindable var viewModel: FeedViewModel
     let users: [User]
     @Binding var isDrawerOpen: Bool
+    @State var themeManager: ThemeManager = ThemeManager.shared
 
     var body: some View {
         NavigationStack {
@@ -18,7 +19,7 @@ struct FeedView: View {
                         )
 
                         Divider()
-                            .background(Theme.border)
+                            .background(themeManager.border)
                     }
 
                     if viewModel.filteredPosts.isEmpty {
@@ -33,7 +34,7 @@ struct FeedView: View {
                 .padding(.top, 8)
             }
             .refreshable { await viewModel.refresh() }
-            .background(Theme.background)
+            .background(themeManager.background)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -43,11 +44,11 @@ struct FeedView: View {
                         HStack(spacing: 6) {
                             Text(viewModel.selectedCity)
                                 .font(.headline)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(themeManager.primaryText)
 
                             Image(systemName: "chevron.down")
                                 .font(.caption.bold())
-                                .foregroundStyle(Theme.secondaryText)
+                                .foregroundStyle(themeManager.secondaryText)
                         }
                     }
                 }
@@ -60,7 +61,7 @@ struct FeedView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(Theme.secondaryText)
+                            .foregroundStyle(themeManager.secondaryText)
                     }
                 }
             }
@@ -103,6 +104,7 @@ struct FeedPostCard: View {
     @State private var showComments: Bool = false
     @State private var showReport: Bool = false
     @State private var showShareSheet: Bool = false
+    @State var themeManager: ThemeManager = ThemeManager.shared
 
     private var author: User? { users.first(where: { $0.id == post.authorId }) }
 
@@ -122,12 +124,12 @@ struct FeedPostCard: View {
                         NavigationLink(value: author) {
                             Text(post.authorName)
                                 .font(.subheadline.bold())
-                                .foregroundStyle(.white)
+                                .foregroundStyle(themeManager.primaryText)
                         }
                     } else {
                         Text(post.authorName)
                             .font(.subheadline.bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(themeManager.primaryText)
                     }
 
                     HStack(spacing: 4) {
@@ -136,7 +138,7 @@ struct FeedPostCard: View {
                         Text(post.locationTag ?? post.city)
                             .font(.caption)
                     }
-                    .foregroundStyle(Theme.secondaryText)
+                    .foregroundStyle(themeManager.secondaryText)
                 }
 
                 Spacer()
@@ -144,10 +146,10 @@ struct FeedPostCard: View {
                 if post.isBoosted {
                     Text("Boosted")
                         .font(.caption2.bold())
-                        .foregroundStyle(Theme.secondaryText)
+                        .foregroundStyle(Theme.gold)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Theme.buttonBackground)
+                        .background(Theme.gold.opacity(0.15))
                         .clipShape(.capsule)
                 }
 
@@ -156,7 +158,7 @@ struct FeedPostCard: View {
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.body)
-                        .foregroundStyle(Theme.secondaryText)
+                        .foregroundStyle(themeManager.secondaryText)
                         .frame(width: 32, height: 32)
                 }
             }
@@ -164,7 +166,7 @@ struct FeedPostCard: View {
 
             Text(post.caption)
                 .font(.body)
-                .foregroundStyle(.white.opacity(0.95))
+                .foregroundStyle(themeManager.primaryText.opacity(0.95))
                 .lineSpacing(4)
                 .padding(.horizontal, 16)
 
@@ -174,9 +176,9 @@ struct FeedPostCard: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: post.isLiked ? "heart.fill" : "heart")
-                            .foregroundStyle(post.isLiked ? Theme.accentRed : Theme.secondaryText)
+                            .foregroundStyle(post.isLiked ? Theme.accentRed : themeManager.secondaryText)
                         Text("\(post.likeCount)")
-                            .foregroundStyle(Theme.secondaryText)
+                            .foregroundStyle(themeManager.secondaryText)
                     }
                     .font(.subheadline)
                     .frame(maxWidth: .infinity)
@@ -189,7 +191,7 @@ struct FeedPostCard: View {
                         Text("\(post.commentCount)")
                     }
                     .font(.subheadline)
-                    .foregroundStyle(Theme.secondaryText)
+                    .foregroundStyle(themeManager.secondaryText)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                 }
@@ -202,7 +204,7 @@ struct FeedPostCard: View {
                         Text("Share")
                     }
                     .font(.subheadline)
-                    .foregroundStyle(Theme.secondaryText)
+                    .foregroundStyle(themeManager.secondaryText)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                 }
@@ -216,6 +218,7 @@ struct FeedPostCard: View {
                 .padding(.bottom, 4)
         }
         .padding(.vertical, 12)
+        .background(boostedBackground)
         .sheet(isPresented: $showComments) {
             CommentsSheet(post: post, feedViewModel: feedViewModel)
         }
@@ -230,6 +233,22 @@ struct FeedPostCard: View {
         }
         .navigationDestination(for: User.self) { user in
             HostProfileView(host: user)
+        }
+    }
+
+    @ViewBuilder
+    private var boostedBackground: some View {
+        if post.isBoosted {
+            RoundedRectangle(cornerRadius: 0)
+                .fill(themeManager.background)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 0)
+                        .stroke(Theme.gold.opacity(0.5), lineWidth: 2)
+                )
+                .shadow(color: Theme.gold.opacity(0.25), radius: 12, x: 0, y: 0)
+                .shadow(color: Theme.gold.opacity(0.1), radius: 4, x: 0, y: 0)
+        } else {
+            Color.clear
         }
     }
 }

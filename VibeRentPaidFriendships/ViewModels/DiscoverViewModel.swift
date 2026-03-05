@@ -7,8 +7,9 @@ class DiscoverViewModel {
     var searchText: String = ""
     var selectedCity: String = "All Cities"
     var minRate: Double = 30
-    var maxRate: Double = 100
+    var maxRate: Double = 200
     var verifiedOnly: Bool = false
+    var availableNowOnly: Bool = false
     var showFilters: Bool = false
     var sortOption: SortOption = .recommended
 
@@ -38,11 +39,22 @@ class DiscoverViewModel {
             result = result.filter { $0.isVerified }
         }
 
+        if availableNowOnly {
+            result = result.filter { $0.isAvailableNow }
+        }
+
         result = result.filter { $0.hourlyRate >= minRate && $0.hourlyRate <= maxRate }
 
         switch sortOption {
         case .recommended:
             result.sort { lhs, rhs in
+                if lhs.hasInstantBoost != rhs.hasInstantBoost { return lhs.hasInstantBoost }
+                if lhs.hostTier.rawValue != rhs.hostTier.rawValue {
+                    let tierOrder: [HostSubscriptionTier] = [.elite, .pro, .free]
+                    let lhsIdx = tierOrder.firstIndex(of: lhs.hostTier) ?? 2
+                    let rhsIdx = tierOrder.firstIndex(of: rhs.hostTier) ?? 2
+                    return lhsIdx < rhsIdx
+                }
                 if lhs.isFeatured != rhs.isFeatured { return lhs.isFeatured }
                 if lhs.hasBackgroundCheck != rhs.hasBackgroundCheck { return lhs.hasBackgroundCheck }
                 return lhs.rating > rhs.rating

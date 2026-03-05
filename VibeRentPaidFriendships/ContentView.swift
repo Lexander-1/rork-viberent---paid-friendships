@@ -30,7 +30,10 @@ struct ContentView: View {
                 mainAppView
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(appViewModel.themeManager.colorScheme)
+        .task {
+            await NotificationService.shared.requestPermission()
+        }
     }
 
     private var mainAppView: some View {
@@ -57,7 +60,7 @@ struct ContentView: View {
         case .map:
             MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity, feedViewModel: feedViewModel, isDrawerOpen: $isDrawerOpen)
         case .earnings:
-            EarningsView(isDrawerOpen: $isDrawerOpen)
+            EarningsView(isDrawerOpen: $isDrawerOpen, user: $appViewModel.currentUser)
         case .chat:
             ChatListView(viewModel: chatViewModel, isDrawerOpen: $isDrawerOpen)
         case .profile:

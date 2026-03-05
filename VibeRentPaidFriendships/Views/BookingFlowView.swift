@@ -19,8 +19,10 @@ struct BookingFlowView: View {
                 VStack(spacing: 20) {
                     hostHeader
                     durationPicker
+                    safetyShieldOption
                     priceBreakdown
                     dateTimePicker
+                    noShowInfo
                     Spacer(minLength: 80)
                 }
                 .padding(16)
@@ -56,7 +58,7 @@ struct BookingFlowView: View {
             .alert("Booking Confirmed!", isPresented: $viewModel.showBookingSuccess) {
                 Button("Done") { dismiss() }
             } message: {
-                Text("Your session with \(host.name) is confirmed. A chat has been opened so you can coordinate details.")
+                Text("Your session with \(host.name) is confirmed. Both parties must tap 'Confirm Meet' 3 times (30s apart) before the booking is fully locked.")
             }
             .overlay {
                 if viewModel.isProcessing {
@@ -91,10 +93,23 @@ struct BookingFlowView: View {
                             .font(.caption)
                             .foregroundStyle(Theme.verifiedBlue)
                     }
+                    if host.hostTier != .free {
+                        Text(host.hostTier.title)
+                            .font(.caption2.bold())
+                            .foregroundStyle(host.hostTier == .elite ? Theme.gold : Theme.secondaryText)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(host.hostTier == .elite ? Theme.gold.opacity(0.15) : Theme.buttonBackground)
+                            .clipShape(.capsule)
+                    }
                 }
                 Text("$\(Int(host.hourlyRate))/hr")
                     .font(.title3.bold())
                     .foregroundStyle(.white)
+
+                Text("Service fee: \(host.hostTier.feeLabel)")
+                    .font(.caption)
+                    .foregroundStyle(Theme.secondaryText)
             }
             Spacer()
         }
@@ -127,7 +142,7 @@ struct BookingFlowView: View {
                                 .font(.subheadline.bold())
                                 .foregroundStyle(.white)
                             if duration != .custom {
-                                let p = Booking.calculatePrice(hourlyRate: host.hourlyRate, duration: duration)
+                                let p = Booking.calculatePrice(hourlyRate: host.hourlyRate, duration: duration, hostTier: host.hostTier)
                                 Text("$\(Int(p.total))")
                                     .font(.caption.bold())
                                     .foregroundStyle(isSelected ? .white.opacity(0.8) : Theme.secondaryText)
@@ -173,6 +188,36 @@ struct BookingFlowView: View {
         }
     }
 
+    private var safetyShieldOption: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "shield.checkmark.fill")
+                .font(.title3)
+                .foregroundStyle(viewModel.addSafetyShield ? .green : Theme.secondaryText)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Safety Shield — $4.99")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.white)
+                Text("Extra photo + GPS verification at check-in")
+                    .font(.caption)
+                    .foregroundStyle(Theme.secondaryText)
+            }
+
+            Spacer()
+
+            Toggle("", isOn: $viewModel.addSafetyShield)
+                .labelsHidden()
+                .tint(.green)
+        }
+        .padding(14)
+        .background(Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(viewModel.addSafetyShield ? Color.green.opacity(0.3) : Theme.border, lineWidth: 1)
+        )
+    }
+
     private var priceBreakdown: some View {
         VStack(spacing: 12) {
             Text("Price Breakdown")
@@ -185,6 +230,12 @@ struct BookingFlowView: View {
 
                 priceRow("Host rate", value: "$\(Int(host.hourlyRate))/hr × \(hours) hr\(hours == 1 ? "" : "s")")
 
+                priceRow("Service fee (\(host.hostTier.feeLabel))", value: "$\(Int(pricing.platformFee - (viewModel.addSafetyShield ? 4.99 : 0)))")
+
+                if viewModel.addSafetyShield {
+                    priceRow("Safety Shield", value: "$4.99")
+                }
+
                 Divider().background(Theme.border)
 
                 HStack {
@@ -192,17 +243,12 @@ struct BookingFlowView: View {
                         Text("You pay")
                             .font(.subheadline)
                             .foregroundStyle(Theme.secondaryText)
-                        Text("(includes 25% service fee)")
-                            .font(.caption2)
-                            .foregroundStyle(Theme.secondaryText.opacity(0.7))
                     }
                     Spacer()
                     Text("$\(Int(pricing.total))")
                         .font(.title2.bold())
                         .foregroundStyle(.white)
                 }
-
-
             }
             .padding(16)
             .background(Theme.cardBackground)
@@ -235,6 +281,44 @@ struct BookingFlowView: View {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(Theme.border, lineWidth: 1)
             )
+        }
+    }
+
+    private var noShowInfo: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.shield.fill")
+                    .foregroundStyle(.orange)
+                Text("No-Show Protection")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.white)
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                infoRow("Both tap 'Confirm Meet' 3× (30s apart)")
+                infoRow("Both tap 'I'm Here' within 15 min of start")
+                infoRow("Host no-show → full refund + 24hr ban")
+                infoRow("Customer no-show → Host keeps earnings")
+                infoRow("Live check-ins every 30 min during hang")
+            }
+        }
+        .padding(14)
+        .background(Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
+    }
+
+    private func infoRow(_ text: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle")
+                .font(.caption2)
+                .foregroundStyle(.green)
+            Text(text)
+                .font(.caption)
+                .foregroundStyle(Theme.secondaryText)
         }
     }
 

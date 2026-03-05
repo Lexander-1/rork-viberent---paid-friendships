@@ -27,6 +27,7 @@ struct MyCalendarView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
+                    availableNowSection
                     rateSection
                     rateSplitPreview
                     bookingsSection
@@ -50,6 +51,36 @@ struct MyCalendarView: View {
         }
     }
 
+    private var availableNowSection: some View {
+        HStack(spacing: 14) {
+            Image(systemName: user.isAvailableNow ? "antenna.radiowaves.left.and.right" : "antenna.radiowaves.left.and.right.slash")
+                .font(.title3)
+                .foregroundStyle(user.isAvailableNow ? .green : Theme.secondaryText)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Available Now")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.white)
+                Text(user.isAvailableNow ? "Customers can see you're online" : "Toggle on to show availability")
+                    .font(.caption)
+                    .foregroundStyle(Theme.secondaryText)
+            }
+
+            Spacer()
+
+            Toggle("", isOn: $user.isAvailableNow)
+                .labelsHidden()
+                .tint(.green)
+        }
+        .padding(16)
+        .background(user.isAvailableNow ? Color.green.opacity(0.08) : Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(user.isAvailableNow ? Color.green.opacity(0.3) : Theme.border, lineWidth: 1)
+        )
+    }
+
     private var rateSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 6) {
@@ -59,6 +90,17 @@ struct MyCalendarView: View {
                 Text("$\(Int(user.hourlyRate))/hr")
                     .font(.headline.bold())
                     .foregroundStyle(.white)
+            }
+
+            if user.hostTier != .free {
+                HStack(spacing: 6) {
+                    Image(systemName: user.hostTier == .elite ? "crown.fill" : "star.circle.fill")
+                        .font(.caption)
+                        .foregroundStyle(user.hostTier == .elite ? Theme.gold : Theme.secondaryText)
+                    Text("\(user.hostTier.title) — \(user.hostTier.feeLabel) platform fee")
+                        .font(.caption)
+                        .foregroundStyle(Theme.secondaryText)
+                }
             }
 
             HStack(spacing: 12) {
@@ -116,11 +158,12 @@ struct MyCalendarView: View {
                 .foregroundStyle(Theme.secondaryText)
 
             let rate = user.hourlyRate
+            let tier = user.hostTier
             VStack(spacing: 8) {
-                splitRow(hours: 1, rate: rate)
-                splitRow(hours: 2, rate: rate)
-                splitRow(hours: 4, rate: rate)
-                splitRow(hours: 8, rate: rate)
+                splitRow(hours: 1, rate: rate, tier: tier)
+                splitRow(hours: 2, rate: rate, tier: tier)
+                splitRow(hours: 4, rate: rate, tier: tier)
+                splitRow(hours: 8, rate: rate, tier: tier)
             }
         }
         .padding(14)
@@ -132,9 +175,10 @@ struct MyCalendarView: View {
         )
     }
 
-    private func splitRow(hours: Int, rate: Double) -> some View {
+    private func splitRow(hours: Int, rate: Double, tier: HostSubscriptionTier) -> some View {
         let hostEarnings = rate * Double(hours)
-        let customerPays = hostEarnings * 1.25
+        let feePercent = tier.platformFeePercent
+        let customerPays = hostEarnings + (hostEarnings * feePercent)
         return HStack {
             Text("\(hours) hr\(hours == 1 ? "" : "s")")
                 .font(.subheadline)

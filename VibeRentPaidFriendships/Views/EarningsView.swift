@@ -2,6 +2,7 @@ import SwiftUI
 
 struct EarningsView: View {
     @Binding var isDrawerOpen: Bool
+    @Binding var user: User
     @State private var showCashOut: Bool = false
     @State private var cashOutSuccess: Bool = false
 
@@ -30,9 +31,20 @@ struct EarningsView: View {
                             .font(.system(size: 36, weight: .bold))
                             .foregroundStyle(.white)
 
-                        Text("You keep 75% of every booking")
+                        Text("You keep \(Int((1 - user.hostTier.platformFeePercent) * 100))% of every booking")
                             .font(.caption)
                             .foregroundStyle(Theme.secondaryText)
+
+                        if user.hostTier != .free {
+                            HStack(spacing: 4) {
+                                Image(systemName: user.hostTier == .elite ? "crown.fill" : "star.circle.fill")
+                                    .font(.caption2)
+                                    .foregroundStyle(user.hostTier == .elite ? Theme.gold : Theme.secondaryText)
+                                Text("\(user.hostTier.title) — \(user.hostTier.feeLabel) fee")
+                                    .font(.caption2)
+                                    .foregroundStyle(Theme.secondaryText)
+                            }
+                        }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(24)
@@ -80,6 +92,8 @@ struct EarningsView: View {
                         )
                         .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
                     }
+
+                    revenueStreamsSection
 
                     HStack(spacing: 12) {
                         earningsStat(title: "This Week", value: "$86.25")
@@ -138,6 +152,44 @@ struct EarningsView: View {
             } message: {
                 Text("$\(String(format: "%.2f", totalEarnings)) is on its way to your bank account. This usually takes 1-3 business days.")
             }
+        }
+    }
+
+    private var revenueStreamsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Revenue Streams")
+                .font(.subheadline.bold())
+                .foregroundStyle(Theme.secondaryText)
+
+            VStack(spacing: 6) {
+                revenueRow(icon: "person.2.fill", title: "Bookings", amount: "$210.00")
+                revenueRow(icon: "gift.fill", title: "Referral Credits", amount: "$25.00")
+                revenueRow(icon: "shield.checkmark.fill", title: "Safety Shield Fees", amount: "$14.97")
+                revenueRow(icon: "bolt.fill", title: "Instant Boosts", amount: "$9.99")
+            }
+        }
+        .padding(14)
+        .background(Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
+    }
+
+    private func revenueRow(icon: String, title: String, amount: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundStyle(Theme.secondaryText)
+                .frame(width: 20)
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.white)
+            Spacer()
+            Text(amount)
+                .font(.caption.bold())
+                .foregroundStyle(.green)
         }
     }
 

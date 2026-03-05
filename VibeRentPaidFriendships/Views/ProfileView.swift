@@ -31,6 +31,11 @@ struct ProfileView: View {
                     }
 
                     ghostModeSection
+
+                    if user.role == .host {
+                        hostTierInfo
+                    }
+
                     menuSection
                     myPostsSection
                     logoutButton
@@ -47,13 +52,13 @@ struct ProfileView: View {
                 EditProfileSheet(viewModel: viewModel, user: $user)
             }
             .sheet(isPresented: $showSubscriptions) {
-                SubscriptionsView(userRole: user.role)
+                SubscriptionsView(userRole: user.role, user: $user)
             }
             .sheet(isPresented: $showReferral) {
                 ReferralView(user: user)
             }
             .sheet(isPresented: $showSettings) {
-                SettingsView(appViewModel: appViewModel)
+                SettingsView(appViewModel: appViewModel, user: $user)
             }
             .fullScreenCover(isPresented: $showAdmin) {
                 AdminDashboardView()
@@ -106,6 +111,16 @@ struct ProfileView: View {
             if user.hasBackgroundCheck {
                 BadgePill(icon: "shield.checkmark.fill", text: "BG Check", color: .green)
             }
+            if user.role == .host && user.hostTier != .free {
+                BadgePill(
+                    icon: user.hostTier == .elite ? "crown.fill" : "star.circle.fill",
+                    text: user.hostTier.title,
+                    color: user.hostTier == .elite ? Theme.gold : Theme.secondaryText
+                )
+            }
+            if user.hasPriorityPass {
+                BadgePill(icon: "bolt.shield.fill", text: "Priority", color: .blue)
+            }
         }
     }
 
@@ -142,6 +157,36 @@ struct ProfileView: View {
         .padding(.horizontal, 16)
     }
 
+    private var hostTierInfo: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Image(systemName: user.hostTier == .elite ? "crown.fill" : user.hostTier == .pro ? "star.circle.fill" : "person.fill")
+                    .foregroundStyle(user.hostTier == .elite ? Theme.gold : Theme.secondaryText)
+                Text(user.hostTier == .free ? "Free Host" : user.hostTier.title)
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.white)
+                Spacer()
+                Text("Fee: \(user.hostTier.feeLabel)")
+                    .font(.caption.bold())
+                    .foregroundStyle(Theme.secondaryText)
+            }
+
+            if user.hostTier == .free {
+                Text("Upgrade to Pro or Elite to reduce platform fees")
+                    .font(.caption)
+                    .foregroundStyle(Theme.secondaryText)
+            }
+        }
+        .padding(16)
+        .background(Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(user.hostTier == .elite ? Theme.gold.opacity(0.3) : Theme.border, lineWidth: 1)
+        )
+        .padding(.horizontal, 16)
+    }
+
     private var menuSection: some View {
         VStack(spacing: 2) {
             profileMenuItem(icon: "pencil.circle.fill", title: "Edit Profile", color: Theme.secondaryText) {
@@ -160,7 +205,7 @@ struct ProfileView: View {
                 showSubscriptions = true
             }
 
-            profileMenuItem(icon: "gift.fill", title: "Refer & Earn $15", color: Theme.secondaryText) {
+            profileMenuItem(icon: "gift.fill", title: "Refer & Earn $25", color: Theme.secondaryText) {
                 showReferral = true
             }
 

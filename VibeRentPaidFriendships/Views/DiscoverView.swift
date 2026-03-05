@@ -64,6 +64,14 @@ struct DiscoverView: View {
                 ) {
                     viewModel.verifiedOnly.toggle()
                 }
+
+                FilterChip(
+                    title: "Available Now",
+                    icon: "antenna.radiowaves.left.and.right",
+                    isActive: viewModel.availableNowOnly
+                ) {
+                    viewModel.availableNowOnly.toggle()
+                }
             }
             .contentMargins(.horizontal, 16)
         }
@@ -140,13 +148,23 @@ struct HostListCard: View {
                             .font(.caption2)
                             .foregroundStyle(Theme.verifiedBlue)
                     }
+
+                    if host.hostTier != .free {
+                        Text(host.hostTier == .elite ? "Elite" : "Pro")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(host.hostTier == .elite ? Theme.gold : Theme.secondaryText)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(host.hostTier == .elite ? Theme.gold.opacity(0.15) : Theme.buttonBackground)
+                            .clipShape(.capsule)
+                    }
                 }
 
                 HStack(spacing: 4) {
                     Text("$\(Int(host.hourlyRate))/hr")
                         .font(.subheadline.bold())
                         .foregroundStyle(.white)
-                    Text("+ 25% fee")
+                    Text("+ \(host.hostTier.feeLabel) fee")
                         .font(.caption2)
                         .foregroundStyle(Theme.secondaryText)
                 }
@@ -174,6 +192,17 @@ struct HostListCard: View {
                     }
                     .foregroundStyle(Theme.secondaryText)
                     .lineLimit(1)
+
+                    if host.isAvailableNow {
+                        HStack(spacing: 3) {
+                            Circle()
+                                .fill(.green)
+                                .frame(width: 6, height: 6)
+                            Text("Now")
+                                .font(.caption2.bold())
+                                .foregroundStyle(.green)
+                        }
+                    }
 
                     if host.hasBackgroundCheck {
                         Image(systemName: "shield.checkmark.fill")
@@ -203,7 +232,7 @@ struct HostListCard: View {
         .clipShape(.rect(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Theme.border, lineWidth: 1)
+                .stroke(host.hostTier == .elite ? Theme.gold.opacity(0.2) : Theme.border, lineWidth: 1)
         )
     }
 }
@@ -272,6 +301,8 @@ struct FilterSheet: View {
                 Section {
                     Toggle("Verified Only", isOn: $viewModel.verifiedOnly)
                         .tint(Theme.secondaryText)
+                    Toggle("Available Now", isOn: $viewModel.availableNowOnly)
+                        .tint(.green)
                 }
             }
             .navigationTitle("Filters")
