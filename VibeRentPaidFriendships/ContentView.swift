@@ -45,6 +45,7 @@ struct ContentView: View {
                             .foregroundStyle(.white)
                             .frame(width: 44, height: 44)
                     }
+                    .buttonStyle(.plain)
                     .padding(.leading, 8)
                     .padding(.top, 4)
                 }
