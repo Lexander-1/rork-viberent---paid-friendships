@@ -2,9 +2,11 @@ import SwiftUI
 
 struct FeedView: View {
     @Bindable var viewModel: FeedViewModel
+    @Bindable var notificationsViewModel: NotificationsViewModel
     let users: [User]
     @Binding var isDrawerOpen: Bool
     @State var themeManager: ThemeManager = ThemeManager.shared
+    @State private var showNotifications: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -57,11 +59,23 @@ struct FeedView: View {
 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        viewModel.showCreatePost = true
+                        showNotifications = true
                     } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(themeManager.secondaryText)
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "bell.fill")
+                                .font(.body)
+                                .foregroundStyle(themeManager.secondaryText)
+
+                            if notificationsViewModel.hasUnread {
+                                Text("\(notificationsViewModel.unreadCount)")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .frame(minWidth: 15, minHeight: 15)
+                                    .background(Theme.accentRed)
+                                    .clipShape(Circle())
+                                    .offset(x: 8, y: -8)
+                            }
+                        }
                     }
                 }
             }
@@ -72,6 +86,9 @@ struct FeedView: View {
             }
             .sheet(isPresented: $viewModel.showCreatePost) {
                 CreatePostView(feedViewModel: viewModel)
+            }
+            .sheet(isPresented: $showNotifications) {
+                NotificationsView(viewModel: notificationsViewModel)
             }
             .overlay(alignment: .bottomTrailing) {
                 Button {

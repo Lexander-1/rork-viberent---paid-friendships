@@ -5,6 +5,7 @@ struct ContentView: View {
     @State private var feedViewModel = FeedViewModel()
     @State private var discoverViewModel = DiscoverViewModel()
     @State private var chatViewModel = ChatViewModel()
+    @State private var notificationsViewModel = NotificationsViewModel()
     @State private var selectedPage: AppPage = .feed
     @State private var isDrawerOpen: Bool = false
 
@@ -52,7 +53,7 @@ struct ContentView: View {
     private var currentPageView: some View {
         switch selectedPage {
         case .feed:
-            FeedView(viewModel: feedViewModel, users: User.sampleUsers, isDrawerOpen: $isDrawerOpen)
+            FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, isDrawerOpen: $isDrawerOpen)
         case .discover:
             DiscoverView(viewModel: discoverViewModel, isDrawerOpen: $isDrawerOpen)
         case .calendar:
