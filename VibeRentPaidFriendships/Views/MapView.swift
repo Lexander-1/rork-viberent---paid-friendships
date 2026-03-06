@@ -5,6 +5,7 @@ struct MapTabView: View {
     let users: [User]
     let selectedCity: String
     var feedViewModel: FeedViewModel?
+    var currentUserRole: UserRole = .customer
     @Binding var isDrawerOpen: Bool
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedUser: User?
@@ -109,7 +110,7 @@ struct MapTabView: View {
             }
             .sheet(item: $selectedUser) { user in
                 NavigationStack {
-                    HostProfileView(host: user)
+                    HostProfileView(host: user, viewerRole: currentUserRole)
                 }
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)

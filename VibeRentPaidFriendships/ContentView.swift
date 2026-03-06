@@ -53,15 +53,27 @@ struct ContentView: View {
     private var currentPageView: some View {
         switch selectedPage {
         case .feed:
-            FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, isDrawerOpen: $isDrawerOpen)
+            FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
         case .discover:
-            DiscoverView(viewModel: discoverViewModel, isDrawerOpen: $isDrawerOpen)
+            if appViewModel.currentUser.role == .customer {
+                DiscoverView(viewModel: discoverViewModel, isDrawerOpen: $isDrawerOpen)
+            } else {
+                FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
+            }
         case .calendar:
-            MyCalendarView(user: $appViewModel.currentUser, isDrawerOpen: $isDrawerOpen)
+            if appViewModel.currentUser.role == .host {
+                MyCalendarView(user: $appViewModel.currentUser, isDrawerOpen: $isDrawerOpen)
+            } else {
+                FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
+            }
         case .map:
-            MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity, feedViewModel: feedViewModel, isDrawerOpen: $isDrawerOpen)
+            MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity, feedViewModel: feedViewModel, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
         case .earnings:
-            EarningsView(isDrawerOpen: $isDrawerOpen, user: $appViewModel.currentUser)
+            if appViewModel.currentUser.role == .host {
+                EarningsView(isDrawerOpen: $isDrawerOpen, user: $appViewModel.currentUser)
+            } else {
+                FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
+            }
         case .chat:
             ChatListView(viewModel: chatViewModel, isDrawerOpen: $isDrawerOpen)
         case .profile:

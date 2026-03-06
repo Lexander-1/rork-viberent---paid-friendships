@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HostProfileView: View {
     let host: User
+    var viewerRole: UserRole = .customer
     @State private var showBooking: Bool = false
     @State private var showReport: Bool = false
     @State private var showReviews: Bool = false
@@ -144,19 +145,21 @@ struct HostProfileView: View {
                 }
                 .padding(16)
 
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Pricing")
-                        .font(.headline)
-                        .foregroundStyle(.white)
+                if viewerRole == .customer {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Pricing")
+                            .font(.headline)
+                            .foregroundStyle(.white)
 
-                    VStack(spacing: 8) {
-                        pricingRow(hours: 1)
-                        pricingRow(hours: 2)
-                        pricingRow(hours: 4)
-                        pricingRow(hours: 8)
+                        VStack(spacing: 8) {
+                            pricingRow(hours: 1)
+                            pricingRow(hours: 2)
+                            pricingRow(hours: 4)
+                            pricingRow(hours: 8)
+                        }
                     }
+                    .padding(16)
                 }
-                .padding(16)
 
                 Spacer(minLength: 100)
             }
@@ -170,15 +173,22 @@ struct HostProfileView: View {
                         Text("$\(Int(host.hourlyRate))/hr")
                             .font(.title3.bold())
                             .foregroundStyle(.white)
-                        Text("+ \(host.hostTier.feeLabel) service fee")
-                            .font(.caption)
-                            .foregroundStyle(Theme.secondaryText)
+                        if viewerRole == .customer {
+                            Text("+ \(host.hostTier.feeLabel) service fee")
+                                .font(.caption)
+                                .foregroundStyle(Theme.secondaryText)
+                        }
                     }
 
                     Spacer()
 
-                    GradientButton("Book Now", icon: "calendar", isFullWidth: false) {
-                        showBooking = true
+                    if viewerRole == .customer {
+                        GradientButton("Book Now", icon: "calendar", isFullWidth: false) {
+                            showBooking = true
+                        }
+                    } else {
+                        GradientButton("Message", icon: "bubble.left.fill", isFullWidth: false) {
+                        }
                     }
                 }
                 .padding(.horizontal, 16)
@@ -202,7 +212,7 @@ struct HostProfileView: View {
             BookingFlowView(host: host)
         }
         .fullScreenCover(isPresented: $showReviews) {
-            AllReviewsView(host: host, reviews: hostReviews, hasBookedBefore: hasBookedBefore)
+            AllReviewsView(host: host, reviews: hostReviews, hasBookedBefore: viewerRole == .customer && hasBookedBefore)
         }
         .alert("Report User", isPresented: $showReport) {
             Button("Report", role: .destructive) { }

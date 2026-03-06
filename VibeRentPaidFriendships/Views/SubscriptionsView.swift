@@ -132,12 +132,14 @@ struct SubscriptionsView: View {
                 action: {}
             )
 
-            boostItem(
-                icon: "shield.checkmark.fill",
-                title: "Safety Shield — $4.99/booking",
-                description: "Extra photo + GPS verification at check-in",
-                action: {}
-            )
+            if userRole == .customer {
+                boostItem(
+                    icon: "shield.checkmark.fill",
+                    title: "Safety Shield — $4.99/booking",
+                    description: "Extra photo + GPS verification at check-in",
+                    action: {}
+                )
+            }
         }
     }
 

@@ -4,6 +4,7 @@ struct FeedView: View {
     @Bindable var viewModel: FeedViewModel
     @Bindable var notificationsViewModel: NotificationsViewModel
     let users: [User]
+    var currentUserRole: UserRole = .customer
     @Binding var isDrawerOpen: Bool
     @State var themeManager: ThemeManager = ThemeManager.shared
     @State private var showNotifications: Bool = false
@@ -38,7 +39,7 @@ struct FeedView: View {
             .refreshable { await viewModel.refresh() }
             .background(themeManager.background)
             .navigationDestination(for: User.self) { user in
-                HostProfileView(host: user)
+                HostProfileView(host: user, viewerRole: currentUserRole)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

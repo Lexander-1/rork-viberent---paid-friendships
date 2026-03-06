@@ -136,7 +136,7 @@ struct ProfileView: View {
         HStack(spacing: 32) {
             statItem(value: "\(user.reviewCount)", label: "Reviews")
             statItem(value: String(format: "%.1f", user.rating), label: "Rating")
-            if user.isHost {
+            if user.role == .host {
                 statItem(value: "$\(Int(user.hourlyRate))", label: "Per Hour")
             }
         }
@@ -197,7 +197,7 @@ struct ProfileView: View {
                 profileMenuItem(icon: "checkmark.seal.fill", title: "Get Verified", color: Theme.verifiedBlue) { }
             }
 
-            if !user.hasBackgroundCheck {
+            if user.role == .host && !user.hasBackgroundCheck {
                 profileMenuItem(icon: "shield.checkmark.fill", title: "Background Check — $9.99", color: .green) { }
             }
 
