@@ -53,18 +53,18 @@ struct ContentView: View {
     private var currentPageView: some View {
         switch selectedPage {
         case .feed:
-            FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
+            FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen, selectedPage: $selectedPage)
         case .discover:
             if appViewModel.currentUser.role == .customer {
                 DiscoverView(viewModel: discoverViewModel, isDrawerOpen: $isDrawerOpen)
             } else {
-                FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
+                FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen, selectedPage: $selectedPage)
             }
         case .calendar:
             if appViewModel.currentUser.role == .host {
                 MyCalendarView(user: $appViewModel.currentUser, isDrawerOpen: $isDrawerOpen)
             } else {
-                FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
+                FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen, selectedPage: $selectedPage)
             }
         case .map:
             MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity, feedViewModel: feedViewModel, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
@@ -72,7 +72,7 @@ struct ContentView: View {
             if appViewModel.currentUser.role == .host {
                 EarningsView(isDrawerOpen: $isDrawerOpen, user: $appViewModel.currentUser)
             } else {
-                FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
+                FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen, selectedPage: $selectedPage)
             }
         case .chat:
             ChatListView(viewModel: chatViewModel, isDrawerOpen: $isDrawerOpen)

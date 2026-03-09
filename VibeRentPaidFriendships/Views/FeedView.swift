@@ -6,8 +6,10 @@ struct FeedView: View {
     let users: [User]
     var currentUserRole: UserRole = .customer
     @Binding var isDrawerOpen: Bool
+    @Binding var selectedPage: AppPage
     @State var themeManager: ThemeManager = ThemeManager.shared
     @State private var showNotifications: Bool = false
+    @State private var showCommentsForPost: FeedPost?
 
     var body: some View {
         NavigationStack {
@@ -39,7 +41,7 @@ struct FeedView: View {
             .refreshable { await viewModel.refresh() }
             .background(themeManager.background)
             .navigationDestination(for: User.self) { user in
-                HostProfileView(host: user, viewerRole: currentUserRole)
+                HostProfileView(host: user, viewerRole: currentUserRole, posts: viewModel.postsForUser(user.id), feedViewModel: viewModel)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -92,7 +94,12 @@ struct FeedView: View {
                 CreatePostView(feedViewModel: viewModel)
             }
             .sheet(isPresented: $showNotifications) {
-                NotificationsView(viewModel: notificationsViewModel)
+                NotificationsView(viewModel: notificationsViewModel) { notification in
+                    handleNotificationNavigation(notification)
+                }
+            }
+            .sheet(item: $showCommentsForPost) { post in
+                CommentsSheet(post: post, feedViewModel: viewModel)
             }
             .overlay(alignment: .bottomTrailing) {
                 Button {
@@ -113,6 +120,20 @@ struct FeedView: View {
                 .padding(.trailing, 20)
                 .padding(.bottom, 24)
             }
+        }
+    }
+
+    private func handleNotificationNavigation(_ notification: AppNotification) {
+        switch notification.type {
+        case .like, .reply, .mention:
+            if let postId = notification.relatedPostId,
+               let post = viewModel.posts.first(where: { $0.id == postId }) {
+                showCommentsForPost = post
+            }
+        case .bookingConfirmed, .bookingCancelled, .bookingUpdate, .bookingReschedule:
+            selectedPage = .chat
+        case .newFollower:
+            selectedPage = .profile
         }
     }
 }
@@ -256,18 +277,7 @@ struct FeedPostCard: View {
 
     @ViewBuilder
     private var boostedBackground: some View {
-        if post.isBoosted {
-            RoundedRectangle(cornerRadius: 0)
-                .fill(themeManager.background)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 0)
-                        .stroke(Theme.gold.opacity(0.5), lineWidth: 2)
-                )
-                .shadow(color: Theme.gold.opacity(0.25), radius: 12, x: 0, y: 0)
-                .shadow(color: Theme.gold.opacity(0.1), radius: 4, x: 0, y: 0)
-        } else {
-            Color.clear
-        }
+        Color.clear
     }
 }
 

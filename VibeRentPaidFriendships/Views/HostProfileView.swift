@@ -3,6 +3,8 @@ import SwiftUI
 struct HostProfileView: View {
     let host: User
     var viewerRole: UserRole = .customer
+    var posts: [FeedPost] = []
+    var feedViewModel: FeedViewModel?
     @State private var showBooking: Bool = false
     @State private var showReport: Bool = false
     @State private var showReviews: Bool = false
@@ -161,6 +163,10 @@ struct HostProfileView: View {
                     .padding(16)
                 }
 
+                if !posts.isEmpty {
+                    userPostsSection
+                }
+
                 Spacer(minLength: 100)
             }
         }
@@ -220,6 +226,58 @@ struct HostProfileView: View {
         } message: {
             Text("This profile will be flagged for review.")
         }
+    }
+
+    private var userPostsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Posts")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                Spacer()
+            }
+
+            ForEach(posts, id: \.id) { post in
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(post.caption)
+                        .font(.subheadline)
+                        .foregroundStyle(.white)
+                        .lineLimit(3)
+
+                    HStack(spacing: 16) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "heart.fill")
+                                .font(.caption2)
+                            Text("\(post.likeCount)")
+                                .font(.caption)
+                        }
+                        .foregroundStyle(Theme.secondaryText)
+
+                        HStack(spacing: 4) {
+                            Image(systemName: "bubble.right")
+                                .font(.caption2)
+                            Text("\(post.commentCount)")
+                                .font(.caption)
+                        }
+                        .foregroundStyle(Theme.secondaryText)
+
+                        Spacer()
+
+                        Text(post.createdAt, style: .relative)
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .padding(14)
+                .background(Theme.cardBackground)
+                .clipShape(.rect(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Theme.border, lineWidth: 1)
+                )
+            }
+        }
+        .padding(16)
     }
 
     private func pricingRow(hours: Int) -> some View {

@@ -110,7 +110,7 @@ struct MapTabView: View {
             }
             .sheet(item: $selectedUser) { user in
                 NavigationStack {
-                    HostProfileView(host: user, viewerRole: currentUserRole)
+                    HostProfileView(host: user, viewerRole: currentUserRole, posts: FeedPost.samplePosts.filter { $0.authorId == user.id })
                 }
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)

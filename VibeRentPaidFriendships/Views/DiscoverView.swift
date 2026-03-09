@@ -33,7 +33,7 @@ struct DiscoverView: View {
             }
             .sheet(item: $selectedUser) { user in
                 NavigationStack {
-                    HostProfileView(host: user, viewerRole: .customer)
+                    HostProfileView(host: user, viewerRole: .customer, posts: FeedPost.samplePosts.filter { $0.authorId == user.id })
                 }
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)

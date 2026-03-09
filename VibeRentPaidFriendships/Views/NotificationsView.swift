@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NotificationsView: View {
     @Bindable var viewModel: NotificationsViewModel
+    var onNavigate: ((AppNotification) -> Void)?
     @Environment(\.dismiss) private var dismiss
     @State var themeManager: ThemeManager = ThemeManager.shared
 
@@ -21,10 +22,15 @@ struct NotificationsView: View {
                             sectionHeader(section)
 
                             ForEach(items, id: \.id) { notification in
-                                NotificationRow(notification: notification, themeManager: themeManager)
-                                    .onTapGesture {
-                                        viewModel.markAsRead(notification.id)
+                                Button {
+                                    viewModel.markAsRead(notification.id)
+                                    dismiss()
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                        onNavigate?(notification)
                                     }
+                                } label: {
+                                    NotificationRow(notification: notification, themeManager: themeManager)
+                                }
 
                                 Divider()
                                     .background(themeManager.border)
