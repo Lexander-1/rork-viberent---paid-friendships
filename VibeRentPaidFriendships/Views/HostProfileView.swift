@@ -238,43 +238,7 @@ struct HostProfileView: View {
             }
 
             ForEach(posts, id: \.id) { post in
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(post.caption)
-                        .font(.subheadline)
-                        .foregroundStyle(.white)
-                        .lineLimit(3)
-
-                    HStack(spacing: 16) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "heart.fill")
-                                .font(.caption2)
-                            Text("\(post.likeCount)")
-                                .font(.caption)
-                        }
-                        .foregroundStyle(Theme.secondaryText)
-
-                        HStack(spacing: 4) {
-                            Image(systemName: "bubble.right")
-                                .font(.caption2)
-                            Text("\(post.commentCount)")
-                                .font(.caption)
-                        }
-                        .foregroundStyle(Theme.secondaryText)
-
-                        Spacer()
-
-                        Text(post.createdAt, style: .relative)
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                    }
-                }
-                .padding(14)
-                .background(Theme.cardBackground)
-                .clipShape(.rect(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Theme.border, lineWidth: 1)
-                )
+                ProfilePostCard(post: post, feedViewModel: feedViewModel)
             }
         }
         .padding(16)
@@ -307,6 +271,7 @@ struct AllReviewsView: View {
     let reviews: [Review]
     let hasBookedBefore: Bool
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedRating: Int = 0
     @State private var showWriteReview: Bool = false
 
     var body: some View {
@@ -334,27 +299,33 @@ struct AllReviewsView: View {
                             .stroke(Theme.border, lineWidth: 1)
                     )
 
-                    if hasBookedBefore {
-                        Button {
-                            showWriteReview = true
-                        } label: {
-                            HStack(spacing: 8) {
-                                Image(systemName: "pencil.line")
-                                Text("Write a Review")
+                    VStack(spacing: 12) {
+                        Text("Tap a star to leave a review")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.secondaryText)
+
+                        HStack(spacing: 16) {
+                            ForEach(1...5, id: \.self) { star in
+                                Button {
+                                    selectedRating = star
+                                    showWriteReview = true
+                                } label: {
+                                    Image(systemName: "star.fill")
+                                        .font(.system(size: 36))
+                                        .foregroundStyle(Theme.secondaryText.opacity(0.4))
+                                }
+                                .sensoryFeedback(.impact(flexibility: .soft), trigger: selectedRating)
                             }
-                            .font(.subheadline.bold())
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(Theme.buttonBackground)
-                            .clipShape(.rect(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
-                            )
-                            .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
                         }
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(20)
+                    .background(Theme.cardBackground)
+                    .clipShape(.rect(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.border, lineWidth: 1)
+                    )
 
                     if reviews.isEmpty {
                         VStack(spacing: 12) {
@@ -385,10 +356,198 @@ struct AllReviewsView: View {
                 }
             }
             .sheet(isPresented: $showWriteReview) {
-                ReviewView(booking: Booking.sampleBookings.first!) { }
+                WriteReviewSheet(host: host, initialRating: selectedRating)
             }
         }
         .preferredColorScheme(.dark)
+    }
+}
+
+struct WriteReviewSheet: View {
+    let host: User
+    let initialRating: Int
+    @Environment(\.dismiss) private var dismiss
+    @State private var rating: Int = 0
+    @State private var reviewText: String = ""
+    @State private var submitted: Bool = false
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 28) {
+                    VStack(spacing: 14) {
+                        AvatarView(name: host.name, size: 64, userId: host.id, isVerified: host.isVerified)
+
+                        Text("Rate \(host.name)")
+                            .font(.title3.bold())
+                            .foregroundStyle(.white)
+                    }
+                    .padding(.top, 20)
+
+                    HStack(spacing: 14) {
+                        ForEach(1...5, id: \.self) { star in
+                            Button {
+                                withAnimation(.spring(duration: 0.25)) {
+                                    rating = star
+                                }
+                            } label: {
+                                Image(systemName: star <= rating ? "star.fill" : "star")
+                                    .font(.system(size: 36))
+                                    .foregroundStyle(star <= rating ? Theme.accentRed : Theme.secondaryText)
+                                    .scaleEffect(star <= rating ? 1.1 : 1.0)
+                            }
+                            .sensoryFeedback(.impact(flexibility: .soft), trigger: rating)
+                        }
+                    }
+
+                    if rating > 0 {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(ratingLabel)
+                                .font(.subheadline.bold())
+                                .foregroundStyle(Theme.accentRed)
+                                .frame(maxWidth: .infinity)
+
+                            TextField("Tell others about your experience...", text: $reviewText, axis: .vertical)
+                                .lineLimit(4...8)
+                                .padding(16)
+                                .background(Theme.cardBackground)
+                                .clipShape(.rect(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Theme.border, lineWidth: 1)
+                                )
+                        }
+                        .padding(.horizontal, 16)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+
+                    if rating > 0 {
+                        GradientButton("Submit Review", icon: "paperplane.fill") {
+                            submitted = true
+                            dismiss()
+                        }
+                        .padding(.horizontal, 16)
+                        .opacity(!reviewText.isEmpty ? 1 : 0.4)
+                        .disabled(reviewText.isEmpty)
+                        .transition(.opacity)
+                    }
+
+                    Spacer(minLength: 40)
+                }
+            }
+            .background(Theme.background)
+            .navigationTitle("Write a Review")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+            .onAppear {
+                rating = initialRating
+            }
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .preferredColorScheme(.dark)
+    }
+
+    private var ratingLabel: String {
+        switch rating {
+        case 1: return "Poor"
+        case 2: return "Fair"
+        case 3: return "Good"
+        case 4: return "Great"
+        case 5: return "Amazing!"
+        default: return ""
+        }
+    }
+}
+
+struct ProfilePostCard: View {
+    let post: FeedPost
+    var feedViewModel: FeedViewModel?
+    @State private var showComments: Bool = false
+    @State private var showShareSheet: Bool = false
+    @State private var isLiked: Bool = false
+    @State private var likeCount: Int = 0
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(post.caption)
+                .font(.subheadline)
+                .foregroundStyle(.white)
+                .lineLimit(4)
+
+            Text(post.createdAt, style: .relative)
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+
+            Divider()
+                .background(Theme.border)
+
+            HStack(spacing: 0) {
+                Button {
+                    isLiked.toggle()
+                    likeCount += isLiked ? 1 : -1
+                    feedViewModel?.toggleLike(for: post.id)
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: isLiked ? "heart.fill" : "heart")
+                            .foregroundStyle(isLiked ? Theme.accentRed : Theme.secondaryText)
+                        Text("\(likeCount)")
+                            .foregroundStyle(Theme.secondaryText)
+                    }
+                    .font(.caption)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                }
+                .sensoryFeedback(.impact(flexibility: .soft), trigger: isLiked)
+
+                Button {
+                    showComments = true
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "bubble.right")
+                        Text("\(post.commentCount)")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(Theme.secondaryText)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                }
+
+                Button {
+                    showShareSheet = true
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "square.and.arrow.up")
+                        Text("Share")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(Theme.secondaryText)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                }
+            }
+        }
+        .padding(14)
+        .background(Theme.cardBackground)
+        .clipShape(.rect(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.border, lineWidth: 1)
+        )
+        .onAppear {
+            isLiked = post.isLiked
+            likeCount = post.likeCount
+        }
+        .sheet(isPresented: $showComments) {
+            CommentsSheet(post: post, feedViewModel: feedViewModel)
+        }
+        .sheet(isPresented: $showShareSheet) {
+            SharePostSheet(post: post)
+        }
     }
 }
 
