@@ -449,14 +449,14 @@ struct RescheduleSheet: View {
     }
 }
 
-nonisolated struct AvailabilitySlot: Identifiable, Sendable {
+nonisolated struct AvailabilitySlot: Identifiable, Hashable, Sendable {
     let id: String = UUID().uuidString
     let date: Date
     let startTime: Date
     let endTime: Date
 }
 
-struct BookingEntry: Identifiable, Sendable {
+nonisolated struct BookingEntry: Identifiable, Hashable, Sendable {
     let id: String
     let seekerName: String
     var date: Date

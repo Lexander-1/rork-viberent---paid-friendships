@@ -392,7 +392,7 @@ struct ReviewCard: View {
     }
 }
 
-struct FlowLayout: Layout {
+nonisolated struct FlowLayout: Layout {
     var spacing: CGFloat = 8
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
