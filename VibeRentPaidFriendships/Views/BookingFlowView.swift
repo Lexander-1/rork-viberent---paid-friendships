@@ -222,7 +222,7 @@ struct BookingFlowView: View {
         VStack(spacing: 12) {
             Text("Price Breakdown")
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             VStack(spacing: 10) {
@@ -247,7 +247,7 @@ struct BookingFlowView: View {
                     Spacer()
                     Text("$\(Int(pricing.total))")
                         .font(.title2.bold())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
                 }
             }
             .padding(16)

@@ -152,7 +152,7 @@ struct AdminDashboardView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("User \(i) — ID Verification")
                                 .font(.subheadline.bold())
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.primaryText)
                             Text("Submitted \(i) day\(i > 1 ? "s" : "") ago")
                                 .font(.caption)
                                 .foregroundStyle(Theme.secondaryText)
@@ -195,7 +195,7 @@ struct AdminDashboardView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("BG Check Request #\(i)")
                                 .font(.subheadline.bold())
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.primaryText)
                             Text("Payment: $9.99 received")
                                 .font(.caption)
                                 .foregroundStyle(.green)
@@ -230,13 +230,13 @@ struct AdminDashboardView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Top Cities")
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
 
                     ForEach(City.allCities.prefix(5)) { city in
                         HStack {
                             Text(city.name)
                                 .font(.subheadline)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.primaryText)
                             Spacer()
                             Text("\(city.activeUsers) users")
                                 .font(.subheadline.bold())
@@ -264,7 +264,7 @@ struct AdminDashboardView: View {
 
             Text(value)
                 .font(.title3.bold())
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
 
             Text(title)
                 .font(.caption)

@@ -167,7 +167,7 @@ struct RecursiveCommentRow: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(comment.authorName)
                         .font(depth == 0 ? .subheadline.bold() : .caption.bold())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
                     Text(comment.createdAt, style: .relative)
                         .font(.caption2)
                         .foregroundStyle(.tertiary)

@@ -56,7 +56,7 @@ struct ConversationRow: View {
                 HStack {
                     Text(otherName)
                         .font(.subheadline.bold())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
                     Spacer()
                     Text(conversation.lastMessageAt, style: .relative)
                         .font(.caption2)

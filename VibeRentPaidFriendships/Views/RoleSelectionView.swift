@@ -12,7 +12,7 @@ struct RoleSelectionView: View {
 
                 Text("Choose your role")
                     .font(.title.bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
 
                 VStack(spacing: 16) {
                     Button {
@@ -21,7 +21,7 @@ struct RoleSelectionView: View {
                         VStack(spacing: 8) {
                             Text("Host")
                                 .font(.title3.bold())
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.primaryText)
                             Text("Offer my time and earn money")
                                 .font(.subheadline)
                                 .foregroundStyle(Theme.secondaryText)
@@ -43,7 +43,7 @@ struct RoleSelectionView: View {
                         VStack(spacing: 8) {
                             Text("Customer")
                                 .font(.title3.bold())
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.primaryText)
                             Text("Book time to hang out")
                                 .font(.subheadline)
                                 .foregroundStyle(Theme.secondaryText)

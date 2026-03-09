@@ -28,7 +28,7 @@ struct OnboardingView: View {
                                 Text(page.title)
                                     .font(.system(.title, weight: .bold))
                                     .multilineTextAlignment(.center)
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(Theme.primaryText)
 
                                 Text(page.subtitle)
                                     .font(.body)

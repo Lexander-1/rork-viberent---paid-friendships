@@ -18,7 +18,7 @@ struct PlatonicAgreementView: View {
                 VStack(spacing: 16) {
                     Text("Platonic Only")
                         .font(.title.bold())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
 
                     Text("VibeRent is a platonic companionship platform. All interactions must remain respectful and non-romantic. Any inappropriate behavior results in immediate account termination.")
                         .font(.body)
@@ -36,7 +36,7 @@ struct PlatonicAgreementView: View {
                             .foregroundStyle(isChecked ? .white : Theme.secondaryText)
                         Text("I agree to platonic-only interactions")
                             .font(.subheadline)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
                     }
                 }
 

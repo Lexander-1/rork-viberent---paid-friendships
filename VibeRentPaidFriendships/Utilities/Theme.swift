@@ -8,7 +8,7 @@ class ThemeManager {
 
     var background: Color {
         switch currentTheme {
-        case .dark: return Color(hex: 0x121212)
+        case .dark: return Color(hex: 0x181818)
         case .light: return Color(hex: 0xF5F5F5)
         case .monotoneBlue: return Color(hex: 0x001F3F)
         case .monotoneRed: return Color(hex: 0x3F0000)
@@ -18,7 +18,7 @@ class ThemeManager {
 
     var cardBackground: Color {
         switch currentTheme {
-        case .dark: return Color(hex: 0x1E1E1E)
+        case .dark: return Color(hex: 0x0F1A2B)
         case .light: return Color(hex: 0xFFFFFF)
         case .monotoneBlue: return Color(hex: 0x002B55)
         case .monotoneRed: return Color(hex: 0x551111)
@@ -29,21 +29,21 @@ class ThemeManager {
     var primaryText: Color {
         switch currentTheme {
         case .light: return Color(hex: 0x1A1A1A)
-        default: return .white
+        default: return Color(hex: 0xEDEDED)
         }
     }
 
     var secondaryText: Color {
         switch currentTheme {
         case .light: return Color(hex: 0x666666)
-        default: return Color(hex: 0xA0A0A0)
+        default: return Color(hex: 0xB0B0B0)
         }
     }
 
     var border: Color {
         switch currentTheme {
         case .light: return Color(hex: 0xDDDDDD)
-        default: return Color(hex: 0x333333)
+        default: return Color(hex: 0x1E2D42)
         }
     }
 
@@ -53,14 +53,14 @@ class ThemeManager {
 }
 
 enum Theme {
-    static let background = Color(hex: 0x121212)
-    static let cardBackground = Color(hex: 0x1E1E1E)
-    static let accent = Color(hex: 0x6B46C1)
-    static let buttonBackground = Color(hex: 0x2A2A2A)
-    static let primaryText = Color.white
-    static let secondaryText = Color(hex: 0xA0A0A0)
-    static let border = Color(hex: 0x333333)
-    static let verifiedBlue = Color(red: 0.7, green: 0.75, blue: 0.85)
+    static let background = Color(hex: 0x181818)
+    static let cardBackground = Color(hex: 0x0F1A2B)
+    static let accent = Color(hex: 0xA8C7FA)
+    static let buttonBackground = Color(hex: 0x0A2540)
+    static let primaryText = Color(hex: 0xEDEDED)
+    static let secondaryText = Color(hex: 0xB0B0B0)
+    static let border = Color(hex: 0x1E2D42)
+    static let verifiedBlue = Color(hex: 0xA8C7FA)
     static let accentRed = Color(hex: 0x9C2A2A)
     static let dangerRed = Color(hex: 0x9C2A2A)
     static let gold = Color(hex: 0xFFD700)

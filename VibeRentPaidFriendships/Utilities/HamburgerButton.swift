@@ -10,7 +10,7 @@ struct HamburgerButton: ToolbarContent {
             } label: {
                 Image(systemName: "line.3.horizontal")
                     .font(.title3.bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
             }
             .buttonStyle(.plain)
         }

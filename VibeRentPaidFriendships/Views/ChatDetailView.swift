@@ -160,7 +160,7 @@ struct ChatRescheduleSheet: View {
                 VStack(spacing: 8) {
                     Text("Reschedule with \(otherName)")
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
                     Text("Pick a new date and time. The other party must tap \"Agree to New Time\" for the change to lock in.")
                         .font(.caption)
                         .foregroundStyle(Theme.secondaryText)
@@ -236,7 +236,7 @@ struct MessageBubble: View {
 
                 Text(message.text)
                     .font(.subheadline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
                     .background(isFromCurrentUser ? Theme.buttonBackground : Color.white.opacity(0.1))

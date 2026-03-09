@@ -29,7 +29,7 @@ struct EarningsView: View {
 
                         Text("$\(String(format: "%.2f", totalEarnings))")
                             .font(.system(size: 36, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
 
                         Text("You keep \(Int((1 - user.hostTier.platformFeePercent) * 100))% of every booking")
                             .font(.caption)
@@ -61,7 +61,7 @@ struct EarningsView: View {
                             .foregroundStyle(Theme.secondaryText)
                         Text("$\(String(format: "%.2f", totalEarnings))")
                             .font(.system(size: 28, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(16)
@@ -103,14 +103,14 @@ struct EarningsView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Recent Payouts")
                             .font(.headline)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
 
                         ForEach(samplePayouts, id: \.0) { payout in
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(payout.0)
                                         .font(.subheadline)
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(Theme.primaryText)
                                     Text(payout.2, style: .date)
                                         .font(.caption)
                                         .foregroundStyle(Theme.secondaryText)
@@ -185,7 +185,7 @@ struct EarningsView: View {
                 .frame(width: 20)
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
             Spacer()
             Text(amount)
                 .font(.caption.bold())
@@ -200,7 +200,7 @@ struct EarningsView: View {
                 .foregroundStyle(Theme.secondaryText)
             Text(value)
                 .font(.title3.bold())
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
         }
         .frame(maxWidth: .infinity)
         .padding(16)

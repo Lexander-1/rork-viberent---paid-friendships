@@ -58,7 +58,7 @@ struct MapTabView: View {
                                         .shadow(color: Theme.accentRed.opacity(0.5), radius: 6, y: 0)
                                     Text(user.name.split(separator: " ").first.map(String.init) ?? user.name)
                                         .font(.caption2.bold())
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(Theme.primaryText)
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 2)
                                         .background(Theme.cardBackground.opacity(0.9))
@@ -98,7 +98,7 @@ struct MapTabView: View {
                         HStack(spacing: 6) {
                             Text(selectedCity)
                                 .font(.headline)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.primaryText)
                             Image(systemName: "chevron.down")
                                 .font(.caption.bold())
                                 .foregroundStyle(Theme.secondaryText)

@@ -28,7 +28,7 @@ struct AvatarView: View {
 
             Text(initials)
                 .font(.system(size: size * 0.35, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
         }
         .overlay(alignment: .bottomTrailing) {
             if isVerified {

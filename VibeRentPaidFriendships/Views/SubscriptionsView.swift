@@ -110,7 +110,7 @@ struct SubscriptionsView: View {
         VStack(spacing: 12) {
             Text("One-Time Purchases")
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             if userRole == .host {
@@ -225,7 +225,7 @@ struct SubscriptionsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(tier.title)
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
                     Text(tier.price)
                         .font(.subheadline)
                         .foregroundStyle(Theme.secondaryText)

@@ -25,7 +25,7 @@ struct GradientButton: View {
                 Text(title)
                     .font(isSmall ? .subheadline.bold() : .body.bold())
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.primaryText)
             .frame(maxWidth: isFullWidth ? .infinity : nil)
             .padding(.horizontal, isSmall ? 16 : 24)
             .padding(.vertical, isSmall ? 10 : 16)

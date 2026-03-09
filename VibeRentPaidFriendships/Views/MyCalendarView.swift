@@ -60,7 +60,7 @@ struct MyCalendarView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Available Now")
                     .font(.subheadline.bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
                 Text(user.isAvailableNow ? "Customers can see you're online" : "Toggle on to show availability")
                     .font(.caption)
                     .foregroundStyle(Theme.secondaryText)
@@ -86,10 +86,10 @@ struct MyCalendarView: View {
             HStack(spacing: 6) {
                 Text("My Current Rate:")
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
                 Text("$\(Int(user.hourlyRate))/hr")
                     .font(.headline.bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
             }
 
             if user.hostTier != .free {
@@ -182,7 +182,7 @@ struct MyCalendarView: View {
         return HStack {
             Text("\(hours) hr\(hours == 1 ? "" : "s")")
                 .font(.subheadline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
                 .frame(width: 50, alignment: .leading)
             Spacer()
             Text("They pay $\(Int(customerPays))")
@@ -201,7 +201,7 @@ struct MyCalendarView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Upcoming Bookings")
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
 
             if sampleBookings.isEmpty {
                 Text("No upcoming bookings")
@@ -218,7 +218,7 @@ struct MyCalendarView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(booking.seekerName)
                                     .font(.subheadline.bold())
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(Theme.primaryText)
                                 HStack(spacing: 8) {
                                     Text(booking.duration)
                                         .font(.caption)
@@ -306,7 +306,7 @@ struct MyCalendarView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Add Availability")
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
 
             VStack(spacing: 12) {
                 DatePicker("Date", selection: $availabilityDate, displayedComponents: .date)
@@ -358,7 +358,7 @@ struct MyCalendarView: View {
                         HStack {
                             Text(slot.date, style: .date)
                                 .font(.subheadline)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.primaryText)
                             Spacer()
                             Text("\(slot.startTime, style: .time) – \(slot.endTime, style: .time)")
                                 .font(.caption)
@@ -389,7 +389,7 @@ struct RescheduleSheet: View {
                 VStack(spacing: 8) {
                     Text("Reschedule with \(booking.seekerName)")
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
                     Text("Pick a new date and time. The other party must agree for the change to lock in.")
                         .font(.caption)
                         .foregroundStyle(Theme.secondaryText)

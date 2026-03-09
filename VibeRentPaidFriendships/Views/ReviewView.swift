@@ -16,7 +16,7 @@ struct ReviewView: View {
 
                         Text("How was your hang with \(booking.hostName)?")
                             .font(.title3.bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
                             .multilineTextAlignment(.center)
 
                         Text(booking.duration.label + " \u{2022} " + booking.city)

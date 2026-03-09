@@ -88,7 +88,7 @@ struct ProfileView: View {
 
             Text(user.name)
                 .font(.title2.bold())
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
 
             HStack(spacing: 4) {
                 Image(systemName: "mappin")
@@ -147,7 +147,7 @@ struct ProfileView: View {
             ForEach(user.interests, id: \.self) { interest in
                 Text(interest)
                     .font(.caption.bold())
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundStyle(Theme.primaryText.opacity(0.9))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(Color.white.opacity(0.08))
@@ -164,7 +164,7 @@ struct ProfileView: View {
                     .foregroundStyle(user.hostTier == .elite ? Theme.gold : Theme.secondaryText)
                 Text(user.hostTier == .free ? "Free Host" : user.hostTier.title)
                     .font(.subheadline.bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
                 Spacer()
                 Text("Fee: \(user.hostTier.feeLabel)")
                     .font(.caption.bold())
@@ -227,7 +227,7 @@ struct ProfileView: View {
             HStack {
                 Text("My Posts")
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
                 Spacer()
             }
             .padding(.horizontal, 16)
@@ -314,7 +314,7 @@ struct ProfileView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Ghost Mode")
                     .font(.subheadline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
                 Text("Hide your location from the map")
                     .font(.caption)
                     .foregroundStyle(Theme.secondaryText)
@@ -365,7 +365,7 @@ struct ProfileView: View {
         VStack(spacing: 4) {
             Text(value)
                 .font(.title3.bold())
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
             Text(label)
                 .font(.caption)
                 .foregroundStyle(Theme.secondaryText)
@@ -382,7 +382,7 @@ struct ProfileView: View {
 
                 Text(title)
                     .font(.subheadline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
 
                 Spacer()
 

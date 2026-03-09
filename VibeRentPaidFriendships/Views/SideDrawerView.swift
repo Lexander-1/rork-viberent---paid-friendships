@@ -16,7 +16,7 @@ struct SideDrawerView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("VibeRent")
                         .font(.title2.bold())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
                         .padding(.top, 60)
                         .padding(.bottom, 32)
                         .padding(.horizontal, 24)
@@ -30,7 +30,7 @@ struct SideDrawerView: View {
                                 Text(page.title)
                                     .font(.body)
                                     .fontWeight(selectedPage == page ? .bold : .regular)
-                                    .foregroundStyle(selectedPage == page ? .white : Theme.secondaryText)
+                                    .foregroundStyle(selectedPage == page ? Theme.primaryText : Theme.secondaryText)
                                 Spacer()
                             }
                             .padding(.vertical, 14)

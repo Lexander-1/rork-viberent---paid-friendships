@@ -26,7 +26,7 @@ struct SignUpView: View {
                     VStack(spacing: 8) {
                         Text("Create Account")
                             .font(.system(.largeTitle, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
                         Text("Join the VibeRent community")
                             .font(.subheadline)
                             .foregroundStyle(Theme.secondaryText)
@@ -40,7 +40,7 @@ struct SignUpView: View {
 
                         Image(systemName: "camera.fill")
                             .font(.title2)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
                     }
 
                     VStack(spacing: 16) {

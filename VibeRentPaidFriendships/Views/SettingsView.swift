@@ -164,7 +164,7 @@ struct SettingsView: View {
 
     private func themePreviewColor(_ theme: AppTheme) -> Color {
         switch theme {
-        case .dark: return Color(hex: 0x121212)
+        case .dark: return Color(hex: 0x181818)
         case .light: return Color(hex: 0xF5F5F5)
         case .monotoneBlue: return Color(hex: 0x001F3F)
         case .monotoneRed: return Color(hex: 0x3F0000)

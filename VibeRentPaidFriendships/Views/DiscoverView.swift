@@ -104,7 +104,7 @@ struct DiscoverView: View {
 
             Text("No hosts nearby yet")
                 .font(.title3.bold())
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
 
             Text("Try another city or adjust your filters")
                 .font(.subheadline)
@@ -148,7 +148,7 @@ struct HostListCard: View {
                 HStack(spacing: 6) {
                     Text(host.name)
                         .font(.subheadline.bold())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
                         .lineLimit(1)
 
                     if host.isVerified {
@@ -171,7 +171,7 @@ struct HostListCard: View {
                 HStack(spacing: 4) {
                     Text("$\(Int(host.hourlyRate))/hr")
                         .font(.subheadline.bold())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.primaryText)
                     Text("+ \(host.hostTier.feeLabel) fee")
                         .font(.caption2)
                         .foregroundStyle(Theme.secondaryText)
@@ -189,7 +189,7 @@ struct HostListCard: View {
                             .foregroundStyle(Theme.secondaryText)
                         Text(String(format: "%.1f", host.rating))
                             .font(.caption2.bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
                     }
 
                     HStack(spacing: 3) {
@@ -261,7 +261,7 @@ struct FilterChip: View {
                 Text(title)
                     .font(.caption.bold())
             }
-            .foregroundStyle(isActive ? .white : Theme.secondaryText)
+            .foregroundStyle(isActive ? Theme.primaryText : Theme.secondaryText)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(isActive ? Theme.buttonBackground : Theme.cardBackground)

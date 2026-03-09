@@ -28,7 +28,7 @@ struct HostProfileView: View {
                         HStack(spacing: 6) {
                             Text(host.name)
                                 .font(.title2.bold())
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.primaryText)
                             if host.isVerified {
                                 Image(systemName: "checkmark.seal.fill")
                                     .font(.subheadline)
@@ -39,7 +39,7 @@ struct HostProfileView: View {
                         HStack(spacing: 8) {
                             Text("$\(Int(host.hourlyRate))/hr")
                                 .font(.title3.bold())
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.primaryText)
 
                             if host.hostTier != .free {
                                 Text(host.hostTier.title)
@@ -80,7 +80,7 @@ struct HostProfileView: View {
                             }
                         }
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(Theme.primaryText.opacity(0.9))
                     }
 
                     HStack(spacing: 12) {
@@ -137,7 +137,7 @@ struct HostProfileView: View {
                         ForEach(host.interests, id: \.self) { interest in
                             Text(interest)
                                 .font(.caption.bold())
-                                .foregroundStyle(.white.opacity(0.9))
+                                .foregroundStyle(Theme.primaryText.opacity(0.9))
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(Color.white.opacity(0.08))
@@ -233,7 +233,7 @@ struct HostProfileView: View {
             HStack {
                 Text("Posts")
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.primaryText)
                 Spacer()
             }
 
@@ -250,11 +250,11 @@ struct HostProfileView: View {
         return HStack {
             Text(label)
                 .font(.subheadline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
             Spacer()
             Text("$\(Int(pricing.total))")
                 .font(.subheadline.bold())
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
         }
         .padding(12)
         .background(Theme.cardBackground)
@@ -476,7 +476,7 @@ struct ProfilePostCard: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(post.caption)
                 .font(.subheadline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
                 .lineLimit(4)
 
             Text(post.createdAt, style: .relative)

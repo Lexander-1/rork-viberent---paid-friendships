@@ -16,7 +16,7 @@ struct ReferralView: View {
 
                         Text("Refer & Earn")
                             .font(.title.bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
 
                         Text("Both you and your friend get $25 credit after their first completed booking!")
                             .font(.subheadline)
@@ -33,7 +33,7 @@ struct ReferralView: View {
 
                         Text(user.referralCode)
                             .font(.system(.title, design: .monospaced).bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
                             .padding(.horizontal, 32)
                             .padding(.vertical, 16)
                             .background(Theme.cardBackground)
@@ -62,7 +62,7 @@ struct ReferralView: View {
                     VStack(spacing: 12) {
                         Text("Your Earnings")
                             .font(.headline)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.primaryText)
                             .frame(maxWidth: .infinity, alignment: .leading)
 
                         HStack {
@@ -72,7 +72,7 @@ struct ReferralView: View {
                                     .foregroundStyle(Theme.secondaryText)
                                 Text("$\(Int(user.referralCredits))")
                                     .font(.title.bold())
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(Theme.primaryText)
                             }
                             Spacer()
                         }

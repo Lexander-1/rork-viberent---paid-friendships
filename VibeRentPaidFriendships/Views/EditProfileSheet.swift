@@ -98,7 +98,7 @@ struct EditProfileSheet: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Personal Info")
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
 
             VStack(spacing: 12) {
                 editField("Name", text: $viewModel.editName, icon: "person.fill")
@@ -133,7 +133,7 @@ struct EditProfileSheet: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Interests")
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.primaryText)
 
             editField("Coffee, Hiking, Art...", text: $viewModel.editInterests, icon: "heart.fill")
         }
