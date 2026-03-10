@@ -6,6 +6,10 @@ struct CrewInfoView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab: CrewInfoTab = .media
 
+    private var crewAvatar: Image? {
+        viewModel.crewAvatarImages[crew.id]
+    }
+
     nonisolated enum CrewInfoTab: String, CaseIterable, Sendable {
         case media = "Media"
         case voiceNotes = "Voice Notes"
@@ -53,19 +57,27 @@ struct CrewInfoView: View {
 
     private var headerSection: some View {
         VStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Theme.accentRed.opacity(0.5), Theme.buttonBackground],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+            if let crewAvatar {
+                crewAvatar
+                    .resizable()
+                    .scaledToFill()
                     .frame(width: 80, height: 80)
-                Image(systemName: "person.3.fill")
-                    .font(.system(size: 30))
-                    .foregroundStyle(Theme.primaryText.opacity(0.8))
+                    .clipShape(Circle())
+            } else {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Theme.accentRed.opacity(0.5), Theme.buttonBackground],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 80, height: 80)
+                    Image(systemName: "person.3.fill")
+                        .font(.system(size: 30))
+                        .foregroundStyle(Theme.primaryText.opacity(0.8))
+                }
             }
 
             VStack(spacing: 4) {

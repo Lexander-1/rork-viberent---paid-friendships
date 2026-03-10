@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 @Observable
 @MainActor
@@ -8,12 +9,14 @@ class CrewViewModel {
     var replyingTo: CrewMessage?
     var isRecording: Bool = false
     var recordingSeconds: Int = 0
+    var crewAvatarImages: [String: Image] = [:]
 
-    func createCrew(name: String, interestTag: String?) {
+    func createCrew(name: String, interestTag: String?, avatarImage: Image?) {
+        let crewId = UUID().uuidString
         let crew = Crew(
-            id: UUID().uuidString,
+            id: crewId,
             name: name,
-            photoURL: nil,
+            photoURL: avatarImage != nil ? "local_avatar" : nil,
             interestTag: interestTag,
             creatorId: "current",
             memberIds: ["current"],
@@ -21,6 +24,9 @@ class CrewViewModel {
             messages: [],
             createdAt: Date()
         )
+        if let img = avatarImage {
+            crewAvatarImages[crewId] = img
+        }
         crews.insert(crew, at: 0)
     }
 
@@ -39,6 +45,7 @@ class CrewViewModel {
             type: .text,
             replyToId: replyingTo?.id,
             replyToText: replyingTo?.text,
+            replyToSenderName: replyingTo?.senderName,
             sharedPostId: nil,
             sharedPostAuthor: nil,
             sharedPostCaption: nil,
@@ -65,6 +72,7 @@ class CrewViewModel {
             type: .voiceNote,
             replyToId: nil,
             replyToText: nil,
+            replyToSenderName: nil,
             sharedPostId: nil,
             sharedPostAuthor: nil,
             sharedPostCaption: nil,
@@ -89,6 +97,7 @@ class CrewViewModel {
             type: .photo,
             replyToId: nil,
             replyToText: nil,
+            replyToSenderName: nil,
             sharedPostId: nil,
             sharedPostAuthor: nil,
             sharedPostCaption: nil,
@@ -113,6 +122,7 @@ class CrewViewModel {
             type: .sharedPost,
             replyToId: nil,
             replyToText: nil,
+            replyToSenderName: nil,
             sharedPostId: post.id,
             sharedPostAuthor: post.authorName,
             sharedPostCaption: post.caption,
@@ -137,6 +147,7 @@ class CrewViewModel {
             type: .bookingAlert,
             replyToId: nil,
             replyToText: nil,
+            replyToSenderName: nil,
             sharedPostId: nil,
             sharedPostAuthor: nil,
             sharedPostCaption: nil,

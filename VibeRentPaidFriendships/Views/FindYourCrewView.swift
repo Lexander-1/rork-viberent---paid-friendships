@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 struct FindYourCrewView: View {
     @Bindable var viewModel: CrewViewModel
@@ -88,7 +89,7 @@ struct FindYourCrewView: View {
             LazyVStack(spacing: 12) {
                 ForEach(viewModel.crews, id: \.id) { crew in
                     NavigationLink(value: crew) {
-                        CrewCard(crew: crew)
+                        CrewCard(crew: crew, avatarImage: viewModel.crewAvatarImages[crew.id])
                     }
                     .buttonStyle(.plain)
                 }
@@ -102,22 +103,31 @@ struct FindYourCrewView: View {
 
 struct CrewCard: View {
     let crew: Crew
+    var avatarImage: Image?
 
     var body: some View {
         HStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Theme.accentRed.opacity(0.4), Theme.buttonBackground],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+            if let img = avatarImage {
+                img
+                    .resizable()
+                    .scaledToFill()
                     .frame(width: 56, height: 56)
-                Image(systemName: "person.3.fill")
-                    .font(.system(size: 20))
-                    .foregroundStyle(Theme.primaryText.opacity(0.8))
+                    .clipShape(Circle())
+            } else {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Theme.accentRed.opacity(0.4), Theme.buttonBackground],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 56, height: 56)
+                    Image(systemName: "person.3.fill")
+                        .font(.system(size: 20))
+                        .foregroundStyle(Theme.primaryText.opacity(0.8))
+                }
             }
 
             VStack(alignment: .leading, spacing: 5) {
@@ -175,10 +185,57 @@ struct CreateCrewSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var crewName: String = ""
     @State private var interestTag: String = ""
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var selectedImage: Image?
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
+                PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                    if let selectedImage {
+                        selectedImage
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 90, height: 90)
+                            .clipShape(Circle())
+                            .overlay(alignment: .bottomTrailing) {
+                                Image(systemName: "camera.circle.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(Theme.accentRed)
+                                    .background(Circle().fill(Theme.background).padding(1))
+                                    .offset(x: 2, y: 2)
+                            }
+                    } else {
+                        ZStack {
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Theme.accentRed.opacity(0.3), Theme.buttonBackground],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 90, height: 90)
+                            VStack(spacing: 4) {
+                                Image(systemName: "camera.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(Theme.primaryText.opacity(0.6))
+                                Text("Add Photo")
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundStyle(Theme.secondaryText)
+                            }
+                        }
+                    }
+                }
+                .onChange(of: selectedPhotoItem) { _, newItem in
+                    Task {
+                        if let newItem, let data = try? await newItem.loadTransferable(type: Data.self),
+                           let uiImage = UIImage(data: data) {
+                            selectedImage = Image(uiImage: uiImage)
+                        }
+                    }
+                }
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Crew Name")
                         .font(.subheadline.bold())
@@ -208,7 +265,7 @@ struct CreateCrewSheet: View {
                 }
 
                 GradientButton("Create Crew", icon: "person.3.fill") {
-                    viewModel.createCrew(name: crewName, interestTag: interestTag.isEmpty ? nil : interestTag)
+                    viewModel.createCrew(name: crewName, interestTag: interestTag.isEmpty ? nil : interestTag, avatarImage: selectedImage)
                     dismiss()
                 }
                 .opacity(crewName.isEmpty ? 0.4 : 1)
@@ -226,7 +283,7 @@ struct CreateCrewSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.large])
         .presentationDragIndicator(.visible)
     }
 }
@@ -245,6 +302,10 @@ struct CrewChatView: View {
 
     private var isCreator: Bool {
         crewData.creatorId == "current"
+    }
+
+    private var crewAvatar: Image? {
+        viewModel.crewAvatarImages[crew.id]
     }
 
     var body: some View {
@@ -269,11 +330,10 @@ struct CrewChatView: View {
             }
             .defaultScrollAnchor(.bottom)
 
-            if let reply = viewModel.replyingTo {
-                replyBar(reply)
-            }
-
             Divider().background(Theme.border)
+            if let reply = viewModel.replyingTo {
+                replyPreview(reply)
+            }
             inputBar
         }
         .background(Theme.background)
@@ -282,19 +342,27 @@ struct CrewChatView: View {
             ToolbarItem(placement: .principal) {
                 Button { showCrewInfo = true } label: {
                     HStack(spacing: 10) {
-                        ZStack {
-                            Circle()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Theme.accentRed.opacity(0.4), Theme.buttonBackground],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
+                        if let crewAvatar {
+                            crewAvatar
+                                .resizable()
+                                .scaledToFill()
                                 .frame(width: 32, height: 32)
-                            Image(systemName: "person.3.fill")
-                                .font(.system(size: 12))
-                                .foregroundStyle(Theme.primaryText.opacity(0.8))
+                                .clipShape(Circle())
+                        } else {
+                            ZStack {
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [Theme.accentRed.opacity(0.4), Theme.buttonBackground],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .frame(width: 32, height: 32)
+                                Image(systemName: "person.3.fill")
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(Theme.primaryText.opacity(0.8))
+                            }
                         }
                         VStack(alignment: .leading, spacing: 1) {
                             Text(crewData.name)
@@ -340,30 +408,30 @@ struct CrewChatView: View {
         }
     }
 
-    private func replyBar(_ reply: CrewMessage) -> some View {
-        HStack(spacing: 8) {
-            Rectangle()
+    private func replyPreview(_ reply: CrewMessage) -> some View {
+        HStack(spacing: 10) {
+            RoundedRectangle(cornerRadius: 1.5)
                 .fill(Theme.accentRed)
-                .frame(width: 3)
-            VStack(alignment: .leading, spacing: 2) {
+                .frame(width: 3, height: 32)
+            VStack(alignment: .leading, spacing: 1) {
                 Text(reply.senderName)
-                    .font(.caption2.bold())
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Theme.accentRed)
                 Text(reply.text)
-                    .font(.caption2)
+                    .font(.system(size: 12))
                     .foregroundStyle(Theme.secondaryText)
                     .lineLimit(1)
             }
-            Spacer()
+            Spacer(minLength: 0)
             Button { viewModel.replyingTo = nil } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.body)
-                    .foregroundStyle(Theme.secondaryText)
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.secondaryText.opacity(0.7))
+                    .frame(width: 24, height: 24)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .background(Theme.cardBackground)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 6)
     }
 
     private var inputBar: some View {
@@ -463,20 +531,6 @@ struct CrewMessageBubble: View {
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(Theme.accentRed)
                     }
-                }
-
-                if let replyText = message.replyToText {
-                    HStack(spacing: 6) {
-                        Rectangle()
-                            .fill(Theme.accentRed.opacity(0.5))
-                            .frame(width: 2)
-                        Text(replyText)
-                            .font(.caption2)
-                            .foregroundStyle(Theme.secondaryText)
-                            .lineLimit(1)
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
                 }
 
                 bubbleContent
@@ -607,18 +661,44 @@ struct CrewMessageBubble: View {
             .clipShape(.rect(cornerRadius: 14))
 
         case .text:
-            Text(message.text)
-                .font(.subheadline)
-                .foregroundStyle(Theme.primaryText)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(isFromCurrentUser ? Theme.buttonBackground : Color(hex: 0x262626))
-                .clipShape(.rect(
-                    topLeadingRadius: 18,
-                    bottomLeadingRadius: isFromCurrentUser ? 18 : 4,
-                    bottomTrailingRadius: isFromCurrentUser ? 4 : 18,
-                    topTrailingRadius: 18
-                ))
+            VStack(alignment: .leading, spacing: 0) {
+                if let replyText = message.replyToText {
+                    HStack(spacing: 0) {
+                        RoundedRectangle(cornerRadius: 1)
+                            .fill(Theme.accentRed)
+                            .frame(width: 2)
+                        VStack(alignment: .leading, spacing: 1) {
+                            if let senderName = message.replyToSenderName {
+                                Text(senderName)
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundStyle(Theme.accentRed)
+                                    .lineLimit(1)
+                            }
+                            Text(replyText)
+                                .font(.system(size: 12))
+                                .foregroundStyle(Theme.secondaryText)
+                                .lineLimit(1)
+                        }
+                        .padding(.leading, 6)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.top, 10)
+                    .padding(.bottom, 4)
+                }
+                Text(message.text)
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.primaryText)
+                    .padding(.horizontal, 14)
+                    .padding(.top, message.replyToText != nil ? 2 : 10)
+                    .padding(.bottom, 10)
+            }
+            .background(isFromCurrentUser ? Theme.buttonBackground : Color(hex: 0x262626))
+            .clipShape(.rect(
+                topLeadingRadius: 18,
+                bottomLeadingRadius: isFromCurrentUser ? 18 : 4,
+                bottomTrailingRadius: isFromCurrentUser ? 4 : 18,
+                topTrailingRadius: 18
+            ))
         }
     }
 }
