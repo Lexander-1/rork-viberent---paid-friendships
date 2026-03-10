@@ -16,9 +16,7 @@ struct FindYourCrewView: View {
             }
             .background(Theme.background)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    HamburgerButton(isDrawerOpen: $isDrawerOpen)
-                }
+                HamburgerButton(isDrawerOpen: $isDrawerOpen)
                 ToolbarItem(placement: .principal) {
                     Text("Find Your Crew")
                         .font(.headline)
