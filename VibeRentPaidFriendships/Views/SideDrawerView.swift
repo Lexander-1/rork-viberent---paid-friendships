@@ -4,6 +4,7 @@ struct SideDrawerView: View {
     let userRole: UserRole
     @Binding var selectedPage: AppPage
     @Binding var isOpen: Bool
+    @State var themeManager: ThemeManager = ThemeManager.shared
 
     var body: some View {
         ZStack(alignment: .leading) {
@@ -40,6 +41,38 @@ struct SideDrawerView: View {
                     }
 
                     Spacer()
+
+                    HStack {
+                        Spacer()
+                        Button {
+                            withAnimation(.spring(duration: 0.3)) {
+                                if themeManager.currentTheme == .light {
+                                    themeManager.currentTheme = .dark
+                                } else {
+                                    themeManager.currentTheme = .light
+                                }
+                            }
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .fill(Theme.buttonBackground)
+                                    .frame(width: 48, height: 48)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
+                                    )
+                                    .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
+
+                                Image(systemName: themeManager.currentTheme == .light ? "sun.max.fill" : "moon.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(themeManager.currentTheme == .light ? .orange : Theme.primaryText)
+                                    .contentTransition(.symbolEffect(.replace))
+                            }
+                        }
+                        .sensoryFeedback(.impact(flexibility: .soft), trigger: themeManager.currentTheme)
+                        Spacer()
+                    }
+                    .padding(.bottom, 32)
                 }
                 .frame(width: 260)
                 .background(Theme.cardBackground)
@@ -56,7 +89,7 @@ enum AppPage: String, Hashable, CaseIterable {
     case feed
     case discover
     case calendar
-    case map
+    case crew
     case earnings
     case chat
     case profile
@@ -66,7 +99,7 @@ enum AppPage: String, Hashable, CaseIterable {
         case .feed: return "Feed"
         case .discover: return "Discover"
         case .calendar: return "My Calendar"
-        case .map: return "Map"
+        case .crew: return "Find Your Crew"
         case .earnings: return "Earnings"
         case .chat: return "Chat"
         case .profile: return "Profile"
@@ -76,9 +109,9 @@ enum AppPage: String, Hashable, CaseIterable {
     static func pages(for role: UserRole) -> [AppPage] {
         switch role {
         case .customer:
-            return [.feed, .discover, .map, .chat, .profile]
+            return [.feed, .discover, .crew, .chat, .profile]
         case .host:
-            return [.feed, .calendar, .map, .earnings, .chat, .profile]
+            return [.feed, .calendar, .crew, .earnings, .chat, .profile]
         }
     }
 }

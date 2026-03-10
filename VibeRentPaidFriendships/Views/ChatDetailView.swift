@@ -8,6 +8,7 @@ struct ChatDetailView: View {
     @State private var showRescheduleSheet: Bool = false
     @State private var bookingActive: Bool = true
     @State private var bookingStatus: String = "Active"
+    @State private var showDeletedMessages: Bool = false
 
     private var messages: [ChatMessage] {
         viewModel.messages[conversation.id] ?? []
@@ -40,6 +41,11 @@ struct ChatDetailView: View {
                 LazyVStack(spacing: 8) {
                     ForEach(messages, id: \.id) { message in
                         MessageBubble(message: message, isFromCurrentUser: message.senderId == "current")
+                            .contextMenu {
+                                Button("Delete Message", systemImage: "trash", role: .destructive) {
+                                    viewModel.deleteMessage(message, in: conversation.id)
+                                }
+                            }
                     }
                 }
                 .padding(16)
@@ -77,13 +83,23 @@ struct ChatDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Button("Report Chat", systemImage: "flag") { }
-                    Button("Share Location", systemImage: "location") { }
-                    Button("Emergency SOS", systemImage: "sos", role: .destructive) { }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .foregroundStyle(Theme.secondaryText)
+                HStack(spacing: 14) {
+                    Button {
+                        showDeletedMessages = true
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.secondaryText)
+                    }
+
+                    Menu {
+                        Button("Report Chat", systemImage: "flag") { }
+                        Button("Share Location", systemImage: "location") { }
+                        Button("Emergency SOS", systemImage: "sos", role: .destructive) { }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .foregroundStyle(Theme.secondaryText)
+                    }
                 }
             }
         }
@@ -100,6 +116,9 @@ struct ChatDetailView: View {
             ChatRescheduleSheet(otherName: otherName) { newDate in
                 bookingStatus = "Reschedule Requested"
             }
+        }
+        .fullScreenCover(isPresented: $showDeletedMessages) {
+            DeletedMessagesView(viewModel: viewModel, conversationId: conversation.id)
         }
     }
 
@@ -144,6 +163,98 @@ struct ChatDetailView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .background(Theme.cardBackground)
+        }
+    }
+}
+
+struct DeletedMessagesView: View {
+    @Bindable var viewModel: ChatViewModel
+    let conversationId: String
+    @Environment(\.dismiss) private var dismiss
+
+    private var deletedMessages: [ChatMessage] {
+        viewModel.deletedMessages[conversationId] ?? []
+    }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if deletedMessages.isEmpty {
+                    VStack(spacing: 16) {
+                        Image(systemName: "trash.slash")
+                            .font(.system(size: 40))
+                            .foregroundStyle(Theme.secondaryText)
+                        Text("No deleted messages")
+                            .font(.title3.bold())
+                            .foregroundStyle(Theme.primaryText)
+                        Text("Messages you delete will appear here for 24 hours before being permanently removed.")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.secondaryText)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                    }
+                } else {
+                    List {
+                        ForEach(deletedMessages, id: \.id) { message in
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Text(message.senderName)
+                                        .font(.caption.bold())
+                                        .foregroundStyle(Theme.primaryText)
+                                    Spacer()
+                                    Text(message.createdAt, style: .relative)
+                                        .font(.caption2)
+                                        .foregroundStyle(.tertiary)
+                                }
+
+                                Text(message.text)
+                                    .font(.subheadline)
+                                    .foregroundStyle(Theme.secondaryText)
+
+                                HStack {
+                                    Text("Auto-deletes in 24h")
+                                        .font(.caption2)
+                                        .foregroundStyle(Theme.accentRed.opacity(0.7))
+
+                                    Spacer()
+
+                                    Button {
+                                        viewModel.recoverMessage(message, in: conversationId)
+                                    } label: {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "arrow.uturn.backward")
+                                                .font(.caption2)
+                                            Text("Recover")
+                                                .font(.caption.bold())
+                                        }
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(Theme.buttonBackground)
+                                        .clipShape(.rect(cornerRadius: 8))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
+                                        )
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 4)
+                            .listRowBackground(Theme.cardBackground)
+                        }
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                }
+            }
+            .background(Theme.background)
+            .navigationTitle("Deleted Messages")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
         }
     }
 }
@@ -216,7 +327,6 @@ struct ChatRescheduleSheet: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .preferredColorScheme(.dark)
     }
 }
 

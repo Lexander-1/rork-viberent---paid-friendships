@@ -6,6 +6,7 @@ struct ContentView: View {
     @State private var discoverViewModel = DiscoverViewModel()
     @State private var chatViewModel = ChatViewModel()
     @State private var notificationsViewModel = NotificationsViewModel()
+    @State private var crewViewModel = CrewViewModel()
     @State private var selectedPage: AppPage = .feed
     @State private var isDrawerOpen: Bool = false
     @State private var hasLaunched: Bool = false
@@ -72,8 +73,8 @@ struct ContentView: View {
             } else {
                 FeedView(viewModel: feedViewModel, notificationsViewModel: notificationsViewModel, users: User.sampleUsers, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen, selectedPage: $selectedPage)
             }
-        case .map:
-            MapTabView(users: User.sampleUsers, selectedCity: feedViewModel.selectedCity, feedViewModel: feedViewModel, currentUserRole: appViewModel.currentUser.role, isDrawerOpen: $isDrawerOpen)
+        case .crew:
+            FindYourCrewView(viewModel: crewViewModel, isDrawerOpen: $isDrawerOpen)
         case .earnings:
             if appViewModel.currentUser.role == .host {
                 EarningsView(isDrawerOpen: $isDrawerOpen, user: $appViewModel.currentUser)

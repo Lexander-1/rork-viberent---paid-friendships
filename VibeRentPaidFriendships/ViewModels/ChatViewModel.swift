@@ -5,6 +5,7 @@ import SwiftUI
 class ChatViewModel {
     var conversations: [Conversation] = Conversation.sampleConversations
     var messages: [String: [ChatMessage]] = ChatMessage.sampleMessages
+    var deletedMessages: [String: [ChatMessage]] = [:]
     var newMessageText: String = ""
 
     func sendMessage(in conversationId: String, senderId: String, senderName: String) {
@@ -24,6 +25,17 @@ class ChatViewModel {
             conversations[idx].lastMessageAt = Date()
         }
         newMessageText = ""
+    }
+
+    func deleteMessage(_ message: ChatMessage, in conversationId: String) {
+        messages[conversationId]?.removeAll { $0.id == message.id }
+        deletedMessages[conversationId, default: []].append(message)
+    }
+
+    func recoverMessage(_ message: ChatMessage, in conversationId: String) {
+        deletedMessages[conversationId]?.removeAll { $0.id == message.id }
+        messages[conversationId, default: []].append(message)
+        messages[conversationId]?.sort { $0.createdAt < $1.createdAt }
     }
 
     func otherParticipantName(in conversation: Conversation, currentUserId: String) -> String {

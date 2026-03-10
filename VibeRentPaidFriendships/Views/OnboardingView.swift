@@ -20,9 +20,20 @@ struct OnboardingView: View {
                         VStack(spacing: 32) {
                             Spacer()
 
-                            Image(systemName: page.icon)
-                                .font(.system(size: 56))
-                                .foregroundStyle(Theme.secondaryText)
+                            VStack(spacing: 16) {
+                                HStack(spacing: 8) {
+                                    Text("Vibe")
+                                        .font(.system(size: 28, weight: .bold))
+                                        .foregroundStyle(Theme.primaryText)
+                                    Text("Rent")
+                                        .font(.system(size: 28, weight: .bold))
+                                        .foregroundStyle(Theme.accentRed)
+                                }
+
+                                Image(systemName: page.icon)
+                                    .font(.system(size: 48))
+                                    .foregroundStyle(index == 1 ? Color(hex: 0xC77A7A) : Theme.secondaryText)
+                            }
 
                             VStack(spacing: 16) {
                                 Text(page.title)
@@ -61,7 +72,7 @@ struct OnboardingView: View {
                         .padding(.horizontal, 24)
                     } else {
                         Button {
-                            currentPage += 1
+                            withAnimation { currentPage += 1 }
                         } label: {
                             Text("Next")
                                 .font(.body.bold())
