@@ -43,7 +43,10 @@ class CrewViewModel {
             sharedPostAuthor: nil,
             sharedPostCaption: nil,
             bookingInfo: nil,
-            voiceNoteDuration: nil
+            voiceNoteDuration: nil,
+            imageURL: nil,
+            fileName: nil,
+            fileSize: nil
         )
         if let idx = crews.firstIndex(where: { $0.id == crewId }) {
             crews[idx].messages.append(message)
@@ -66,7 +69,34 @@ class CrewViewModel {
             sharedPostAuthor: nil,
             sharedPostCaption: nil,
             bookingInfo: nil,
-            voiceNoteDuration: duration
+            voiceNoteDuration: duration,
+            imageURL: nil,
+            fileName: nil,
+            fileSize: nil
+        )
+        if let idx = crews.firstIndex(where: { $0.id == crewId }) {
+            crews[idx].messages.append(message)
+        }
+    }
+
+    func sendPhoto(in crewId: String, senderId: String, senderName: String, imageURL: String) {
+        let message = CrewMessage(
+            id: UUID().uuidString,
+            senderId: senderId,
+            senderName: senderName,
+            text: "Photo",
+            createdAt: Date(),
+            type: .photo,
+            replyToId: nil,
+            replyToText: nil,
+            sharedPostId: nil,
+            sharedPostAuthor: nil,
+            sharedPostCaption: nil,
+            bookingInfo: nil,
+            voiceNoteDuration: nil,
+            imageURL: imageURL,
+            fileName: nil,
+            fileSize: nil
         )
         if let idx = crews.firstIndex(where: { $0.id == crewId }) {
             crews[idx].messages.append(message)
@@ -87,7 +117,10 @@ class CrewViewModel {
             sharedPostAuthor: post.authorName,
             sharedPostCaption: post.caption,
             bookingInfo: nil,
-            voiceNoteDuration: nil
+            voiceNoteDuration: nil,
+            imageURL: nil,
+            fileName: nil,
+            fileSize: nil
         )
         if let idx = crews.firstIndex(where: { $0.id == crewId }) {
             crews[idx].messages.append(message)
@@ -108,11 +141,26 @@ class CrewViewModel {
             sharedPostAuthor: nil,
             sharedPostCaption: nil,
             bookingInfo: "Booked for \(hours)h @ $\(price)",
-            voiceNoteDuration: nil
+            voiceNoteDuration: nil,
+            imageURL: nil,
+            fileName: nil,
+            fileSize: nil
         )
         if let idx = crews.firstIndex(where: { $0.id == crewId }) {
             crews[idx].messages.append(message)
         }
+    }
+
+    func mediaMessages(for crew: Crew) -> [CrewMessage] {
+        crew.messages.filter { $0.type == .photo && $0.imageURL != nil }
+    }
+
+    func voiceNoteMessages(for crew: Crew) -> [CrewMessage] {
+        crew.messages.filter { $0.type == .voiceNote }
+    }
+
+    func fileMessages(for crew: Crew) -> [CrewMessage] {
+        crew.messages.filter { $0.type == .file }
     }
 
     func membersForCrew(_ crew: Crew) -> [User] {
