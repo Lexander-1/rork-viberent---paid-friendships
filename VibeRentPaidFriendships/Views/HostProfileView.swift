@@ -32,7 +32,7 @@ struct HostProfileView: View {
                             if host.isVerified {
                                 Image(systemName: "checkmark.seal.fill")
                                     .font(.subheadline)
-                                    .foregroundStyle(Theme.verifiedBlue)
+                                    .foregroundStyle(Theme.verifiedBadge)
                             }
                         }
 
@@ -85,7 +85,7 @@ struct HostProfileView: View {
 
                     HStack(spacing: 12) {
                         if host.isVerified {
-                            BadgePill(icon: "checkmark.seal.fill", text: "Verified", color: Theme.verifiedBlue)
+                            BadgePill(icon: "checkmark.seal.fill", text: "Verified", color: Theme.verifiedBadge)
                         }
                         if host.hasBackgroundCheck {
                             BadgePill(icon: "shield.checkmark.fill", text: "BG Check", color: .green)
@@ -117,9 +117,9 @@ struct HostProfileView: View {
                         .clipShape(.rect(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                         )
-                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                        .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
                     }
                     .padding(.horizontal, 24)
                 }
@@ -140,7 +140,7 @@ struct HostProfileView: View {
                                 .foregroundStyle(Theme.primaryText.opacity(0.9))
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(Color.white.opacity(0.08))
+                                .background(Theme.accentRed.opacity(0.1))
                                 .clipShape(.capsule)
                         }
                     }

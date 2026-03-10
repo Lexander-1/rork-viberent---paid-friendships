@@ -91,7 +91,7 @@ struct BookingFlowView: View {
                     if host.isVerified {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.caption)
-                            .foregroundStyle(Theme.verifiedBlue)
+                            .foregroundStyle(Theme.verifiedBadge)
                     }
                     if host.hostTier != .free {
                         Text(host.hostTier.title)
@@ -154,9 +154,9 @@ struct BookingFlowView: View {
                         .clipShape(.rect(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(isSelected ? Color.white.opacity(0.12) : Theme.border, lineWidth: 1)
+                                .stroke(isSelected ? Theme.accentRed.opacity(0.3) : Theme.border, lineWidth: 1)
                         )
-                        .shadow(color: isSelected ? .white.opacity(0.08) : .clear, radius: 6, x: 0, y: 0)
+                        .shadow(color: isSelected ? Theme.buttonGlow : .clear, radius: 6, x: 0, y: 0)
                     }
                 }
             }

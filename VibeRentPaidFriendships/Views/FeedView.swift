@@ -15,13 +15,15 @@ struct FeedView: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(viewModel.filteredPosts, id: \.id) { post in
+                    ForEach(Array(viewModel.filteredPosts.enumerated()), id: \.element.id) { index, post in
                         FeedPostCard(
                             post: post,
                             onLike: { viewModel.toggleLike(for: post.id) },
                             users: users,
                             feedViewModel: viewModel
                         )
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .animation(.spring(duration: 0.4, bounce: 0.15).delay(Double(index) * 0.05), value: viewModel.filteredPosts.count)
 
                         Divider()
                             .background(themeManager.border)
@@ -113,10 +115,11 @@ struct FeedView: View {
                         .clipShape(Circle())
                         .overlay(
                             Circle()
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                         )
-                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                        .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
                 }
+                .buttonStyle(ScaleTapStyle())
                 .padding(.trailing, 20)
                 .padding(.bottom, 24)
             }
@@ -260,7 +263,7 @@ struct FeedPostCard: View {
                 .padding(.bottom, 4)
         }
         .padding(.vertical, 12)
-        .background(boostedBackground)
+        .background(Color.clear)
         .sheet(isPresented: $showComments) {
             CommentsSheet(post: post, feedViewModel: feedViewModel)
         }
@@ -273,11 +276,6 @@ struct FeedPostCard: View {
         } message: {
             Text("This post will be flagged for review by our moderation team.")
         }
-    }
-
-    @ViewBuilder
-    private var boostedBackground: some View {
-        Color.clear
     }
 }
 
@@ -333,9 +331,9 @@ struct SharePostSheet: View {
                     .clipShape(.rect(cornerRadius: 12))
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                            .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                     )
-                    .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                    .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
                 }
 
                 Button {

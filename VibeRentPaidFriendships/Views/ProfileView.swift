@@ -106,7 +106,7 @@ struct ProfileView: View {
             rolePill
 
             if user.isVerified {
-                BadgePill(icon: "checkmark.seal.fill", text: "Verified", color: Theme.verifiedBlue)
+                BadgePill(icon: "checkmark.seal.fill", text: "Verified", color: Theme.verifiedBadge)
             }
             if user.hasBackgroundCheck {
                 BadgePill(icon: "shield.checkmark.fill", text: "BG Check", color: .green)
@@ -119,7 +119,7 @@ struct ProfileView: View {
                 )
             }
             if user.hasPriorityPass {
-                BadgePill(icon: "bolt.shield.fill", text: "Priority", color: .blue)
+                BadgePill(icon: "bolt.shield.fill", text: "Priority", color: Theme.accentRed)
             }
         }
     }
@@ -150,7 +150,7 @@ struct ProfileView: View {
                     .foregroundStyle(Theme.primaryText.opacity(0.9))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(Color.white.opacity(0.08))
+                    .background(Theme.accentRed.opacity(0.1))
                     .clipShape(.capsule)
             }
         }
@@ -194,7 +194,7 @@ struct ProfileView: View {
             }
 
             if !user.isVerified {
-                profileMenuItem(icon: "checkmark.seal.fill", title: "Get Verified", color: Theme.verifiedBlue) { }
+                profileMenuItem(icon: "checkmark.seal.fill", title: "Get Verified", color: Theme.verifiedBadge) { }
             }
 
             if user.role == .host && !user.hasBackgroundCheck {
@@ -247,9 +247,9 @@ struct ProfileView: View {
                 .clipShape(.rect(cornerRadius: 12))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                        .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                 )
-                .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
             }
             .padding(.horizontal, 16)
 

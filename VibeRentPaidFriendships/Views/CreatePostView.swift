@@ -108,11 +108,11 @@ struct CreatePostView: View {
         } label: {
             if isPosting {
                 ProgressView()
-                    .tint(Theme.accent)
+                    .tint(Theme.accentRed)
             } else {
                 Text("Post")
                     .fontWeight(.bold)
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.accentRed)
             }
         }
         .disabled(caption.isEmpty || isPosting)

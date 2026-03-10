@@ -32,10 +32,11 @@ struct RoleSelectionView: View {
                         .clipShape(.rect(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                         )
-                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                        .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
                     }
+                    .buttonStyle(ScaleTapStyle())
 
                     Button {
                         onSelect(.customer)
@@ -54,9 +55,9 @@ struct RoleSelectionView: View {
                         .clipShape(.rect(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                         )
-                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                        .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
                     }
                 }
                 .padding(.horizontal, 24)

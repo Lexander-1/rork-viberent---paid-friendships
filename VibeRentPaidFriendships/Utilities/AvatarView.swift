@@ -34,7 +34,7 @@ struct AvatarView: View {
             if isVerified {
                 Image(systemName: "checkmark.seal.fill")
                     .font(.system(size: size * 0.3))
-                    .foregroundStyle(Theme.verifiedBlue)
+                    .foregroundStyle(Theme.verifiedBadge)
                     .background(Circle().fill(Theme.background).padding(1))
                     .offset(x: 2, y: 2)
             }

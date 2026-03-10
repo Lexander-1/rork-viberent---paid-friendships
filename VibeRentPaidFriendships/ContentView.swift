@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var notificationsViewModel = NotificationsViewModel()
     @State private var selectedPage: AppPage = .feed
     @State private var isDrawerOpen: Bool = false
+    @State private var hasLaunched: Bool = false
 
     var body: some View {
         Group {
@@ -31,9 +32,14 @@ struct ContentView: View {
                 mainAppView
             }
         }
+        .opacity(hasLaunched ? 1 : 0)
+        .scaleEffect(hasLaunched ? 1.0 : 0.95)
         .preferredColorScheme(appViewModel.themeManager.colorScheme)
         .task {
             await NotificationService.shared.requestPermission()
+            withAnimation(.easeOut(duration: 0.5)) {
+                hasLaunched = true
+            }
         }
     }
 

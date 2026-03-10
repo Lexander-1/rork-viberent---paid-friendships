@@ -39,11 +39,11 @@ struct EditProfileSheet: View {
                     } label: {
                         if isSaving {
                             ProgressView()
-                                .tint(Theme.accent)
+                                .tint(Theme.accentRed)
                         } else {
                             Text("Save")
                                 .fontWeight(.bold)
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.accentRed)
                         }
                     }
                     .disabled(isSaving)

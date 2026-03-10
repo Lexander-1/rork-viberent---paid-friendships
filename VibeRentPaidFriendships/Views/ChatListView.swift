@@ -74,7 +74,7 @@ struct ConversationRow: View {
                     .font(.caption2.bold())
                     .foregroundStyle(.white)
                     .frame(width: 20, height: 20)
-                    .background(Theme.accent)
+                    .background(Theme.accentRed)
                     .clipShape(.circle)
             }
         }

@@ -139,9 +139,9 @@ struct MyCalendarView: View {
                         .clipShape(.rect(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                         )
-                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                        .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
                 }
             }
 
@@ -273,9 +273,9 @@ struct MyCalendarView: View {
                                         .clipShape(.rect(cornerRadius: 12))
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 12)
-                                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                                .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                                         )
-                                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                                        .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
                                 }
                             }
                         }
@@ -310,13 +310,13 @@ struct MyCalendarView: View {
 
             VStack(spacing: 12) {
                 DatePicker("Date", selection: $availabilityDate, displayedComponents: .date)
-                    .tint(.white)
+                    .tint(Theme.accentRed)
 
                 DatePicker("Start Time", selection: $startTime, displayedComponents: .hourAndMinute)
-                    .tint(.white)
+                    .tint(Theme.accentRed)
 
                 DatePicker("End Time", selection: $endTime, displayedComponents: .hourAndMinute)
-                    .tint(.white)
+                    .tint(Theme.accentRed)
             }
             .padding(14)
             .background(Theme.cardBackground)
@@ -343,9 +343,9 @@ struct MyCalendarView: View {
                     .clipShape(.rect(cornerRadius: 12))
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                            .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                     )
-                    .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                    .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
             }
 
             if !availabilitySlots.isEmpty {
@@ -403,7 +403,7 @@ struct RescheduleSheet: View {
                     displayedComponents: [.date, .hourAndMinute]
                 )
                 .datePickerStyle(.graphical)
-                .tint(.white)
+                .tint(Theme.accentRed)
                 .padding(14)
                 .background(Theme.cardBackground)
                 .clipShape(.rect(cornerRadius: 12))
@@ -426,9 +426,9 @@ struct RescheduleSheet: View {
                         .clipShape(.rect(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                         )
-                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                        .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
                 }
 
                 Spacer()

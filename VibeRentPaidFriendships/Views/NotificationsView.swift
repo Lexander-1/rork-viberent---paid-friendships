@@ -85,11 +85,11 @@ struct NotificationRow: View {
     private var iconColor: Color {
         switch notification.type {
         case .like: return Theme.accentRed
-        case .reply, .mention: return Color(hex: 0x5B9BD5)
+        case .reply, .mention: return Theme.accentRed
         case .bookingConfirmed: return Color(hex: 0x4CAF50)
         case .bookingCancelled: return Theme.accentRed
         case .bookingUpdate, .bookingReschedule: return Color(hex: 0xFFA726)
-        case .newFollower: return Theme.verifiedBlue
+        case .newFollower: return Theme.verifiedBadge
         }
     }
 

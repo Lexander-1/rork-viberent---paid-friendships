@@ -64,7 +64,7 @@ struct ChatDetailView: View {
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.title2)
-                        .foregroundStyle(viewModel.newMessageText.isEmpty ? Theme.secondaryText : .white)
+                        .foregroundStyle(viewModel.newMessageText.isEmpty ? Theme.secondaryText : Theme.accentRed)
                 }
                 .disabled(viewModel.newMessageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
@@ -136,9 +136,9 @@ struct ChatDetailView: View {
                         .clipShape(.rect(cornerRadius: 10))
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                         )
-                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                        .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
                 }
             }
             .padding(.horizontal, 16)
@@ -174,7 +174,7 @@ struct ChatRescheduleSheet: View {
                     displayedComponents: [.date, .hourAndMinute]
                 )
                 .datePickerStyle(.graphical)
-                .tint(.white)
+                .tint(Theme.accentRed)
                 .padding(14)
                 .background(Theme.cardBackground)
                 .clipShape(.rect(cornerRadius: 12))
@@ -196,10 +196,11 @@ struct ChatRescheduleSheet: View {
                         .clipShape(.rect(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
                         )
-                        .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+                        .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
                 }
+                .buttonStyle(ScaleTapStyle())
 
                 Spacer()
             }
@@ -239,8 +240,12 @@ struct MessageBubble: View {
                     .foregroundStyle(Theme.primaryText)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(isFromCurrentUser ? Theme.buttonBackground : Color.white.opacity(0.1))
+                    .background(isFromCurrentUser ? Theme.buttonBackground : Color(hex: 0x333333))
                     .clipShape(.rect(cornerRadius: 18, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .stroke(isFromCurrentUser ? Theme.accentRed.opacity(0.2) : Theme.border, lineWidth: 0.5)
+                    )
 
                 Text(message.createdAt, style: .time)
                     .font(.caption2)

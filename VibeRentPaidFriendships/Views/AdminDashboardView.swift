@@ -132,7 +132,7 @@ struct AdminDashboardView: View {
 
                     if user.isVerified {
                         Image(systemName: "checkmark.seal.fill")
-                            .foregroundStyle(Theme.verifiedBlue)
+                            .foregroundStyle(Theme.verifiedBadge)
                     }
                 }
                 .listRowBackground(Theme.cardBackground)
@@ -223,7 +223,7 @@ struct AdminDashboardView: View {
                     statCard(title: "Active Hosts", value: "3,421", icon: "person.crop.circle.badge.checkmark", color: .green)
                     statCard(title: "Bookings Today", value: "847", icon: "calendar", color: Theme.secondaryText)
                     statCard(title: "Revenue (MTD)", value: "$128.4K", icon: "dollarsign.circle.fill", color: Theme.secondaryText)
-                    statCard(title: "Verified Users", value: "9,234", icon: "checkmark.seal.fill", color: Theme.verifiedBlue)
+                    statCard(title: "Verified Users", value: "9,234", icon: "checkmark.seal.fill", color: Theme.verifiedBadge)
                     statCard(title: "Flagged Posts", value: "23", icon: "flag.fill", color: Theme.dangerRed)
                 }
 

@@ -59,12 +59,12 @@ struct SettingsView: View {
                     Toggle(isOn: $user.notificationsEnabled) {
                         Label("Push Notifications", systemImage: "bell.fill")
                     }
-                    .tint(Theme.accent)
+                    .tint(Theme.accentRed)
 
                     Toggle(isOn: $user.proximityAlertsEnabled) {
                         Label("Proximity Alerts", systemImage: "location.magnifyingglass")
                     }
-                    .tint(Theme.accent)
+                    .tint(Theme.accentRed)
 
                     if user.role == .customer {
                         VStack(alignment: .leading, spacing: 4) {
@@ -82,7 +82,7 @@ struct SettingsView: View {
                     Toggle(isOn: $user.locationSharingEnabled) {
                         Label("Live Location Sharing", systemImage: "location.fill")
                     }
-                    .tint(Theme.accent)
+                    .tint(Theme.accentRed)
 
                     HStack {
                         Label("Emergency SOS", systemImage: "sos")

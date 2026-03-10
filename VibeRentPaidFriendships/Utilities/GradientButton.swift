@@ -6,6 +6,7 @@ struct GradientButton: View {
     let action: () -> Void
     var isFullWidth: Bool = true
     var isSmall: Bool = false
+    @State private var isPressed: Bool = false
 
     init(_ title: String, icon: String? = nil, isFullWidth: Bool = true, isSmall: Bool = false, action: @escaping () -> Void) {
         self.title = title
@@ -16,7 +17,9 @@ struct GradientButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             HStack(spacing: 8) {
                 if let icon {
                     Image(systemName: icon)
@@ -33,9 +36,18 @@ struct GradientButton: View {
             .clipShape(.rect(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                    .stroke(Theme.accentRed.opacity(0.3), lineWidth: 1)
             )
-            .shadow(color: .white.opacity(0.08), radius: 6, x: 0, y: 0)
+            .shadow(color: Theme.buttonGlow, radius: 6, x: 0, y: 0)
         }
+        .buttonStyle(ScaleTapStyle())
+    }
+}
+
+struct ScaleTapStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }

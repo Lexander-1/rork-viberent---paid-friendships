@@ -18,7 +18,7 @@ class ThemeManager {
 
     var cardBackground: Color {
         switch currentTheme {
-        case .dark: return Color(hex: 0x0F1A2B)
+        case .dark: return Color(hex: 0x2A1616)
         case .light: return Color(hex: 0xFFFFFF)
         case .monotoneBlue: return Color(hex: 0x002B55)
         case .monotoneRed: return Color(hex: 0x551111)
@@ -29,21 +29,21 @@ class ThemeManager {
     var primaryText: Color {
         switch currentTheme {
         case .light: return Color(hex: 0x1A1A1A)
-        default: return Color(hex: 0xEDEDED)
+        default: return Color(hex: 0xF5F5F5)
         }
     }
 
     var secondaryText: Color {
         switch currentTheme {
         case .light: return Color(hex: 0x666666)
-        default: return Color(hex: 0xB0B0B0)
+        default: return Color(hex: 0xC0C0C0)
         }
     }
 
     var border: Color {
         switch currentTheme {
         case .light: return Color(hex: 0xDDDDDD)
-        default: return Color(hex: 0x1E2D42)
+        default: return Color(hex: 0x400000)
         }
     }
 
@@ -54,16 +54,17 @@ class ThemeManager {
 
 enum Theme {
     static let background = Color(hex: 0x181818)
-    static let cardBackground = Color(hex: 0x0F1A2B)
-    static let accent = Color(hex: 0xA8C7FA)
-    static let buttonBackground = Color(hex: 0x0A2540)
-    static let primaryText = Color(hex: 0xEDEDED)
-    static let secondaryText = Color(hex: 0xB0B0B0)
-    static let border = Color(hex: 0x1E2D42)
-    static let verifiedBlue = Color(hex: 0xA8C7FA)
+    static let cardBackground = Color(hex: 0x2A1616)
+    static let accent = Color(hex: 0x9C2A2A)
+    static let buttonBackground = Color(hex: 0x400000)
+    static let primaryText = Color(hex: 0xF5F5F5)
+    static let secondaryText = Color(hex: 0xC0C0C0)
+    static let border = Color(hex: 0x400000)
+    static let verifiedBadge = Color(hex: 0xC77A7A)
     static let accentRed = Color(hex: 0x9C2A2A)
     static let dangerRed = Color(hex: 0x9C2A2A)
     static let gold = Color(hex: 0xFFD700)
+    static let buttonGlow = Color(hex: 0x9C2A2A).opacity(0.5)
 }
 
 extension Color {
